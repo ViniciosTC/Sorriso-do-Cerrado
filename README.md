@@ -93,5 +93,5 @@ npx vite
 * [Samantha Yumi Tanaka](https://github.com/ySamantha)
 * [Samuel Batista Rennó](https://github.com/SamuelBati)
 * [Samuel Rodrigues da Silva](https://github.com/Samuelblew)
-* [Vinicios Trindade Costa](https://github.com/Vinhicious)
+* [Vinicios Trindade Costa](https://github.com/ViniciosTC)
 * [Wictor Emanoel Ponte Menezes](https://github.com/we-learner)
