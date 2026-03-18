@@ -2,116 +2,96 @@
   <img src="https://i.imgur.com/CGdLk4r.png" width="550">
 </p>
 
-<h1 align="center">🛍️ Sorriso do Cerrado - Loja de Artesanato</h1>
+<h1 align="center"> Sorriso do Cerrado - Loja de Artesanato</h1>
+
+<p align="center"><img src="https://img.shields.io/static/v1?label=STATUS&message=%20Conclu%C3%ADdo&color=GREEN&style=for-the-badge"/></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/status-concluído-green?style=for-the-badge"/>
+  Sorriso do Cerrado é uma aplicação web de e-commerce, desenvolvida como parte do Projeto de Extensão universitária da Universidade Católica de Brasília.
 </p>
 
 <p align="center">
-  Aplicação web de e-commerce desenvolvida como parte de um projeto de extensão da Universidade Católica de Brasília.
+  O objetivo principal é fornecer uma plataforma digital para que Ângela Maria, uma artesã local, possa exibir, divulgar e vender os seus produtos artesanais, conectando a sua arte com um público mais amplo e promovendo a cultura do Cerrado. O projeto inclui uma área pública para clientes e uma área administrativa segura para a gestão completa do catálogo de produtos.
 </p>
-
-<p align="center">
-  O objetivo é fornecer uma plataforma digital para que uma artesã local possa divulgar e vender seus produtos, conectando sua arte a um público maior e promovendo a cultura do Cerrado.
-</p>
-
----
 
 ## ✨ Funcionalidades
 
-O projeto é dividido em duas experiências principais: cliente e administração.
+O projeto é dividido em duas experiências principais: a do cliente visitante e a da artesã administradora.
 
-### 👥 Área do Cliente
-- Visualização de produtos em destaque  
-- Catálogo com busca em tempo real  
-- Página de detalhes dos produtos  
-- Carrinho de compras com persistência (`localStorage`)  
-- Finalização de compra via WhatsApp  
+### **Para Clientes (Público)**
+* Visualização da página inicial com produtos em destaque.
+* Catálogo completo de produtos com funcionalidade de busca em tempo real. 
+* Página de detalhe para cada produto.
+* Um carrinho de compras funcional, que persiste no navegador (`localStorage`).
+* Finalização de compra simulada através de um link para o WhatsApp.
 
-### 🔐 Área Administrativa
-- Autenticação com JWT  
-- Painel de controle de produtos  
-- CRUD completo:
-  - Adicionar produtos  
-  - Editar produtos  
-  - Excluir produtos  
-- Logout seguro  
-
----
+### **Para a Artesã (Área Administrativa)**
+* Sistema de autenticação seguro com JWT (JSON Web Tokens) para proteger as rotas de gestão.
+* Painel de controle para visualizar todos os produtos registados.
+* Funcionalidade **CRUD** (Criar, Ler, Atualizar, Apagar) completa para os produtos:
+    * **Adicionar** novos produtos através de um formulário.
+    * **Editar** as informações de produtos existentes.
+    * **Excluir** produtos do catálogo.
+* Função de Logout para sair da área administrativa com segurança.
 
 ## 🛠️ Tecnologias Utilizadas
 
-| Área | Tecnologias |
-|------|------------|
-| **Front-End** | React (Vite), React Router, Axios, CSS Modules |
-| **Back-End** | Node.js, Express |
-| **Banco de Dados** | MySQL (`mysql2`) |
-| **Autenticação** | JWT, bcrypt |
+Este projeto foi construído com as seguintes tecnologias:
 
----
+| Área | Tecnologia |
+| :--- | :--- |
+| **Front-End** | React (com Vite), `react-router-dom`, `axios`, CSS Modules |
+| **Back-End** | Node.js, Express.js |
+| **Banco de Dados** | MySQL (com a biblioteca `mysql2`) |
+| **Autenticação** | JWT (JSON Web Tokens), `bcryptjs` |
 
-## 🚀 Como executar
+## 🚀 Como Rodar o Projeto Localmente
 
-### 📋 Pré-requisitos
-- Node.js  
-- Git  
-- MySQL rodando localmente  
+Para executar este projeto no seu ambiente de desenvolvimento, serão necessários dois terminais, um para o back-end e um para o front-end.
 
----
+### **Pré-requisitos**
+* [Node.js](https://nodejs.org/en/)
+* [Git](https://git-scm.com/)
+* Um servidor MySQL a correr localmente.
 
-### 🔧 Back-End
-
+### **1. Back-End**
 ```bash
-# Clone o repositório
-git clone <url-do-backend>
+# Clone o repositório do back-end
 
-# Acesse a pasta
-cd <nome-do-backend>
+# Entre na pasta do projeto
 
-# Crie o arquivo .env na raiz
+# Crie um ficheiro .env na raiz e configure as suas credenciais do banco de dados
 DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=sua_senha
+DB_PASSWORD=suasenha
 DB_NAME=sorrisodb
 DB_PORT=3306
 
 # Instale as dependências
 npm install
 
-# Inicie o servidor
+# Inicie o servidor 
 npx nodemon src/app.js
+```
+> O servidor back-end vai rodar na porta 3000.
 
-O servidor backend rodará em:
+### **2. Front-End**
+```bash
+# Em um novo terminal, clone o repositório do front-end
 
-http://localhost:3000
-💻 Front-End
-# Clone o repositório
-git clone <url-do-frontend>
-
-# Acesse a pasta
-cd <nome-do-frontend>
+# Entre na pasta do projeto
 
 # Instale as dependências
 npm install
 
-# Inicie a aplicação
+# Inicie a aplicação 
 npx vite
+```
+> A aplicação front-end estará disponível em `http://localhost:5173`.
 
-A aplicação estará disponível em:
-
-http://localhost:5173
-👩‍💻 Autores
-
-Samantha Yumi Tanaka
-
-Samuel Batista Rennó
-
-Samuel Rodrigues da Silva
-
-Vinicios Trindade Costa
-
-Wictor Emanoel Ponte Menezes
-
-
-Se quiser, depois eu te deixo isso ainda mais “nível GitHub top” (com deploy, prints, badges melhor
+## 👩‍💻 Autores
+* [Samantha Yumi Tanaka](https://github.com/ySamantha)
+* [Samuel Batista Rennó](https://github.com/SamuelBati)
+* [Samuel Rodrigues da Silva](https://github.com/Samuelblew)
+* [Vinicios Trindade Costa](https://github.com/Vinhicious)
+* [Wictor Emanoel Ponte Menezes](https://github.com/we-learner)
