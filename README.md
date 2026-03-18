@@ -63,5 +63,55 @@ O projeto é dividido em duas experiências principais: cliente e administraçã
 ### 🔧 Back-End
 
 ```bash
+# Clone o repositório
+git clone <url-do-backend>
+
+# Acesse a pasta
+cd <nome-do-backend>
+
+# Crie o arquivo .env na raiz
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=sua_senha
+DB_NAME=sorrisodb
+DB_PORT=3306
+
+# Instale as dependências
 npm install
+
+# Inicie o servidor
 npx nodemon src/app.js
+
+O servidor backend rodará em:
+
+http://localhost:3000
+💻 Front-End
+# Clone o repositório
+git clone <url-do-frontend>
+
+# Acesse a pasta
+cd <nome-do-frontend>
+
+# Instale as dependências
+npm install
+
+# Inicie a aplicação
+npx vite
+
+A aplicação estará disponível em:
+
+http://localhost:5173
+👩‍💻 Autores
+
+Samantha Yumi Tanaka
+
+Samuel Batista Rennó
+
+Samuel Rodrigues da Silva
+
+Vinicios Trindade Costa
+
+Wictor Emanoel Ponte Menezes
+
+
+Se quiser, depois eu te deixo isso ainda mais “nível GitHub top” (com deploy, prints, badges melhor
