@@ -11,6 +11,7 @@ import EditarProduto from './pages/editarProduto';
 import Favoritos from './pages/favoritos';
 import Carrinho from './pages/carrinho';
 import Cadastro from './pages/cadastro';
+import Explorar from './pages/explorar';
 
 import Configuracoes from './pages/configuracoes';
 import EditarDados from './pages/editarDados';
@@ -32,6 +33,7 @@ function App() {
         <Route path="/carrinho" element={<Carrinho />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/explorar" element={<Explorar />} />
 
         <Route
           path="/configuracoes"
