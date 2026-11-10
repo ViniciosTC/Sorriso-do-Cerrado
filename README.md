@@ -108,7 +108,7 @@ npx vite
 > A aplicação front-end estará disponível em `http://localhost:5173`.
 
 ## 👩‍💻 Autores
-* [Gabriel Cézar Peres Matos](https://github.com/gbrielzera))
+* [Gabriel Cézar Peres Matos](https://github.com/gbrielzera)
 * [Pedro Henrique Cavalcante de Sousa](https://github.com/pedrocavati)
 * [Samantha Yumi Tanaka](https://github.com/ySamantha)
 * [Samuel Batista Rennó](https://github.com/SamuelBati)
