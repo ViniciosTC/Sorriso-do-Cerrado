@@ -26,7 +26,7 @@
     * Diagramas e Modelagem
     * Melhorias e novas funcionaidades
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 O projeto é dividido em duas experiências principais: a do cliente visitante e a da artesã administradora.
 
@@ -46,7 +46,7 @@ O projeto é dividido em duas experiências principais: a do cliente visitante e
     * **Excluir** produtos do catálogo.
 * Função de Logout para sair da área administrativa com segurança.
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 Este projeto foi construído com as seguintes tecnologias:
 
@@ -57,7 +57,7 @@ Este projeto foi construído com as seguintes tecnologias:
 | **Banco de Dados** | MySQL (com a biblioteca `mysql2`) |
 | **Autenticação** | Better Auth, sessões em cookies |
 
-## 🚀 Como Rodar o Projeto Localmente
+## Como Rodar o Projeto Localmente
 
 Para executar este projeto no seu ambiente de desenvolvimento, serão necessários dois terminais, um para o back-end e um para o front-end.
 
@@ -108,9 +108,9 @@ npx vite
 > A aplicação front-end estará disponível em `http://localhost:5173`.
 
 ## 👩‍💻 Autores
+* [Gabriel Cézar Peres Matos](https://github.com/gbrielzera))
 * [Pedro Henrique Cavalcante de Sousa](https://github.com/pedrocavati)
-* [Pedro Henrique Nunes de Freitas](https://github.com/henripredo40)
 * [Samantha Yumi Tanaka](https://github.com/ySamantha)
 * [Samuel Batista Rennó](https://github.com/SamuelBati)
 * [Vinicios Trindade Costa](https://github.com/Vinhicious)
-* [Wictor Emanoel Ponte Menezes](https://github.com/we-learner)
+
