@@ -4,8 +4,6 @@
 
 <h1 align="center"> Sorriso do Cerrado - Loja de Artesanato</h1>
 
-<p align="center"><img src="https://img.shields.io/static/v1?label=STATUS&message=%20Conclu%C3%ADdo&color=GREEN&style=for-the-badge"/></p>
-
 <p align="center">
   Sorriso do Cerrado é uma aplicação web de e-commerce, desenvolvida por alunos da Universidade Católica de Brasília.
 </p>
