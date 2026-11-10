@@ -11,12 +11,14 @@ import EditarProduto from './pages/editarProduto';
 import Favoritos from './pages/favoritos';
 import Carrinho from './pages/carrinho';
 import Cadastro from './pages/cadastro';
+import Explorar from './pages/explorar';
 
 import Configuracoes from './pages/configuracoes';
 import EditarDados from './pages/editarDados';
 import MudarSenha from './pages/mudarSenha';
 
 import RotaProtegida from './auth/rotaProtegida';
+import RotaAdmin from './auth/rotaAdmin';
 
 import './global.css';
 
@@ -24,7 +26,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         <Route path="/" element={<Home />} />
         <Route path="/produtos" element={<Produtos />} />
         <Route path="/produto/:id" element={<DetalheProduto />} />
@@ -32,6 +33,7 @@ function App() {
         <Route path="/carrinho" element={<Carrinho />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/explorar" element={<Explorar />} />
 
         <Route
           path="/configuracoes"
@@ -41,7 +43,6 @@ function App() {
             </RotaProtegida>
           }
         />
-
         <Route
           path="/editar-dados"
           element={
@@ -50,7 +51,6 @@ function App() {
             </RotaProtegida>
           }
         />
-
         <Route
           path="/mudar-senha"
           element={
@@ -59,34 +59,30 @@ function App() {
             </RotaProtegida>
           }
         />
-
         <Route
           path="/admin"
           element={
-            <RotaProtegida>
+            <RotaAdmin>
               <AdminPainel />
-            </RotaProtegida>
+            </RotaAdmin>
           }
         />
-
         <Route
           path="/admin/adicionar-produto"
           element={
-            <RotaProtegida>
+            <RotaAdmin>
               <AdicionarProduto />
-            </RotaProtegida>
+            </RotaAdmin>
           }
         />
-
         <Route
           path="/admin/editar-produto/:id"
           element={
-            <RotaProtegida>
+            <RotaAdmin>
               <EditarProduto />
-            </RotaProtegida>
+            </RotaAdmin>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );

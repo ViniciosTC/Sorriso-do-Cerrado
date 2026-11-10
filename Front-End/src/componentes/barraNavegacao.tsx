@@ -51,7 +51,7 @@ function BarraNavegacao() {
 
       <ul className={styles.linksNavegacao}>
         <li><Link to="/">Início</Link></li>
-        <li><Link to="/produtos">Produtos</Link></li>
+        <li><Link to="/explorar">Explorar</Link></li>
 
         {isAuthenticated ? (
           <li className={styles.menuUsuario} ref={menuRef}>
