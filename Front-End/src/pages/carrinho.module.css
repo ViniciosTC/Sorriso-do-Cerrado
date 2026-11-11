@@ -38,6 +38,51 @@
   color: #555;
 }
 
+.controleQuantidade {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  color: #555;
+}
+
+.seletorQuantidade {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.botaoQuantidade {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #E2D5C8;
+  border-radius: 5px;
+  background-color: #F5ECE2;
+  color: #8D5B4C;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.botaoQuantidade:hover {
+  background-color: #EADBC9;
+  border-color: #D2BFA9;
+}
+
+.valorQuantidade {
+  min-width: 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4A3B31;
+}
+
 .botaoRemover {
   background-color: #ffebee;
   color: #c62828;
@@ -77,4 +122,26 @@
 .botaoLimpar {
   background-color: #eee;
   color: #333;
+}
+
+@media (max-width: 600px) {
+  .conteudoGeralCarrinho {
+    padding: 1.25rem;
+  }
+
+  .itemCarrinho {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .resumoCarrinho {
+    text-align: center;
+  }
+
+  .botaoFinalizar,
+  .botaoLimpar {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.75rem;
+  }
 }
