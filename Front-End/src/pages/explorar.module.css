@@ -162,6 +162,7 @@
     color: #8D5B4C;
     font-size: 0.9rem;
     font-weight: 600;
+    text-decoration: none;
 }
 
 .tituloSecao {
@@ -189,6 +190,8 @@
 
 /* CARDS DE ARTESÃOS */
 .cartaoArtesao {
+    display: block;
+    text-decoration: none;
     width: 100%;
     height: 294px;
     min-width: 0;
@@ -196,6 +199,12 @@
     border-radius: 16px;
     overflow: hidden;
     color: #4A3029;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cartaoArtesao:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(74, 59, 49, 0.08);
 }
 
 .bannerArtesao {
@@ -289,6 +298,19 @@
     width: 100%;
 }
 
+.mensagemSemResultado {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 32px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E9DED0;
+    color: #817268;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
 /* RESPONSIVIDADE */
 
 @media (max-width: 768px) {
@@ -298,6 +320,11 @@
 
     .hero {
         padding: 55px 0 40px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+        line-height: 38px;
     }
 
     .hero p {
