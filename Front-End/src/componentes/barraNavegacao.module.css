@@ -239,3 +239,36 @@
 
   padding: 14px 18px;
 }
+
+@media (max-width: 768px) {
+  .barraNavegacao {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0.85rem 1.25rem;
+  }
+
+  .logoNavegacao {
+    font-size: 1.35rem;
+  }
+
+  .logoImagem {
+    height: 32px;
+  }
+
+  .linksNavegacao {
+    gap: 14px;
+    padding-left: 0;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .barraNavegacao {
+    justify-content: center;
+  }
+
+  .linksNavegacao {
+    width: 100%;
+    justify-content: center;
+  }
+}

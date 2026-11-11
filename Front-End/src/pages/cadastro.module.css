@@ -1,5 +1,6 @@
 .formularioContainer {
-  width: 30%;
+  width: 90%;
+  max-width: 420px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #fff;
@@ -36,6 +37,15 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   width: 100%;
+}
+
+.mensagemErro {
+  color: #D8000C;
+  background-color: #FFD2D2;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 .container {

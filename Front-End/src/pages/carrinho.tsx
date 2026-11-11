@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
 import { useAuth } from '../auth/authContext';
+import { useNotificacao } from '../context/notificacaoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import styles from './carrinho.module.css';
 
 function Carrinho() {
-  const { cartItems, removeFromCart, clearCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const { mostrarNotificacao } = useNotificacao();
   const [compraFinalizada, setCompraFinalizada] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
@@ -20,7 +22,10 @@ function Carrinho() {
 
   const handleFinalizarCompra = async () => {
     if (!isAuthenticated) {
-      alert('Precisa fazer login para finalizar a compra!');
+      mostrarNotificacao(
+        'Você precisa fazer login para finalizar a compra.',
+        'aviso'
+      );
       return;
     }
 
@@ -38,10 +43,14 @@ function Carrinho() {
       );
 
       setCompraFinalizada(true);
-      clearCart();
+      clearCart(false);
+      mostrarNotificacao('Pedido registrado com sucesso!', 'sucesso');
     } catch (error) {
       console.error('Erro ao registrar venda:', error);
-      alert('Falha ao registrar pedido. Tente novamente.');
+      mostrarNotificacao(
+        'Falha ao registrar pedido. Tente novamente.',
+        'erro'
+      );
     } finally {
       setCarregando(false);
     }
@@ -98,7 +107,30 @@ function Carrinho() {
 
                       <div className={styles.infoProdutoCarrinho}>
                         <h3>{item.name}</h3>
-                        <p>Quantidade: {item.quantity}</p>
+                        <div className={styles.controleQuantidade}>
+                          <span>Quantidade:</span>
+                          <div className={styles.seletorQuantidade}>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className={styles.botaoQuantidade}
+                              aria-label="Diminuir quantidade"
+                            >
+                              −
+                            </button>
+                            <span className={styles.valorQuantidade}>
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className={styles.botaoQuantidade}
+                              aria-label="Aumentar quantidade"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
                         <p>
                           Preço: R${' '}
                           {parseFloat(String(item.price)).toFixed(2)}
@@ -126,7 +158,10 @@ function Carrinho() {
                     {carregando ? 'A processar...' : 'Finalizar Compra'}
                   </button>
 
-                  <button onClick={clearCart} className={styles.botaoLimpar}>
+                  <button
+                    onClick={() => clearCart()}
+                    className={styles.botaoLimpar}
+                  >
                     Limpar Carrinho
                   </button>
                 </div>

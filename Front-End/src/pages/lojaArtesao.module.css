@@ -1,0 +1,460 @@
+.paginaLojaArtesao {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    flex-shrink: 0;
+    background: #FAF3E0;
+}
+
+.mainContainer {
+    flex: 1 0 auto;
+    display: block;
+    width: 100%;
+}
+
+/* CAPA DA LOJA DO ARTESÃO */
+
+.capaContainer {
+    width: 100%;
+    height: 210px;
+    min-height: 210px;
+    flex-shrink: 0;
+    background: #D5BCA8;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 16px 28px;
+}
+
+.capaImagem {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    display: block;
+}
+
+.capaTexto {
+    position: relative;
+    z-index: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: #5C473B;
+    text-transform: uppercase;
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+.conteudo {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px 80px;
+}
+
+/* CABEÇALHO DA LOJA DO ARTESÃO (CARD SOBREPOSTO) */
+
+.cartaoCabecalho {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 28px 36px;
+    margin-top: -65px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 8px 25px rgba(74, 59, 49, 0.06);
+    border: 1px solid #EFE6D8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+}
+
+.infoPrincipal {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: 1;
+}
+
+.avatarLojaArtesao {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: #7D5243;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.avatarLojaArtesao img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dadosLojaArtesao {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dadosLojaArtesao h1 {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #8B5A4B;
+}
+
+.metadados {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: #65483E;
+}
+
+.itemMetadado {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.estrela {
+    color: #D28A20;
+    font-size: 15px;
+}
+
+.descricaoLojaArtesao {
+    margin: 4px 0 0;
+    max-width: 650px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #5C473B;
+}
+
+/* BOTÕES DO CABEÇALHO */
+
+.acoesCabecalho {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.botaoSeguir {
+    padding: 11px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #7D5243;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.botaoSeguir:hover {
+    background: #694336;
+}
+
+.botaoMensagem {
+    padding: 10px 20px;
+    border: 1px solid #C4A99B;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #65483E;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.botaoMensagem:hover {
+    background: #FAF3E0;
+    border-color: #8D5B4C;
+}
+
+/* CORPO DA LOJA (2 COLUNAS) */
+
+.corpoLoja {
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 28px;
+    margin-top: 38px;
+    align-items: start;
+}
+
+.colunaPrincipal {
+    min-width: 0;
+}
+
+/* BARRA DE ABAS E ORDENAÇÃO */
+
+.barraControles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.abas {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.aba,
+.abaAtiva {
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.aba {
+    background: #FFFFFF;
+    border: 1px solid #E4D6C7;
+    color: #65483E;
+}
+
+.aba:hover {
+    border-color: #8D5B4C;
+}
+
+.abaAtiva {
+    background: #7D5243;
+    border: 1px solid #7D5243;
+    color: #FFFFFF;
+}
+
+.ordenacaoContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: #65483E;
+}
+
+.selectOrdenacao {
+    padding: 8px 14px;
+    border: 1px solid #E4D6C7;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #4A3B31;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    cursor: pointer;
+    outline: none;
+}
+
+/* GRADE DE PRODUTOS */
+
+.gradeProdutos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.gradeProdutos > a {
+    display: flex;
+    height: 100%;
+}
+
+.gradeProdutos > a > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid #EFE6D8;
+    text-align: left;
+}
+
+.gradeProdutos > a > div h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #3F2B25;
+    margin: 4px 0;
+}
+
+.gradeProdutos > a > div p {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #556B2F;
+    margin: 0 0 10px;
+}
+
+.gradeProdutos img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    background-color: #E6D7C3;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.cartaoSecundario {
+    background: #FFFFFF;
+    border: 1px solid #EFE6D8;
+    border-radius: 14px;
+    padding: 28px;
+    color: #4A3B31;
+    font-family: 'Inter', sans-serif;
+}
+
+.cartaoSecundario h3 {
+    margin: 0 0 12px;
+    color: #8B5A4B;
+    font-size: 18px;
+}
+
+.cartaoSecundario p {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #5C473B;
+}
+
+/* COLUNA LATERAL DIREITA */
+
+.colunaLateral {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cartaoLateral {
+    background: #FFFFFF;
+    border: 1px solid #EFE6D8;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(74, 59, 49, 0.04);
+    font-family: 'Inter', sans-serif;
+}
+
+.cartaoLateral h3 {
+    margin: 0 0 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #8B5A4B;
+}
+
+.blocoInfo {
+    margin-bottom: 14px;
+}
+
+.blocoInfo:last-child {
+    margin-bottom: 0;
+}
+
+.blocoInfo strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4A3B31;
+    margin-bottom: 3px;
+}
+
+.blocoInfo p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #65483E;
+}
+
+.textoDuvidas {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #65483E;
+}
+
+.linkMensagemLoja {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8B5A4B;
+    cursor: pointer;
+    text-align: left;
+}
+
+.linkMensagemLoja:hover {
+    text-decoration: underline;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1024px) {
+    .corpoLoja {
+        grid-template-columns: 1fr;
+    }
+
+    .gradeProdutos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .conteudo {
+        padding: 0 22px 50px;
+    }
+
+    .cartaoCabecalho {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 22px;
+    }
+
+    .infoPrincipal {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .acoesCabecalho {
+        width: 100%;
+    }
+
+    .botaoSeguir,
+    .botaoMensagem {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .gradeProdutos {
+        grid-template-columns: 1fr;
+    }
+}

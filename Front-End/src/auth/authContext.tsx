@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useSession, signOut } from './auth-client';
+import { useNotificacao } from '../context/notificacaoContext';
 
 interface User {
   id: string;
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = useSession();
+  const { mostrarNotificacao } = useNotificacao();
 
   const user = session?.user
     ? {
@@ -30,7 +32,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     : null;
 
+  useEffect(() => {
+    if (isPending) return;
+
+    if (user) {
+      sessionStorage.setItem('sessaoAtiva', 'true');
+    } else if (sessionStorage.getItem('sessaoAtiva') === 'true') {
+      sessionStorage.removeItem('sessaoAtiva');
+      mostrarNotificacao(
+        'O tempo da sua sessão acabou por inatividade ou expiração. Faça login novamente.',
+        'aviso'
+      );
+    }
+  }, [user, isPending, mostrarNotificacao]);
+
   const logout = async () => {
+    sessionStorage.removeItem('sessaoAtiva');
     await signOut();
   };
 

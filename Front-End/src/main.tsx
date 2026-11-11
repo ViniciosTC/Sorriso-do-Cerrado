@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AuthProvider } from './auth/authContext';
 import { CartProvider } from './context/carrinhoContext';
+import { NotificacaoProvider } from './context/notificacaoContext';
 
 import './global.css';
 
@@ -15,10 +16,12 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <AuthProvider>
-      <CartProvider>
-        <App />
-      </CartProvider>
-    </AuthProvider>
+    <NotificacaoProvider>
+      <AuthProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </AuthProvider>
+    </NotificacaoProvider>
   </React.StrictMode>
 );

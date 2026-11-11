@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
+import { useNotificacao } from '../context/notificacaoContext';
 import styles from './editarProduto.module.css';
 
 function EditarProduto() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { mostrarNotificacao } = useNotificacao();
 
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -95,7 +97,7 @@ function EditarProduto() {
         }
       );
 
-      alert('Produto atualizado com sucesso!');
+      mostrarNotificacao('Produto atualizado com sucesso!', 'sucesso');
       navigate('/admin');
     } catch (err: unknown) {
       console.error(err);

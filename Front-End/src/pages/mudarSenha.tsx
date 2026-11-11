@@ -2,18 +2,20 @@ import { useState } from 'react';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import { authClient } from '../auth/auth-client';
+import { useNotificacao } from '../context/notificacaoContext';
 import styles from './mudarSenha.module.css';
 
 function MudarSenha() {
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const { mostrarNotificacao } = useNotificacao();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (novaSenha !== confirmarSenha) {
-      alert('Senhas não coincidem');
+      mostrarNotificacao('As senhas não coincidem.', 'erro');
       return;
     }
 
@@ -24,11 +26,11 @@ function MudarSenha() {
     });
 
     if (error) {
-      alert(error.message || 'Erro ao alterar senha');
+      mostrarNotificacao(error.message || 'Erro ao alterar senha', 'erro');
       return;
     }
 
-    alert('Senha alterada com sucesso');
+    mostrarNotificacao('Senha alterada com sucesso!', 'sucesso');
     setSenhaAtual('');
     setNovaSenha('');
     setConfirmarSenha('');

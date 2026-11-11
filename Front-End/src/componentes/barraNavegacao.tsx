@@ -33,10 +33,7 @@ function BarraNavegacao() {
     navigate('/');
   };
 
-  const totalItemsNoCarrinho = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const totalItemsNoCarrinho = cartItems.length;
 
   return (
     <nav className={styles.barraNavegacao}>
