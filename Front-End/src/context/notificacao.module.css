@@ -1,0 +1,149 @@
+.containerNotificacoes {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 380px;
+  width: calc(100% - 48px);
+  pointer-events: none;
+}
+
+.notificacao {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(74, 59, 49, 0.14);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  border-left: 5px solid #8D5B4C;
+  animation: entrarToast 0.22s ease-out;
+}
+
+.sucesso {
+  border-left-color: #556B2F;
+  background-color: #F7FAF2;
+  color: #35471A;
+}
+
+.erro {
+  border-left-color: #C62828;
+  background-color: #FFF5F5;
+  color: #8E1B1B;
+}
+
+.aviso {
+  border-left-color: #8D5B4C;
+  background-color: #FFFBF5;
+  color: #4A3B31;
+}
+
+.textoNotificacao {
+  flex: 1;
+  font-weight: 500;
+}
+
+.botaoFechar {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.65;
+  padding: 0 2px;
+}
+
+.botaoFechar:hover {
+  opacity: 1;
+}
+
+@keyframes entrarToast {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MODAL DE CONFIRMAÇÃO */
+
+.fundoModal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: rgba(63, 43, 37, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.caixaModal {
+  background-color: #FFFFFF;
+  border: 1px solid #E9DED0;
+  border-radius: 14px;
+  padding: 24px 28px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(74, 59, 49, 0.18);
+  text-align: center;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.textoModal {
+  margin: 0 0 20px;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: #4A3B31;
+  font-weight: 500;
+}
+
+.botoesModal {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.botaoCancelar,
+.botaoConfirmar {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.botaoCancelar {
+  background-color: #FAF3E0;
+  border: 1px solid #E2D5C8;
+  color: #65483E;
+}
+
+.botaoCancelar:hover {
+  background-color: #F0E4CE;
+}
+
+.botaoConfirmar {
+  background-color: #8D5B4C;
+  border: none;
+  color: #FFFFFF;
+}
+
+.botaoConfirmar:hover {
+  background-color: #714A3E;
+}

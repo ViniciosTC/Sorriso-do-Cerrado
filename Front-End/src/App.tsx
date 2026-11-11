@@ -12,6 +12,8 @@ import Favoritos from './pages/favoritos';
 import Carrinho from './pages/carrinho';
 import Cadastro from './pages/cadastro';
 import Explorar from './pages/explorar';
+import LojaArtesao from './pages/lojaArtesao';
+import Artesaos from './pages/artesaos';
 
 import Configuracoes from './pages/configuracoes';
 import EditarDados from './pages/editarDados';
@@ -34,6 +36,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/explorar" element={<Explorar />} />
+        <Route path="/artesaos" element={<Artesaos />} />
+        <Route path="/loja-artesao" element={<LojaArtesao />} />
+        <Route path="/loja-artesao/:id" element={<LojaArtesao />} />
 
         <Route
           path="/configuracoes"

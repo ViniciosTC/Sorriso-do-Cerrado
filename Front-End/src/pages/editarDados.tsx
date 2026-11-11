@@ -3,10 +3,12 @@ import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import { authClient } from '../auth/auth-client';
 import { useAuth } from '../auth/authContext';
+import { useNotificacao } from '../context/notificacaoContext';
 import styles from './editarDados.module.css';
 
 function EditarDados() {
   const { user } = useAuth();
+  const { mostrarNotificacao } = useNotificacao();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
 
@@ -27,7 +29,7 @@ function EditarDados() {
       });
 
       if (error) {
-        alert(error.message || 'Erro ao atualizar e-mail');
+        mostrarNotificacao(error.message || 'Erro ao atualizar e-mail', 'erro');
         return;
       }
     }
@@ -37,11 +39,14 @@ function EditarDados() {
     });
 
     if (error) {
-      alert(error.message || 'Erro ao atualizar dados');
+      mostrarNotificacao(error.message || 'Erro ao atualizar dados', 'erro');
       return;
     }
 
-    alert('Dados atualizados com sucesso! Se solicitado, confirme a alteração do e-mail pelo link enviado.');
+    mostrarNotificacao(
+      'Dados atualizados com sucesso! Se solicitado, confirme a alteração do e-mail pelo link enviado.',
+      'sucesso'
+    );
   };
 
   return (

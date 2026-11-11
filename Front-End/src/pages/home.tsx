@@ -7,6 +7,7 @@ import Rodape from '../componentes/rodape';
 
 import { imagens } from '../imagens';
 import { useAuth } from '../auth/authContext';
+import { useNotificacao } from '../context/notificacaoContext';
 
 import styles from './home.module.css';
 
@@ -29,6 +30,7 @@ function Home() {
   const [favoritosIds, setFavoritosIds] = useState<number[]>([]);
 
   const { isAdmin, isAuthenticated } = useAuth();
+  const { mostrarNotificacao } = useNotificacao();
 
   const carrosselRef = useRef<HTMLDivElement>(null);
 
@@ -92,13 +94,13 @@ function Home() {
       });
 
       await buscarBanners();
-      alert('Banner atualizado com sucesso!');
+      mostrarNotificacao('Banner atualizado com sucesso!', 'sucesso');
     } catch (error: unknown) {
       console.error('Erro ao atualizar banner:', error);
       const mensagem = axios.isAxiosError(error)
         ? error.response?.data?.error
         : undefined;
-      alert(mensagem || 'Erro ao atualizar banner.');
+      mostrarNotificacao(mensagem || 'Erro ao atualizar banner.', 'erro');
     }
   };
 

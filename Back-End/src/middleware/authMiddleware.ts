@@ -12,7 +12,9 @@ export const autenticar: preHandlerHookHandler = async (
     });
 
     if (!session) {
-      return reply.code(401).send({ error: "Não autenticado" });
+      return reply.code(401).send({
+        error: "O tempo da sua sessão acabou ou você não está logado. Por favor, faça login novamente.",
+      });
     }
 
     request.usuario = {
@@ -22,7 +24,9 @@ export const autenticar: preHandlerHookHandler = async (
     };
   } catch (error) {
     request.log.error({ err: error }, "Falha ao validar sessão");
-    return reply.code(401).send({ error: "Sessão inválida ou expirada" });
+    return reply.code(401).send({
+      error: "O tempo da sua sessão acabou. Por favor, faça login novamente.",
+    });
   }
 };
 
