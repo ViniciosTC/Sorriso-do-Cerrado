@@ -61,3 +61,19 @@
   margin-bottom: 1rem;
 }
 
+@media (max-width: 768px) {
+  .conteudoGeral {
+    padding: 1rem;
+  }
+
+  .tabelaAdmin {
+    display: block;
+    overflow-x: auto;
+    table-layout: auto;
+  }
+
+  .botaoAcao {
+    margin-bottom: 4px;
+  }
+}
+
