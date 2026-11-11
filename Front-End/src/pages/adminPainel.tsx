@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
+import { useNotificacao } from '../context/notificacaoContext';
 import styles from './adminPainel.module.css';
 
 interface Produto {
@@ -14,6 +15,7 @@ interface Produto {
 function AdminPainel() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const navigate = useNavigate();
+  const { mostrarNotificacao, confirmarAcao } = useNotificacao();
 
   const fetchProdutos = async () => {
     try {
@@ -26,7 +28,10 @@ function AdminPainel() {
       console.error('Erro ao buscar produtos:', error);
 
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        alert('Sessão expirada ou não autorizada. Faça login novamente.');
+        mostrarNotificacao(
+          'O tempo da sua sessão acabou. Por favor, faça login novamente para continuar.',
+          'erro'
+        );
         navigate('/login');
       }
     }
@@ -37,7 +42,7 @@ function AdminPainel() {
   }, []);
 
   const handleExcluir = async (id: number) => {
-    const confirmar = window.confirm(
+    const confirmar = await confirmarAcao(
       'Tem certeza que deseja excluir este produto?'
     );
 
@@ -47,11 +52,11 @@ function AdminPainel() {
           withCredentials: true,
         });
 
-        alert('Produto excluído com sucesso!');
+        mostrarNotificacao('Produto excluído com sucesso!', 'sucesso');
         fetchProdutos();
       } catch (error) {
         console.error('Erro ao excluir o produto:', error);
-        alert('Falha ao excluir o produto.');
+        mostrarNotificacao('Falha ao excluir o produto.', 'erro');
       }
     }
   };

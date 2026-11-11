@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUp } from '../auth/auth-client';
+import { useNotificacao } from '../context/notificacaoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import styles from './cadastro.module.css';
 
@@ -8,22 +9,25 @@ function Cadastro() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
+  const { mostrarNotificacao } = useNotificacao();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError('');
 
-    const { data, error } = await signUp.email({
+    const { error: err } = await signUp.email({
       email,
       password: senha,
       name: nome,
     });
 
-    if (error) {
-      alert(error.message || 'Erro ao cadastrar');
+    if (err) {
+      setError(err.message || 'Erro ao cadastrar');
     } else {
-      alert('Usuário cadastrado com sucesso!');
+      mostrarNotificacao('Usuário cadastrado com sucesso!', 'sucesso');
       navigate('/login');
     }
   };
@@ -65,6 +69,7 @@ function Cadastro() {
                 required
               />
             </div>
+            {error && <p className={styles.mensagemErro}>{error}</p>}
             <button type="submit" className={styles.botaoSubmit}>
               Registrar
             </button>

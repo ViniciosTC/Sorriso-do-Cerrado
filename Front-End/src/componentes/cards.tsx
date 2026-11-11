@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
 import { useAuth } from '../auth/authContext';
+import { useNotificacao } from '../context/notificacaoContext';
 import styles from './cards.module.css';
 
 interface Product {
@@ -25,6 +26,7 @@ function CartaoProduto({
 }: CartaoProdutoProps) {
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { mostrarNotificacao } = useNotificacao();
   const [isFavorited, setIsFavorited] = useState(favoritadoInicial);
 
   useEffect(() => {
@@ -48,7 +50,10 @@ function CartaoProduto({
     event.preventDefault();
 
     if (!isAuthenticated) {
-      alert('Você precisa fazer login para favoritar produtos.');
+      mostrarNotificacao(
+        'Não foi possível adicionar o produto aos favoritos: você não está logado. Por favor, faça login na sua conta para favoritar produtos.',
+        'aviso'
+      );
       return;
     }
 
@@ -59,6 +64,7 @@ function CartaoProduto({
         });
 
         setIsFavorited(false);
+        mostrarNotificacao('Produto removido dos favoritos.', 'aviso');
 
         if (onToggleFavorite) {
           onToggleFavorite();
@@ -71,10 +77,24 @@ function CartaoProduto({
         );
 
         setIsFavorited(true);
+        mostrarNotificacao('Produto adicionado aos favoritos!', 'sucesso');
       }
     } catch (err: unknown) {
       console.error('Erro na API:', err);
-      alert('Não foi possível atualizar os favoritos. Tente novamente.');
+
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        sessionStorage.removeItem('sessaoAtiva');
+        mostrarNotificacao(
+          'O tempo da sua sessão acabou. Por favor, faça login novamente para favoritar produtos.',
+          'erro'
+        );
+        return;
+      }
+
+      mostrarNotificacao(
+        'Não foi possível atualizar os favoritos. Tente novamente.',
+        'erro'
+      );
     }
   };
 

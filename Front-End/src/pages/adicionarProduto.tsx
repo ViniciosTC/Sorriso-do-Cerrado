@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
+import { useNotificacao } from '../context/notificacaoContext';
 import styles from './adicionarProduto.module.css';
 
 function AdicionarProduto() {
@@ -15,6 +16,7 @@ function AdicionarProduto() {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
+  const { mostrarNotificacao } = useNotificacao();
 
   const handleUploadImagem = async () => {
     try {
@@ -68,7 +70,7 @@ function AdicionarProduto() {
         withCredentials: true,
       });
 
-      alert('Produto adicionado com sucesso!');
+      mostrarNotificacao('Produto adicionado com sucesso!', 'sucesso');
       navigate('/admin');
     } catch (err: unknown) {
       const mensagem = axios.isAxiosError(err)
