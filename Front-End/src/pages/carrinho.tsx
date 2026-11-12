@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
@@ -6,13 +6,22 @@ import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
+import PagamentoPix, { type DadosPix } from '../componentes/pagamentoPix';
 import styles from './carrinho.module.css';
+
+type Etapa = 'carrinho' | 'pagamento' | 'concluida';
+
+interface Pagamento {
+  vendaId: number;
+  pix: DadosPix;
+}
 
 function Carrinho() {
   const { cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const { mostrarNotificacao } = useNotificacao();
-  const [compraFinalizada, setCompraFinalizada] = useState(false);
+  const [etapa, setEtapa] = useState<Etapa>('carrinho');
+  const [pagamento, setPagamento] = useState<Pagamento | null>(null);
   const [carregando, setCarregando] = useState(false);
 
   const precoTotal = cartItems.reduce((total, item) => {
@@ -31,20 +40,21 @@ function Carrinho() {
 
     setCarregando(true);
     try {
-      await axios.post(
+      const { data } = await axios.post(
         'http://localhost:3000/vendas',
         {
           nomeCliente: user?.name || 'Cliente',
-          emailCliente: user?.email,
           telefoneCliente: 'Não informado',
-          total: precoTotal,
+          itens: cartItems.map(({ id, quantity }) => ({
+            id,
+            quantidade: quantity,
+          })),
         },
         { withCredentials: true }
       );
 
-      setCompraFinalizada(true);
-      clearCart(false);
-      mostrarNotificacao('Pedido registrado com sucesso!', 'sucesso');
+      setPagamento({ vendaId: data.id, pix: data.pix });
+      setEtapa('pagamento');
     } catch (error) {
       console.error('Erro ao registrar venda:', error);
       mostrarNotificacao(
@@ -56,6 +66,20 @@ function Carrinho() {
     }
   };
 
+  const handlePago = useCallback(() => {
+    clearCart(false);
+    mostrarNotificacao('Pagamento confirmado!', 'sucesso');
+    setEtapa('concluida');
+  }, [clearCart, mostrarNotificacao]);
+
+  const handleExpirado = useCallback(() => {
+    mostrarNotificacao(
+      'O código PIX expirou. Finalize a compra novamente.',
+      'aviso'
+    );
+    setEtapa('carrinho');
+  }, [mostrarNotificacao]);
+
   return (
     <div>
       <BarraNavegacao />
@@ -63,17 +87,24 @@ function Carrinho() {
       <main className={styles.conteudoGeralCarrinho}>
         <h2>Seu Carrinho de Compras</h2>
 
-        {compraFinalizada ? (
+        {etapa === 'pagamento' && pagamento ? (
+          <PagamentoPix
+            vendaId={pagamento.vendaId}
+            pix={pagamento.pix}
+            onPago={handlePago}
+            onExpirado={handleExpirado}
+          />
+        ) : etapa === 'concluida' ? (
           <div className={styles.mensagemSucesso}>
             <h3>Parabéns pela sua compra!</h3>
 
             <p>
               Obrigada por escolher o artesanato do Sorriso do Cerrado.
-              O seu pedido foi registrado no sistema.
+              O seu pagamento foi confirmado.
             </p>
 
             <p>
-              Para combinar os detalhes do pagamento e da entrega,
+              Para combinar os detalhes da entrega,
               por favor, entre em contato conosco através do WhatsApp.
             </p>
 

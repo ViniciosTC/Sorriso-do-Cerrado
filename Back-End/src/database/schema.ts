@@ -84,6 +84,7 @@ export const vendas = mysqlTable("vendas", {
   data: datetime("data").default(new Date()),
   total: decimal("total", { precision: 10, scale: 2 }),
   status: mysqlEnum("status", ["pendente", "confirmada", "cancelada"]).default("pendente"),
+  pagamentoId: varchar("pagamento_id", { length: 64 }),
 });
 
 export const itensVenda = mysqlTable("itens_venda", {
