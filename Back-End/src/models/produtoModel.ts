@@ -9,6 +9,7 @@ export interface Produto {
   preco: number | string;
   estoque: number | null;
   imagemURL?: string | null;
+  categoria?: string | null;
 }
 
 const ProdutoModel = {
@@ -26,7 +27,7 @@ const ProdutoModel = {
   },
 
   criar: async (produto: Produto): Promise<Produto> => {
-    const { nome, descricao, preco, estoque, imagemURL } = produto;
+    const { nome, descricao, preco, estoque, imagemURL, categoria } = produto;
 
     const resultado = await db.insert(produtos).values({
       nome,
@@ -34,6 +35,7 @@ const ProdutoModel = {
       preco: String(preco),
       estoque,
       imagemURL,
+      categoria,
     });
 
     return {
@@ -46,7 +48,7 @@ const ProdutoModel = {
     id: string | number,
     produto: Produto
   ): Promise<boolean> => {
-    const { nome, descricao, preco, estoque, imagemURL } = produto;
+    const { nome, descricao, preco, estoque, imagemURL, categoria } = produto;
 
     const resultado = await db
       .update(produtos)
@@ -56,6 +58,7 @@ const ProdutoModel = {
         preco: String(preco),
         estoque,
         imagemURL,
+        categoria,
       })
       .where(eq(produtos.id, Number(id)));
 

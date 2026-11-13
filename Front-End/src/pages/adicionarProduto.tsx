@@ -6,8 +6,19 @@ import Rodape from '../componentes/rodape';
 import { useNotificacao } from '../context/notificacaoContext';
 import styles from './adicionarProduto.module.css';
 
+const CATEGORIAS = [
+  'Cerâmica',
+  'Decoração',
+  'Acessórios',
+  'Tecelagem',
+  'Arte em madeira',
+  'Pintura',
+  'Outros',
+];
+
 function AdicionarProduto() {
   const [nome, setNome] = useState('');
+  const [categoria, setCategoria] = useState('');
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
   const [estoque, setEstoque] = useState('');
@@ -57,6 +68,7 @@ function AdicionarProduto() {
 
       const novoProduto = {
         nome,
+        categoria: categoria || null,
         descricao,
         preco: precoFormatado,
         estoque: parseInt(estoque, 10),
@@ -98,6 +110,23 @@ function AdicionarProduto() {
                 onChange={(e) => setNome(e.target.value)}
                 required
               />
+            </div>
+
+            <div className={styles.campoFormulario}>
+              <label htmlFor="categoria">Categoria</label>
+              <select
+                id="categoria"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                required
+              >
+                <option value="">Selecione uma categoria</option>
+                {CATEGORIAS.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className={styles.campoFormulario}>

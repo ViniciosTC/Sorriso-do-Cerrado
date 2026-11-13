@@ -12,6 +12,7 @@ const FavoritoModel = {
         preco: produtos.preco,
         estoque: produtos.estoque,
         imagemURL: produtos.imagemURL,
+        categoria: produtos.categoria,
       })
       .from(favoritos)
       .innerJoin(produtos, eq(favoritos.produtoId, produtos.id))
