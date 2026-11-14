@@ -1,20 +1,34 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import CartaoProduto from '../componentes/cards';
+import { useAuth } from '../auth/authContext';
 
 import styles from './explorar.module.css';
 
+interface Produto {
+    id: number;
+    nome: string;
+    artesao?: string;
+    categoria?: string;
+    preco: string | number;
+    imagemURL?: string;
+}
+
 const categorias = [
-    'Cerâmica',
+    'Moda e acessórios',
+    'Joias e bijuterias',
+    'Crochê e peças artesanais',
     'Decoração',
-    'Acessórios',
-    'Tecelagem',
-    'Arte em madeira',
-    'Pintura',
+    'Organização e armazenamento',
+    'Mesa e cozinha',
+    'Aromas e cuidados pessoais',
+    'Jardim e plantas',
+    'Presentes e lembranças',
 ];
 
 const artesãos = [
@@ -25,7 +39,7 @@ const artesãos = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=800',
         localizacao: 'Pirenópolis, GO',
-        categoria: 'Crochê e bolsas',
+        categoria: 'Crochê e peças artesanais',
         avaliacao: '4,9'
     },
     {
@@ -45,7 +59,7 @@ const artesãos = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800',
         localizacao: 'Pirenópolis, GO',
-        categoria: 'Cerâmica',
+        categoria: 'Mesa e cozinha',
         avaliacao: '5,0'
     }
 ];
@@ -55,7 +69,7 @@ const produtos = [
         id: 101,
         nome: 'Vaso de cerâmica artesanal',
         artesao: 'Ateliê Raízes',
-        categoria: 'Cerâmica',
+        categoria: 'Jardim e plantas',
         preco: '89,90',
         imagemURL: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600',
     },
@@ -63,7 +77,7 @@ const produtos = [
         id: 102,
         nome: 'Cesto de fibras naturais',
         artesao: 'Mãos do Cerrado',
-        categoria: 'Tecelagem',
+        categoria: 'Organização e armazenamento',
         preco: '120,00',
         imagemURL: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=600',
     },
@@ -71,7 +85,7 @@ const produtos = [
         id: 103,
         nome: 'Peça decorativa em madeira',
         artesao: 'Arte Viva',
-        categoria: 'Arte em madeira',
+        categoria: 'Decoração',
         preco: '75,00',
         imagemURL: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=600',
     },
@@ -79,7 +93,7 @@ const produtos = [
         id: 104,
         nome: 'Objeto decorativo artesanal',
         artesao: 'Flor de Barro',
-        categoria: 'Decoração',
+        categoria: 'Presentes e lembranças',
         preco: '65,00',
         imagemURL: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=600',
     },
@@ -87,8 +101,31 @@ const produtos = [
 
 function Explorar() {
     const [termoBusca, setTermoBusca] = useState('');
-
     const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<string[]>([]);
+    const [produtosBanco, setProdutosBanco] = useState<Produto[]>([]);
+    const [favoritosIds, setFavoritosIds] = useState<number[]>([]);
+
+    const { isAuthenticated } = useAuth();
+
+    useEffect(() => {
+        const carregarDados = async () => {
+            try {
+                const resProdutos = await axios.get<Produto[]>('http://localhost:3000/produtos');
+                setProdutosBanco(resProdutos.data);
+
+                if (isAuthenticated) {
+                    const resFavoritos = await axios.get<Produto[]>('http://localhost:3000/favoritos', {
+                        withCredentials: true,
+                    });
+                    setFavoritosIds(resFavoritos.data.map((fav) => fav.id));
+                }
+            } catch (error) {
+                console.error('Erro ao buscar produtos na tela explorar:', error);
+            }
+        };
+
+        carregarDados();
+    }, [isAuthenticated]);
 
     function handleBuscar(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -115,14 +152,18 @@ function Explorar() {
         return correspondeBusca && correspondeCategoria;
     });
 
-    const produtosFiltrados = produtos.filter((produto) => {
+    const todosProdutos: Produto[] = [...produtosBanco, ...produtos];
+
+    const produtosFiltrados = todosProdutos.filter((produto) => {
+        const termo = termoBusca.toLowerCase();
         const correspondeBusca =
-            produto.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
-            produto.artesao.toLowerCase().includes(termoBusca.toLowerCase());
+            produto.nome.toLowerCase().includes(termo) ||
+            (produto.artesao || '').toLowerCase().includes(termo) ||
+            (produto.categoria || '').toLowerCase().includes(termo);
 
         const correspondeCategoria =
             categoriasSelecionadas.length === 0 ||
-            categoriasSelecionadas.includes(produto.categoria);
+            (!!produto.categoria && categoriasSelecionadas.includes(produto.categoria));
 
         return correspondeBusca && correspondeCategoria;
     });
@@ -177,20 +218,20 @@ function Explorar() {
                 </section>
 
                 {/* Artesãos */}
-                <section className={styles.secao}>
-                    <div className={styles.secaoCabecalho}>
-                        <div>
-                            <h2 className={styles.tituloSecao}>Artesãos em destaque</h2>
+                {artesaosFiltrados.length > 0 && (
+                    <section className={styles.secao}>
+                        <div className={styles.secaoCabecalho}>
+                            <div>
+                                <h2 className={styles.tituloSecao}>Artesãos em destaque</h2>
+                            </div>
+
+                            <Link to="/artesaos" className={styles.verTodos}>
+                                Ver todos →
+                            </Link>
                         </div>
 
-                        <Link to="/artesaos" className={styles.verTodos}>
-                            Ver todos →
-                        </Link>
-                    </div>
-
-                    <div className={styles.gradeArtesaos}>
-                        {artesaosFiltrados.length > 0 ? (
-                            artesaosFiltrados.map((artesao) => (
+                        <div className={styles.gradeArtesaos}>
+                            {artesaosFiltrados.map((artesao) => (
                                 <Link
                                     to={`/loja-artesao/${artesao.id}`}
                                     className={styles.cartaoArtesao}
@@ -223,43 +264,41 @@ function Explorar() {
                                         </div>
                                     </div>
                                 </Link>
-                            ))
-                        ) : (
-                            <p className={styles.mensagemSemResultado}>
-                                Nenhum artesão ou loja encontrado para "{termoBusca}".
-                            </p>
-                        )}
-                    </div>
-                </section>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* Produtos */}
-                <section className={styles.secao}>
-                    <div className={styles.secaoCabecalho}>
-                        <div>
-                            <h2 className={styles.tituloSecao}>Produtos em destaque</h2>
+                {produtosFiltrados.length > 0 && (
+                    <section className={styles.secao}>
+                        <div className={styles.secaoCabecalho}>
+                            <div>
+                                <h2 className={styles.tituloSecao}>Produtos em destaque</h2>
+                            </div>
+
+                            <Link to="/produtos" className={styles.verTodos}>
+                                Ver catálogo →
+                            </Link>
                         </div>
 
-                        <Link to="/produtos" className={styles.verTodos}>
-                            Ver catálogo →
-                        </Link>
-                    </div>
-
-                    <div className={styles.gradeProdutos}>
-                        {produtosFiltrados.length > 0 ? (
-                            produtosFiltrados.map((produto) => (
+                        <div className={styles.gradeProdutos}>
+                            {produtosFiltrados.map((produto) => (
                                 <CartaoProduto
                                     key={produto.id}
                                     product={produto}
-                                    favoritadoInicial={false}
+                                    favoritadoInicial={favoritosIds.includes(produto.id)}
                                 />
-                            ))
-                        ) : (
-                            <p className={styles.mensagemSemResultado}>
-                                Nenhum produto encontrado para "{termoBusca}".
-                            </p>
-                        )}
-                    </div>
-                </section>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {artesaosFiltrados.length === 0 && produtosFiltrados.length === 0 && (
+                    <p className={styles.mensagemSemResultado}>
+                        Nenhum artesão ou produto encontrado para os filtros selecionados.
+                    </p>
+                )}
             </main>
 
             <Rodape />

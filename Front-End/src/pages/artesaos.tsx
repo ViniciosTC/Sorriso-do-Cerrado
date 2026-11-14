@@ -8,12 +8,15 @@ import styles from './artesaos.module.css';
 
 const categorias = [
     'Todas',
-    'Crochê e bolsas',
+    'Moda e acessórios',
+    'Joias e bijuterias',
+    'Crochê e peças artesanais',
     'Decoração',
-    'Cerâmica',
-    'Tecelagem',
-    'Arte em madeira',
-    'Acessórios',
+    'Organização e armazenamento',
+    'Mesa e cozinha',
+    'Aromas e cuidados pessoais',
+    'Jardim e plantas',
+    'Presentes e lembranças',
 ];
 
 export const listaArtesaosMock = [
@@ -24,7 +27,7 @@ export const listaArtesaosMock = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=800',
         localizacao: 'Pirenópolis, GO',
-        categoria: 'Crochê e bolsas',
+        categoria: 'Crochê e peças artesanais',
         avaliacao: '4,9',
         descricao:
             'Peças de crochê feitas à mão com fios naturais. Cada bolsa leva dias para ficar pronta, do primeiro ponto ao acabamento.',
@@ -48,7 +51,7 @@ export const listaArtesaosMock = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800',
         localizacao: 'Pirenópolis, GO',
-        categoria: 'Cerâmica',
+        categoria: 'Mesa e cozinha',
         avaliacao: '5,0',
         descricao:
             'Cerâmicas utilitárias e decorativas modeladas manualmente e queimadas em forno de alta temperatura.',
@@ -60,7 +63,7 @@ export const listaArtesaosMock = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800',
         localizacao: 'Alto Paraíso, GO',
-        categoria: 'Tecelagem',
+        categoria: 'Organização e armazenamento',
         avaliacao: '4,9',
         descricao:
             'Tapetes, mantas e redes tecidos em tear manual utilizando algodão agroecológico do Cerrado.',
@@ -72,7 +75,7 @@ export const listaArtesaosMock = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=800',
         localizacao: 'Cidade de Goiás, GO',
-        categoria: 'Arte em madeira',
+        categoria: 'Presentes e lembranças',
         avaliacao: '4,7',
         descricao:
             'Esculturas, tábuas e luminárias entalhadas em madeira de reaproveitamento e galhos caídos do Cerrado.',
@@ -84,7 +87,7 @@ export const listaArtesaosMock = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
         localizacao: 'Caldas Novas, GO',
-        categoria: 'Acessórios',
+        categoria: 'Joias e bijuterias',
         avaliacao: '5,0',
         descricao:
             'Colares, brincos e pulseiras produzidos artesanalmente com capim-dourado e sementes nativas.',

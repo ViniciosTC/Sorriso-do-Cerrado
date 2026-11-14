@@ -40,7 +40,7 @@ const lojasArtesaos: LojaArtesaoInfo[] = [
         avatar: null,
         bannerImage: null,
         localizacao: 'Pirenópolis, GO',
-        categoria: 'Crochê e bolsas',
+        categoria: 'Crochê e peças artesanais',
         avaliacao: '4,9',
         descricao:
             'Peças de crochê feitas à mão com fios naturais. Cada bolsa leva dias para ficar pronta, do primeiro ponto ao acabamento.',
@@ -74,7 +74,7 @@ const lojasArtesaos: LojaArtesaoInfo[] = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200',
         localizacao: 'Pirenópolis, GO',
-        categoria: 'Cerâmica',
+        categoria: 'Mesa e cozinha',
         avaliacao: '5,0',
         descricao:
             'Cerâmicas utilitárias e decorativas modeladas manualmente e queimadas em forno de alta temperatura.',
@@ -91,7 +91,7 @@ const lojasArtesaos: LojaArtesaoInfo[] = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1200',
         localizacao: 'Alto Paraíso, GO',
-        categoria: 'Tecelagem',
+        categoria: 'Organização e armazenamento',
         avaliacao: '4,9',
         descricao:
             'Tapetes, mantas e redes tecidos em tear manual utilizando algodão agroecológico do Cerrado.',
@@ -108,7 +108,7 @@ const lojasArtesaos: LojaArtesaoInfo[] = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=1200',
         localizacao: 'Cidade de Goiás, GO',
-        categoria: 'Arte em madeira',
+        categoria: 'Presentes e lembranças',
         avaliacao: '4,7',
         descricao:
             'Esculturas, tábuas e luminárias entalhadas em madeira de reaproveitamento e galhos caídos do Cerrado.',
@@ -125,7 +125,7 @@ const lojasArtesaos: LojaArtesaoInfo[] = [
         avatar: null,
         bannerImage: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200',
         localizacao: 'Caldas Novas, GO',
-        categoria: 'Acessórios',
+        categoria: 'Joias e bijuterias',
         avaliacao: '5,0',
         descricao:
             'Colares, brincos e pulseiras produzidos artesanalmente com capim-dourado e sementes nativas.',

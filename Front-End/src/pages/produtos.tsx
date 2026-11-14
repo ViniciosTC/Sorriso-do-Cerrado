@@ -19,12 +19,15 @@ interface Produto {
 
 const categorias = [
   'Todas',
-  'Cerâmica',
+  'Moda e acessórios',
+  'Joias e bijuterias',
+  'Crochê e peças artesanais',
   'Decoração',
-  'Acessórios',
-  'Tecelagem',
-  'Arte em madeira',
-  'Pintura',
+  'Organização e armazenamento',
+  'Mesa e cozinha',
+  'Aromas e cuidados pessoais',
+  'Jardim e plantas',
+  'Presentes e lembranças',
 ];
 
 function Produtos() {
