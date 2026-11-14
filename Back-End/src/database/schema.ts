@@ -74,6 +74,7 @@ export const produtos = mysqlTable("produtos", {
   preco: decimal("preco", { precision: 10, scale: 2 }).notNull(),
   estoque: int("estoque").default(0),
   imagemURL: varchar("imagemURL", { length: 255 }),
+  categoria: varchar("categoria", { length: 100 }),
 });
 
 export const vendas = mysqlTable("vendas", {

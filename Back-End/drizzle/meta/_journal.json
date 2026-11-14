@@ -29,6 +29,13 @@
       "when": 1794360734536,
       "tag": "0003_fearless_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1794595343305,
+      "tag": "0004_normal_whizzer",
+      "breakpoints": true
     }
   ]
 }

@@ -35,7 +35,7 @@ export const criarProduto = async (
   reply: FastifyReply,
 ) => {
   try {
-    const { nome, descricao, preco, estoque, imagemURL } =
+    const { nome, descricao, preco, estoque, imagemURL, categoria } =
       request.body as ProductBody;
     const novoProduto = await ProdutoModel.criar({
       nome,
@@ -43,6 +43,7 @@ export const criarProduto = async (
       preco,
       estoque,
       imagemURL,
+      categoria,
     });
     return reply.code(201).send(novoProduto);
   } catch (error) {
@@ -56,7 +57,7 @@ export const atualizarProduto = async (
   reply: FastifyReply,
 ) => {
   try {
-    const { nome, descricao, preco, estoque, imagemURL } =
+    const { nome, descricao, preco, estoque, imagemURL, categoria } =
       request.body;
     const atualizado = await ProdutoModel.atualizar(request.params.id, {
       nome,
@@ -64,6 +65,7 @@ export const atualizarProduto = async (
       preco,
       estoque,
       imagemURL,
+      categoria,
     });
 
     if (!atualizado) {
