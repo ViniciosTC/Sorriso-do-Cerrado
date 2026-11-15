@@ -16,8 +16,11 @@ import LojaArtesao from './pages/lojaArtesao';
 import Artesaos from './pages/artesaos';
 
 import Configuracoes from './pages/configuracoes';
+import Perfil from './pages/perfil';
 import EditarDados from './pages/editarDados';
 import MudarSenha from './pages/mudarSenha';
+import CadastroArtesao from './pages/cadastroArtesao';
+import DadosRecebimentoArtesao from './pages/dadosRecebimentoArtesao';
 
 import RotaProtegida from './auth/rotaProtegida';
 import RotaAdmin from './auth/rotaAdmin';
@@ -45,6 +48,30 @@ function App() {
           element={
             <RotaProtegida>
               <Configuracoes />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <RotaProtegida>
+              <Perfil />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/cadastro-artesao"
+          element={
+            <RotaProtegida>
+              <CadastroArtesao />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/dados-recebimento"
+          element={
+            <RotaProtegida>
+              <DadosRecebimentoArtesao />
             </RotaProtegida>
           }
         />

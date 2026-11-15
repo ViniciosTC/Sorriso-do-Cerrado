@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { imagens } from '../imagens';
 import { useAuth } from '../auth/authContext';
 import { useCart } from '../context/carrinhoContext';
+import AvatarUsuario from './avatarUsuario';
 import styles from './barraNavegacao.module.css';
 
 function BarraNavegacao() {
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, isArtisan, isUser, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
 
@@ -107,28 +108,22 @@ function BarraNavegacao() {
             <button
               className={styles.botaoMenu}
               onClick={() => setMenuAberto(!menuAberto)}
-              aria-label="Configurações"
-              title="Configurações"
+              aria-label="Abrir menu do usuário"
+              title="Menu do usuário"
+              aria-expanded={menuAberto}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={styles.iconeConfiguracoes}
-              >
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
+              <AvatarUsuario image={user?.image} className={styles.avatarMenu} />
             </button>
 
             {menuAberto && (
               <div className={styles.menuDropdown}>
+                <Link
+                  to="/perfil"
+                  onClick={() => setMenuAberto(false)}
+                >
+                  Perfil
+                </Link>
+
                 <Link
                   to="/configuracoes"
                   onClick={() => setMenuAberto(false)}
@@ -136,12 +131,21 @@ function BarraNavegacao() {
                   Configurações
                 </Link>
 
-                {isAdmin && (
+                {(isArtisan || isAdmin) && (
                   <Link
                     to="/admin"
                     onClick={() => setMenuAberto(false)}
                   >
-                    Administrar loja
+                    Gerenciar artesanato
+                  </Link>
+                )}
+
+                {isUser && (
+                  <Link
+                    to="/cadastro-artesao"
+                    onClick={() => setMenuAberto(false)}
+                  >
+                    Torne-se um artesão
                   </Link>
                 )}
 

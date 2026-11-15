@@ -155,8 +155,6 @@
   align-items: center;
 }
 
-/* BOTÃO CONFIGURAÇÕES */
-
 .botaoMenu {
   background: transparent;
   border: none;
@@ -166,19 +164,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease-in-out, transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .botaoMenu:hover {
-  color: #a0522d;
+  transform: scale(1.05);
 }
 
-.iconeConfiguracoes {
+.avatarMenu {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-  stroke: currentColor;
-  transition: color 0.2s ease;
+  border-radius: 50%;
+  object-fit: cover;
+  color: #8D5B4C;
+  background-color: #F5ECE2;
+  border: 1px solid #E2D5C8;
 }
 
 /* MENU SUSPENSO */

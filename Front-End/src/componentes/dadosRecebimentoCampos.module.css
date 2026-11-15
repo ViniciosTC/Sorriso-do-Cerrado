@@ -1,0 +1,73 @@
+.grupoCampos {
+  margin: 0 0 1.15rem;
+  padding: 0;
+  border: 0;
+}
+
+.grupoCampos legend {
+  margin-bottom: 0.55rem;
+  color: #4A3B31;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 1.1rem 0.5rem 0;
+  color: #5C473B;
+  font-size: 0.9rem;
+}
+
+.opcao input {
+  accent-color: #8D5B4C;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.15rem;
+  color: #4A3B31;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #E5DCD0;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #4A3B31;
+  font: inherit;
+  font-weight: 400;
+  outline: none;
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #8D5B4C;
+  box-shadow: 0 0 0 3px rgba(141, 91, 76, 0.13);
+}
+
+.duasColunas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.ajuda {
+  margin: 0.5rem 0 1rem;
+  color: #77685E;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .duasColunas {
+    grid-template-columns: 1fr;
+  }
+}

@@ -7,5 +7,6 @@ declare module "fastify" {
       email: string;
       papel?: string;
     };
+    rawBody?: Buffer;
   }
 }

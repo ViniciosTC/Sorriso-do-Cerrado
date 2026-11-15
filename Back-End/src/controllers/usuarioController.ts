@@ -111,3 +111,4 @@ export const deletarUsuario = async (
     return reply.code(500).send({ error: "Erro ao deletar usuário" });
   }
 };
+

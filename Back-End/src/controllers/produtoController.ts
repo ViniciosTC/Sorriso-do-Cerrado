@@ -30,6 +30,27 @@ export const buscarProdutoPorId = async (
   }
 };
 
+export const listarProdutosParaGerenciamento = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  if (!request.usuario) {
+    return reply.code(401).send({ error: "Não autenticado" });
+  }
+
+  try {
+    return reply.send(
+      await ProdutoModel.listarParaGerenciamento(
+        request.usuario.id,
+        request.usuario.papel === "admin",
+      ),
+    );
+  } catch (error) {
+    request.log.error({ err: error }, "Erro ao buscar produtos do artesão");
+    return reply.code(500).send({ error: "Erro ao buscar produtos" });
+  }
+};
+
 export const criarProduto = async (
   request: FastifyRequest<{ Body: ProductBody }>,
   reply: FastifyReply,
@@ -37,7 +58,12 @@ export const criarProduto = async (
   try {
     const { nome, descricao, preco, estoque, imagemURL, categoria } =
       request.body as ProductBody;
+    if (!request.usuario) {
+      return reply.code(401).send({ error: "Não autenticado" });
+    }
+
     const novoProduto = await ProdutoModel.criar({
+      usuarioId: request.usuario.id,
       nome,
       descricao,
       preco,
@@ -57,6 +83,21 @@ export const atualizarProduto = async (
   reply: FastifyReply,
 ) => {
   try {
+    if (!request.usuario) {
+      return reply.code(401).send({ error: "Não autenticado" });
+    }
+
+    const produtoExistente = await ProdutoModel.buscarPorId(request.params.id);
+    if (
+      !produtoExistente ||
+      (produtoExistente.usuarioId !== request.usuario.id &&
+        request.usuario.papel !== "admin")
+    ) {
+      return reply.code(produtoExistente ? 403 : 404).send({
+        error: produtoExistente ? "Acesso negado" : "Produto não encontrado",
+      });
+    }
+
     const { nome, descricao, preco, estoque, imagemURL, categoria } =
       request.body;
     const atualizado = await ProdutoModel.atualizar(request.params.id, {
@@ -84,6 +125,21 @@ export const deletarProduto = async (
   reply: FastifyReply,
 ) => {
   try {
+    if (!request.usuario) {
+      return reply.code(401).send({ error: "Não autenticado" });
+    }
+
+    const produtoExistente = await ProdutoModel.buscarPorId(request.params.id);
+    if (
+      !produtoExistente ||
+      (produtoExistente.usuarioId !== request.usuario.id &&
+        request.usuario.papel !== "admin")
+    ) {
+      return reply.code(produtoExistente ? 403 : 404).send({
+        error: produtoExistente ? "Acesso negado" : "Produto não encontrado",
+      });
+    }
+
     const deletado = await ProdutoModel.deletar(request.params.id);
     if (!deletado) {
       return reply.code(404).send({ error: "Produto não encontrado" });

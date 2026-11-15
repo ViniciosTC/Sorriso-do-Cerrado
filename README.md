@@ -89,9 +89,19 @@ npm run dev
 
 ### Autenticação
 
-O cadastro e o login usam os endpoints do Better Auth (`/api/auth/sign-up/email` e `/api/auth/sign-in/email`). O papel é atribuído pelo servidor; cadastros públicos sempre recebem o papel de cliente. Usuários com e-mail ainda não verificado podem alterá-lo sem confirmação, pois o projeto ainda não configura envio de e-mails. Em desenvolvimento, o seed cria o administrador `admin@email.com` com senha `admin123`. Não use essas credenciais fora do ambiente local.
+O cadastro e o login usam os endpoints do Better Auth (`/api/auth/sign-up/email` e `/api/auth/sign-in/email`). O papel é atribuído pelo servidor; cadastros públicos sempre recebem o papel de cliente. Usuários com e-mail ainda não verificado podem alterá-lo sem confirmação, pois o projeto ainda não configura envio de e-mails. Em desenvolvimento, o seed cria o administrador `admin@email.com` com senha `Admin@123`. Não use essas credenciais fora do ambiente local.
 
 Em produção, configure `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `FRONTEND_URL`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` no ambiente do back-end, e `VITE_API_URL` com a URL pública da API no front-end. O servidor recusa iniciar sem as variáveis do back-end quando `NODE_ENV=production`.
+
+### Cadastro de artesãos e AbacatePay
+
+O cadastro profissional está disponível para usuários autenticados em **Torne-se um artesão**. A subconta da AbacatePay é criada somente na confirmação do cadastro; o papel `artisan` é atribuído pelo back-end após o provedor confirmar a criação. Os dados pessoais e financeiros do cadastro são cifrados no banco com AES-256-GCM. Configure `ARTESAO_DADOS_ENCRYPTION_KEY` com pelo menos 32 caracteres e mantenha uma cópia segura; sem essa chave, o cadastro não é concluído.
+
+O modo padrão da AbacatePay é teste. Use `ABACATEPAY_MODE=test` e uma chave `abc_dev_...` em `ABACATEPAY_API_KEY_DEV` (ou `ABACATEPAY_API_KEY` para compatibilidade local). A comissão de teste padrão é 10%, ajustável por `ABACATEPAY_COMMISSION_TEST`. Cobranças continuam na API v2 e, para produtos de artesãos, o backend envia os splits em centavos após calcular o repasse no servidor. Nenhuma simulação usa fundos reais.
+
+Para produção, a troca exige configuração explícita de `ABACATEPAY_MODE=production`, `ABACATEPAY_API_KEY_PROD` com chave `abc_prod_...` e `ABACATEPAY_COMMISSION_PROD`. Não configure a chave de produção em ambientes de teste. A criação de subcontas e splits exige as permissões `SUB_ACCOUNT:CREATE`, `SUB_ACCOUNT:READ` e `TRANSPARENT:CREATE`, além da liberação do recurso de subcontas pela AbacatePay. A API informa `devMode` e saldo da subconta, mas não expõe neste fluxo um estado de verificação individual; a verificação da conta principal para operar em produção é feita no painel da AbacatePay. Saques de subcontas são exclusivos da produção e não são iniciados pelo cadastro.
+
+Para receber eventos, configure `ABACATEPAY_WEBHOOK_SECRET` com pelo menos 32 caracteres e cadastre no painel da AbacatePay o endpoint HTTPS público `/webhooks/abacatepay`, versão v2, para eventos de checkout transparente. O webhook valida o secret e a assinatura HMAC, ignora reentregas e atualiza o status do pedido. Em desenvolvimento local, use um túnel HTTPS público ou a CLI da AbacatePay; cadastre um webhook separado em Modo Teste. Para simular um Pix no desenvolvimento, a tela de pagamento exibe **Simular pagamento (Dev Mode)**, que chama o endpoint de simulação do provedor. A chave precisa da permissão `TRANSPARENT:CREATE`.
 
 ### **2. Front-End**
 ```bash

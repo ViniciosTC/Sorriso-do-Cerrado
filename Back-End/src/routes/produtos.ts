@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import {
   listarProdutos,
+  listarProdutosParaGerenciamento,
   buscarProdutoPorId,
   criarProduto,
   atualizarProduto,
@@ -14,20 +15,45 @@ const produtosRoutes: FastifyPluginAsync = async (app) => {
   type ProductBody = Omit<Produto, "id">;
 
   app.get("/", listarProdutos);
+  app.get(
+    "/meus",
+    {
+      preHandler: [
+        autenticar,
+        autorizar("admin", "artisan", "vendedor", "artesa"),
+      ],
+    },
+    listarProdutosParaGerenciamento,
+  );
   app.get<{ Params: ProductParams }>("/:id", buscarProdutoPorId);
   app.post<{ Body: ProductBody }>(
     "/",
-    { preHandler: [autenticar, autorizar("admin")] },
+    {
+      preHandler: [
+        autenticar,
+        autorizar("admin", "artisan", "vendedor", "artesa"),
+      ],
+    },
     criarProduto,
   );
   app.put<{ Params: ProductParams; Body: ProductBody }>(
     "/:id",
-    { preHandler: [autenticar, autorizar("admin")] },
+    {
+      preHandler: [
+        autenticar,
+        autorizar("admin", "artisan", "vendedor", "artesa"),
+      ],
+    },
     atualizarProduto,
   );
   app.delete<{ Params: ProductParams }>(
     "/:id",
-    { preHandler: [autenticar, autorizar("admin")] },
+    {
+      preHandler: [
+        autenticar,
+        autorizar("admin", "artisan", "vendedor", "artesa"),
+      ],
+    },
     deletarProduto,
   );
 };

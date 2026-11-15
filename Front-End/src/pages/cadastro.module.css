@@ -19,11 +19,50 @@
 }
 
 .campoFormulario input {
-  width: 95%;
+  width: 100%;
+  box-sizing: border-box;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+.inputComIcone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputComIcone input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 42px 10px 10px;
+}
+
+.botaoVerSenha {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+  padding: 4px;
+}
+
+.botaoVerSenha:hover {
+  color: #333;
+}
+
+.ajudaSenha {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.3;
 }
 
 .botaoSubmit {

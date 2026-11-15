@@ -6,6 +6,7 @@ interface User {
   id: string;
   email: string;
   name: string;
+  image?: string | null;
   papel?: string;
 }
 
@@ -14,6 +15,8 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isArtisan: boolean;
+  isUser: boolean;
   isPending: boolean;
 }
 
@@ -28,9 +31,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: session.user.id,
         email: session.user.email,
         name: session.user.name,
+        image: session.user.image,
         papel: (session.user as any).papel || 'cliente',
       }
     : null;
+
+  const papelNormalizado = user?.papel?.trim().toLowerCase();
+  const isAdmin = papelNormalizado === 'admin';
+  const isArtisan =
+    papelNormalizado === 'artisan' ||
+    papelNormalizado === 'artesa' ||
+    papelNormalizado === 'vendedor';
+  const isUser = !isAdmin && !isArtisan;
 
   useEffect(() => {
     if (isPending) return;
@@ -57,7 +69,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         logout,
         isAuthenticated: !!user,
-        isAdmin: user?.papel === 'admin',
+        isAdmin,
+        isArtisan,
+        isUser,
         isPending,
       }}
     >

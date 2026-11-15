@@ -7,6 +7,8 @@ import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
 import styles from './adminPainel.module.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 type AbaPainel = 'resumo' | 'produtos';
 
 interface Produto {
@@ -16,6 +18,15 @@ interface Produto {
   preco: string | number;
 }
 
+interface SubcontaFinanceira {
+  id: string;
+  balance: {
+    available: number;
+    blocked: number;
+  };
+  devMode: boolean;
+}
+
 function AdminPainel() {
   const location = useLocation();
   const abaInicial: AbaPainel =
@@ -23,16 +34,19 @@ function AdminPainel() {
 
   const [abaAtiva, setAbaAtiva] = useState<AbaPainel>(abaInicial);
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [subconta, setSubconta] = useState<SubcontaFinanceira | null>(null);
+  const [erroFinanceiro, setErroFinanceiro] = useState('');
+  const [carregandoFinanceiro, setCarregandoFinanceiro] = useState(false);
 
-  const { user } = useAuth();
+  const { user, isArtisan } = useAuth();
   const navigate = useNavigate();
   const { mostrarNotificacao, confirmarAcao } = useNotificacao();
 
-  const nomeVendedor = user?.name || 'Ateliê Dona Maria';
+  const nomeVendedor = user?.name || 'Vendedor';
 
   const fetchProdutos = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/produtos', {
+      const response = await axios.get('http://localhost:3000/produtos/meus', {
         withCredentials: true,
       });
 
@@ -53,6 +67,30 @@ function AdminPainel() {
   useEffect(() => {
     fetchProdutos();
   }, []);
+
+  useEffect(() => {
+    if (!isArtisan) return;
+
+    setCarregandoFinanceiro(true);
+    axios
+      .get<{ subconta: SubcontaFinanceira | null }>(
+        `${API_URL}/usuarios/artesao`,
+        { withCredentials: true }
+      )
+      .then(({ data }) => {
+        setSubconta(data.subconta);
+        if (!data.subconta) {
+          setErroFinanceiro('Nenhuma subconta financeira está vinculada.');
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('Erro ao consultar subconta do artesão:', error);
+        setErroFinanceiro(
+          'Não foi possível consultar os dados financeiros na AbacatePay.'
+        );
+      })
+      .finally(() => setCarregandoFinanceiro(false));
+  }, [isArtisan]);
 
   const handleExcluir = async (id: number) => {
     const confirmar = await confirmarAcao(
@@ -139,7 +177,7 @@ function AdminPainel() {
               <div>
                 <div className={styles.painelHeader}>
                   <div className={styles.tituloContainer}>
-                    <h1 className={styles.tituloPainel}>Painel do vendedor</h1>
+                    <h1 className={styles.tituloPainel}>Gerenciar artesanato</h1>
                     <p className={styles.nomeVendedor}>{nomeVendedor}</p>
                   </div>
 
@@ -151,6 +189,14 @@ function AdminPainel() {
                       Adicionar Novo Produto
                     </button>
                   </Link>
+                  {isArtisan && (
+                    <Link
+                      to="/dados-recebimento"
+                      className={`${styles.linkBotaoAdicionar} ${styles.botaoAdicionar}`}
+                    >
+                      Dados de recebimento
+                    </Link>
+                  )}
                 </div>
 
                 <div className={styles.gradeCardsResumo}>
@@ -165,6 +211,41 @@ function AdminPainel() {
                       Produtos ativos
                     </span>
                   </div>
+                  {isArtisan && (
+                    <div className={styles.cardResumo}>
+                      <span className={styles.tituloCardResumo}>
+                        Recebimentos AbacatePay
+                      </span>
+                      {subconta ? (
+                        <>
+                          <strong>
+                            {new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL',
+                            }).format(subconta.balance.available / 100)}
+                          </strong>
+                          <span className={styles.tituloCardResumo}>
+                            Saldo disponível •{' '}
+                            {subconta.devMode ? 'Modo de Teste' : 'Produção'}
+                          </span>
+                          <span className={styles.tituloCardResumo}>
+                            Saldo bloqueado:{' '}
+                            {new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL',
+                            }).format(subconta.balance.blocked / 100)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className={styles.tituloCardResumo}>
+                          {erroFinanceiro ||
+                            (carregandoFinanceiro
+                              ? 'Consultando saldo...'
+                              : 'Saldo indisponível.')}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -49,10 +49,13 @@
 
 .faixaCarrossel {
   display: flex;
+  min-width: 100%;
   width: max-content;
   align-items: stretch;
+  justify-content: center;
   gap: 24px;
-  padding-right: 24px;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .banner {
@@ -113,10 +116,59 @@
   right: 14px;
 }
 
-.botaoEditarBanner {
+.barraAdminBanners {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  z-index: 12;
+  position: relative;
+}
+
+.botaoAdicionarBanner {
+  background-color: #8D5B4C;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.botaoAdicionarBanner:hover:not(:disabled) {
+  background-color: #714A3E;
+  transform: translateY(-2px);
+}
+
+.botaoAdicionarBanner:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.contadorBanners {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #4A3B31;
+}
+
+.acoesBanner {
   position: absolute;
   top: 8px;
   right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+
+.botaoEditarBanner,
+.botaoExcluirBanner {
   background-color: #8D5B4C;
   color: white;
   border: none;
@@ -125,10 +177,33 @@
   border-radius: 6px;
   cursor: pointer;
   opacity: 0.9;
+  transition: opacity 0.2s, background-color 0.2s;
 }
 
-.botaoEditarBanner:hover {
+.botaoExcluirBanner {
+  background-color: #b91c1c;
+}
+
+.botaoEditarBanner:hover,
+.botaoExcluirBanner:hover {
   opacity: 1;
+}
+
+.bannerPlaceholderAdmin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: clamp(380px, 32vw, 520px);
+  min-height: 220px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px dashed #8D5B4C;
+  border-radius: 20px;
+  text-align: center;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  gap: 12px;
 }
 
 .conteudoGeral {
@@ -181,7 +256,7 @@
 
   .faixaCarrossel {
     gap: 16px;
-    padding-right: 16px;
+    padding: 0 16px;
   }
 
   .controleCarrossel {
