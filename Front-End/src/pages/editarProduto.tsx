@@ -7,13 +7,15 @@ import { useNotificacao } from '../context/notificacaoContext';
 import styles from './editarProduto.module.css';
 
 const CATEGORIAS = [
-  'Cerâmica',
+  'Moda e acessórios',
+  'Joias e bijuterias',
+  'Crochê e peças artesanais',
   'Decoração',
-  'Acessórios',
-  'Tecelagem',
-  'Arte em madeira',
-  'Pintura',
-  'Outros',
+  'Organização e armazenamento',
+  'Mesa e cozinha',
+  'Aromas e cuidados pessoais',
+  'Jardim e plantas',
+  'Presentes e lembranças',
 ];
 
 function EditarProduto() {
@@ -111,7 +113,7 @@ function EditarProduto() {
       );
 
       mostrarNotificacao('Produto atualizado com sucesso!', 'sucesso');
-      navigate('/admin');
+      navigate('/admin', { state: { aba: 'produtos' } });
     } catch (err: unknown) {
       console.error(err);
 
