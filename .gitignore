@@ -3,6 +3,7 @@ Back-End/node_modules/
 node_modules/
 
 .env
+**/.env
 
 dist/
 build/
