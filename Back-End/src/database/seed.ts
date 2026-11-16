@@ -1,119 +1,127 @@
 import { db } from './db.js';
-import { user, account, banners } from './schema.js';
-import { eq } from 'drizzle-orm';
+import { user, account, adminAuditLogs } from './schema.js';
+import { eq, inArray } from 'drizzle-orm';
 import { hashPassword } from 'better-auth/crypto';
+import { randomUUID } from 'node:crypto';
 
 export const criarAdminPadrao = async () => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const adminEmail = process.env.ADMIN_EMAIL || (isProduction ? undefined : 'admin@email.com');
-  const adminPassword = process.env.ADMIN_PASSWORD || (isProduction ? undefined : 'admin123');
-
-  if (!adminEmail || !adminPassword) {
-    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD are required in production');
-  }
-
   try {
-    const adminExiste = await db
-      .select()
-      .from(user)
-      .where(eq(user.email, adminEmail));
+    const adminEmail = (process.env.ADMIN_EMAIL?.trim() || "admin@email.com").toLowerCase();
+    const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
 
-    if (adminExiste.length > 0) {
-      console.log(`Admin já existe: ${adminEmail}`);
+    if (adminEmail) {
+      const encontrados = await db
+        .select()
+        .from(user)
+        .where(eq(user.email, adminEmail));
+      const principal = encontrados[0];
+
+      if (principal) {
+        if (!["admin", "super_admin"].includes(principal.papel ?? "")) {
+          throw new Error("ADMIN_EMAIL precisa identificar uma conta administrativa existente");
+        }
+        if (!principal.isActive || principal.deletedAt) {
+          throw new Error("A conta administrativa indicada por ADMIN_EMAIL está desativada");
+        }
+        if (principal.papel === "admin") {
+          const agora = new Date();
+          await db.transaction(async (transacao) => {
+            await transacao
+              .update(user)
+              .set({ papel: "super_admin", updatedAt: agora })
+              .where(eq(user.id, principal.id));
+            await transacao.insert(adminAuditLogs).values({
+              id: randomUUID(),
+              actorId: null,
+              targetUserId: principal.id,
+              action: "bootstrap_super_admin",
+              details: JSON.stringify({ email: adminEmail }),
+              createdAt: agora,
+            });
+          });
+        }
+        console.log(`Super Admin principal verificado: ${adminEmail}`);
+        return;
+      }
+
+      if (!adminPassword) {
+        throw new Error(
+          "ADMIN_EMAIL não corresponde a uma conta existente; ADMIN_PASSWORD é necessário para criá-la",
+        );
+      }
+
+      const userId = randomUUID();
+      const agora = new Date();
+      const senhaHash = await hashPassword(adminPassword);
+      await db.transaction(async (transacao) => {
+        await transacao.insert(user).values({
+          id: userId,
+          name: "Admin",
+          email: adminEmail,
+          papel: "super_admin",
+          emailVerified: true,
+          isActive: true,
+          createdAt: agora,
+          updatedAt: agora,
+        });
+        await transacao.insert(account).values({
+          id: randomUUID(),
+          userId,
+          accountId: userId,
+          providerId: "credential",
+          password: senhaHash,
+          createdAt: agora,
+          updatedAt: agora,
+        });
+        await transacao.insert(adminAuditLogs).values({
+          id: randomUUID(),
+          actorId: null,
+          targetUserId: userId,
+          action: "bootstrap_super_admin_created",
+          details: JSON.stringify({ email: adminEmail }),
+          createdAt: agora,
+        });
+      });
+      console.log(`Super Admin inicial criado a partir de ADMIN_EMAIL: ${adminEmail}`);
       return;
     }
 
-    const userId = crypto.randomUUID();
-    const accountId = crypto.randomUUID();
-    const senhaHash = await hashPassword(adminPassword);
+    const administradores = await db
+      .select()
+      .from(user)
+      .where(inArray(user.papel, ["admin", "super_admin"]));
+    if (administradores.some((administrador) => administrador.papel === "super_admin")) {
+      return;
+    }
+    if (administradores.length !== 1 || !administradores[0].isActive) {
+      throw new Error(
+        "Defina ADMIN_EMAIL para identificar o Super Admin inicial; sem ele, deve existir exatamente um administrador ativo",
+      );
+    }
 
-    await db.insert(user).values({
-      id: userId,
-      name: 'Admin',
-      email: adminEmail,
-      papel: 'admin',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    const principal = administradores[0];
+    const agora = new Date();
+    await db.transaction(async (transacao) => {
+      await transacao
+        .update(user)
+        .set({ papel: "super_admin", updatedAt: agora })
+        .where(eq(user.id, principal.id));
+      await transacao.insert(adminAuditLogs).values({
+        id: randomUUID(),
+        actorId: null,
+        targetUserId: principal.id,
+        action: "bootstrap_super_admin",
+        details: JSON.stringify({ email: principal.email }),
+        createdAt: agora,
+      });
     });
-
-    await db.insert(account).values({
-      id: accountId,
-      userId: userId,
-      accountId: userId,
-      providerId: 'credential',
-      password: senhaHash,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    console.log(`Admin padrão criado com sucesso: ${adminEmail}`);
+    console.log(`Super Admin promovido por identificação única: ${principal.email}`);
   } catch (err) {
-    console.error('Erro ao criar admin:', err);
+    console.error('Erro ao inicializar o Super Admin:', err);
     throw err;
   }
 };
 
 export const criarBannersPadrao = async () => {
-  const bannersPadrao = [
-    {
-      titulo: 'Banner Principal',
-      imagemURL: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-      ordem: 1,
-      ativo: true,
-    },
-    {
-      titulo: 'Banner Secundário',
-      imagemURL: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
-      ordem: 2,
-      ativo: true,
-    },
-    {
-      titulo: 'Banner de Natureza',
-      imagemURL: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6',
-      ordem: 3,
-      ativo: true,
-    },
-    {
-      titulo: 'Banner de Artesanato',
-      imagemURL: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9',
-      ordem: 4,
-      ativo: true,
-    },
-    {
-      titulo: 'Banner de Decoração',
-      imagemURL: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d',
-      ordem: 5,
-      ativo: true,
-    },
-    {
-      titulo: 'Banner de Cerâmica',
-      imagemURL: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa',
-      ordem: 6,
-      ativo: true,
-    },
-  ];
-
-  try {
-    const bannersExistentes = await db
-      .select({ id: banners.id, titulo: banners.titulo })
-      .from(banners);
-    const titulosExistentes = new Set(
-      bannersExistentes.map((banner) => banner.titulo),
-    );
-    const vagas = Math.max(0, 6 - bannersExistentes.length);
-    const novosBanners = bannersPadrao
-      .filter((banner) => !titulosExistentes.has(banner.titulo))
-      .slice(0, vagas);
-
-    if (novosBanners.length === 0) {
-      console.log('Já existem seis banners ou mais');
-      return;
-    }
-
-    await db.insert(banners).values(novosBanners);
-
-    console.log(`${novosBanners.length} banners padrão criados com sucesso!`);
-  } catch (err) {
-    console.error('Erro ao criar banners:', err);
-  }
+  // Começa com zero banners por padrão, permitindo que o admin adicione até 10 banners manualmente
 };

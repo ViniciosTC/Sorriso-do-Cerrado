@@ -1,27 +1,36 @@
+@import './theme.css';
+
 * {
   box-sizing: border-box;
+}
+
+html {
+  background-color: var(--theme-page);
 }
 
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #FAF3E0;
-  color: #4A3B31;
+  background-color: var(--theme-page);
+  color: var(--theme-text-primary);
   line-height: 1.6;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
 }
 
 #root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; 
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .page {
-  flex: 1;
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   padding: 2rem;
@@ -34,16 +43,52 @@ main {
 }
 
 h1, h2, h3 { 
-  color: #8D5B4C; 
+  color: var(--theme-text-heading);
 }
 
 a { 
   text-decoration: none; 
-  color: #A0522D; 
+  color: var(--theme-text-link);
+}
+
+:root[data-theme='dark'] ::selection {
+  background: var(--theme-surface-accent);
+  color: var(--theme-text-on-accent);
+}
+
+:root[data-theme='dark'] :focus-visible {
+  outline-color: var(--theme-border-accent);
 }
 
 .pageContainer {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; 
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+#root > div:has(> footer) {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+#root > div:has(> footer) > main,
+#root > main {
+  flex: 1 0 auto;
+  min-height: 0;
+}
+
+#root > div:has(> footer) > footer,
+#root > footer {
+  margin-top: auto;
+}
+
+#root:has(> footer) > div {
+  flex: 1 0 auto;
+  min-height: 0;
 }

@@ -32,134 +32,9 @@ interface LojaArtesaoInfo {
     pagamento: string;
 }
 
-const lojasArtesaos: LojaArtesaoInfo[] = [
-    {
-        id: 1,
-        nome: 'Ateliê Dona Maria',
-        iniciais: 'AD',
-        avatar: null,
-        bannerImage: null,
-        localizacao: 'Pirenópolis, GO',
-        categoria: 'Crochê e peças artesanais',
-        avaliacao: '4,9',
-        descricao:
-            'Peças de crochê feitas à mão com fios naturais. Cada bolsa leva dias para ficar pronta, do primeiro ponto ao acabamento.',
-        sobre:
-            'O Ateliê Dona Maria nasceu em Pirenópolis com a missão de manter viva a tradição do crochê artesanal goiano, utilizando matérias-primas sustentáveis e fios 100% naturais.',
-        envio: 'Para todo o Brasil, com código de rastreio.',
-        prazoProducao: 'Peças feitas sob encomenda levam de 5 a 10 dias.',
-        pagamento: 'Pix, cartão de crédito e boleto.',
-    },
-    {
-        id: 2,
-        nome: 'Mãos do Cerrado',
-        iniciais: 'MC',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=1200',
-        localizacao: 'Goiânia, GO',
-        categoria: 'Decoração',
-        avaliacao: '4,8',
-        descricao:
-            'Arte e decoração inspiradas nas cores, fibras e texturas do bioma Cerrado, produzidas artesanalmente por famílias locais.',
-        sobre:
-            'Trabalhamos com fibras nativas e madeira de reaproveitamento para criar peças únicas de decoração que levam a identidade do Cerrado para dentro de casa.',
-        envio: 'Para todo o Brasil, com código de rastreio.',
-        prazoProducao: 'Peças feitas sob encomenda levam de 5 a 10 dias.',
-        pagamento: 'Pix, cartão de crédito e boleto.',
-    },
-    {
-        id: 3,
-        nome: 'Arte em Barro',
-        iniciais: 'AB',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200',
-        localizacao: 'Pirenópolis, GO',
-        categoria: 'Mesa e cozinha',
-        avaliacao: '5,0',
-        descricao:
-            'Cerâmicas utilitárias e decorativas modeladas manualmente e queimadas em forno de alta temperatura.',
-        sobre:
-            'Cada peça do Arte em Barro é modelada no torno ou manualmente, respeitando o tempo natural de secagem e queima da argila do Cerrado.',
-        envio: 'Para todo o Brasil, com código de rastreio.',
-        prazoProducao: 'Peças feitas sob encomenda levam de 7 a 12 dias.',
-        pagamento: 'Pix, cartão de crédito e boleto.',
-    },
-    {
-        id: 4,
-        nome: 'Fios da Chapada',
-        iniciais: 'FC',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1200',
-        localizacao: 'Alto Paraíso, GO',
-        categoria: 'Organização e armazenamento',
-        avaliacao: '4,9',
-        descricao:
-            'Tapetes, mantas e redes tecidos em tear manual utilizando algodão agroecológico do Cerrado.',
-        sobre:
-            'Produzimos peças de tecelagem manual na Chapada dos Veadeiros, valorizando o algodão local e técnicas tradicionais de tear.',
-        envio: 'Para todo o Brasil, com código de rastreio.',
-        prazoProducao: 'Peças feitas sob encomenda levam de 5 a 10 dias.',
-        pagamento: 'Pix, cartão de crédito e boleto.',
-    },
-    {
-        id: 5,
-        nome: 'Oficina Raiz do Pequi',
-        iniciais: 'RP',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=1200',
-        localizacao: 'Cidade de Goiás, GO',
-        categoria: 'Presentes e lembranças',
-        avaliacao: '4,7',
-        descricao:
-            'Esculturas, tábuas e luminárias entalhadas em madeira de reaproveitamento e galhos caídos do Cerrado.',
-        sobre:
-            'Nossa oficina transforma madeiras caídas naturalmente no Cerrado em peças funcionais e esculturas exclusivas.',
-        envio: 'Para todo o Brasil, com código de rastreio.',
-        prazoProducao: 'Peças feitas sob encomenda levam de 7 a 14 dias.',
-        pagamento: 'Pix, cartão de crédito e boleto.',
-    },
-    {
-        id: 6,
-        nome: 'Biojoias Douradas',
-        iniciais: 'BD',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200',
-        localizacao: 'Caldas Novas, GO',
-        categoria: 'Joias e bijuterias',
-        avaliacao: '5,0',
-        descricao:
-            'Colares, brincos e pulseiras produzidos artesanalmente com capim-dourado e sementes nativas.',
-        sobre:
-            'Criamos biojoias sustentáveis com capim-dourado e sementes colhidas de forma consciente por comunidades tradicionais.',
-        envio: 'Para todo o Brasil, com código de rastreio.',
-        prazoProducao: 'Envio em até 3 dias úteis.',
-        pagamento: 'Pix, cartão de crédito e boleto.',
-    },
-];
+const lojasArtesaos: LojaArtesaoInfo[] = [];
 
-const produtosMock: Produto[] = [
-    {
-        id: 201,
-        nome: 'Bolsa de Crochê Natural',
-        preco: '119.90',
-        imagemURL: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=600',
-        lojaArtesaoId: 1,
-    },
-    {
-        id: 202,
-        nome: 'Sousplat Artesanal em Fio',
-        preco: '19.90',
-        imagemURL: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=600',
-        lojaArtesaoId: 1,
-    },
-    {
-        id: 203,
-        nome: 'Necessaire Trama do Cerrado',
-        preco: '24.90',
-        imagemURL: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600',
-        lojaArtesaoId: 1,
-    },
-];
+const produtosLoja: Produto[] = [];
 
 function LojaArtesao() {
     const { id } = useParams<{ id: string }>();
@@ -176,7 +51,29 @@ function LojaArtesao() {
         window.scrollTo(0, 0);
     }, [id]);
 
-    const produtosOrdenados = [...produtosMock].sort((a, b) => {
+    if (!lojaArtesaoAtual) {
+        return (
+            <div className={styles.paginaLojaArtesao}>
+                <BarraNavegacao />
+                <main className={styles.mainContainer}>
+                    <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+                        <h2>Artesão ou loja não encontrada</h2>
+                        <p
+                            style={{
+                                marginTop: '1rem',
+                                color: 'var(--theme-text-secondary)',
+                            }}
+                        >
+                            Nenhum artesão cadastrado no momento.
+                        </p>
+                    </div>
+                </main>
+                <Rodape />
+            </div>
+        );
+    }
+
+    const produtosOrdenados = [...produtosLoja].sort((a, b) => {
         const precoA = parseFloat(String(a.preco).replace(',', '.')) || 0;
         const precoB = parseFloat(String(b.preco).replace(',', '.')) || 0;
 

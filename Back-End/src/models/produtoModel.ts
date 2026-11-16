@@ -4,6 +4,7 @@ import { produtos } from "../database/schema.js";
 
 export interface Produto {
   id?: number;
+  usuarioId?: string | null;
   nome: string;
   descricao?: string | null;
   preco: number | string;
@@ -17,6 +18,11 @@ const ProdutoModel = {
     return await db.select().from(produtos);
   },
 
+  listarParaGerenciamento: async (usuarioId: string, isAdmin: boolean) => {
+    if (isAdmin) return db.select().from(produtos);
+    return db.select().from(produtos).where(eq(produtos.usuarioId, usuarioId));
+  },
+
   buscarPorId: async (id: string | number): Promise<Produto | null> => {
     const resultado = await db
       .select()
@@ -27,9 +33,18 @@ const ProdutoModel = {
   },
 
   criar: async (produto: Produto): Promise<Produto> => {
-    const { nome, descricao, preco, estoque, imagemURL, categoria } = produto;
+    const {
+      usuarioId,
+      nome,
+      descricao,
+      preco,
+      estoque,
+      imagemURL,
+      categoria,
+    } = produto;
 
     const resultado = await db.insert(produtos).values({
+      usuarioId,
       nome,
       descricao,
       preco: String(preco),

@@ -2,7 +2,6 @@
   padding: 2rem;
   max-width: 900px;
   margin: 0 auto;
-  min-height: 80vh;
 }
 
 .tabelaCarrinho {
@@ -15,7 +14,7 @@
   align-items: center;
   gap: 1.5rem;
   padding: 1rem 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--palette-border-eee);
 }
 
 .imagemProdutoCarrinho {
@@ -35,7 +34,7 @@
 
 .infoProdutoCarrinho p {
   margin: 0;
-  color: #555;
+  color: var(--palette-text-555);
 }
 
 .controleQuantidade {
@@ -43,7 +42,7 @@
   align-items: center;
   gap: 8px;
   margin: 6px 0;
-  color: #555;
+  color: var(--palette-text-555);
 }
 
 .seletorQuantidade {
@@ -55,10 +54,10 @@
 .botaoQuantidade {
   width: 22px;
   height: 22px;
-  border: 1px solid #E2D5C8;
+  border: 1px solid var(--palette-border-e2d5c8);
   border-radius: 5px;
-  background-color: #F5ECE2;
-  color: #8D5B4C;
+  background-color: var(--palette-surface-f5ece2);
+  color: var(--palette-text-8d5b4c);
   font-size: 13px;
   font-weight: 500;
   line-height: 1;
@@ -71,8 +70,8 @@
 }
 
 .botaoQuantidade:hover {
-  background-color: #EADBC9;
-  border-color: #D2BFA9;
+  background-color: var(--palette-surface-eadbc9);
+  border-color: var(--palette-border-d2bfa9);
 }
 
 .valorQuantidade {
@@ -80,12 +79,12 @@
   text-align: center;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
 }
 
 .botaoRemover {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: var(--palette-surface-ffebee);
+  color: var(--palette-text-c62828);
   border: none;
   padding: 8px 12px;
   border-radius: 4px;
@@ -95,7 +94,7 @@
 .resumoCarrinho {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 2px solid #ddd;
+  border-top: 2px solid var(--palette-border-ddd);
   text-align: right;
 }
 
@@ -115,13 +114,13 @@
 }
 
 .botaoFinalizar {
-  background-color: #2E7D32;
-  color: white;
+  background-color: var(--palette-surface-2e7d32);
+  color: var(--theme-text-on-accent);
 }
 
 .botaoLimpar {
-  background-color: #eee;
-  color: #333;
+  background-color: var(--palette-surface-eee);
+  color: var(--palette-text-333);
 }
 
 @media (max-width: 600px) {

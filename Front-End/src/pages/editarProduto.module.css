@@ -3,9 +3,9 @@
   width: 95%;
   margin: 2rem auto;
   padding: 2.5rem;
-  background-color: #fff;
+  background-color: var(--palette-surface-fff);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px var(--palette-shadow-rgba-0-0-0-0-1);
 }
 
 .campoFormulario {
@@ -23,16 +23,16 @@
 .campoFormulario select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--palette-border-ddd);
   border-radius: 4px;
   font-size: 1rem;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: var(--palette-surface-fff);
 }
 
 .mensagemErro {
-  color: #D8000C;
-  background-color: #FFD2D2;
+  color: var(--palette-text-d8000c);
+  background-color: var(--palette-surface-ffd2d2);
   padding: 10px;
   border-radius: 4px;
   text-align: center;
@@ -40,8 +40,8 @@
 }
 
 .botaoSubmit {
-    background-color: #8D5B4C;
-    color: white;
+    background-color: var(--palette-surface-8d5b4c);
+    color: var(--theme-text-on-accent);
     padding: 15px 20px;
     border: none;
     border-radius: 5px;
@@ -53,5 +53,5 @@
 }
 
 .botaoSubmit:hover {
-    background-color: #714A3E;
+    background-color: var(--palette-surface-714a3e);
 }

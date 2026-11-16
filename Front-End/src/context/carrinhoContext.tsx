@@ -56,15 +56,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      // Se havia um mock antigo no localStorage com o mesmo ID mas nome diferente,
-      // ajusta o ID do mock antigo para não colidir com o produto real cadastrado
-      const itensAjustados = prevItems.map(item =>
-        item.id === productToAdd.id && item.name !== productToAdd.name
-          ? { ...item, id: item.id + 1000 }
-          : item
-      );
-
-      return [...itensAjustados, { ...productToAdd, quantity: 1 }];
+      return [...prevItems, { ...productToAdd, quantity: 1 }];
     });
 
     mostrarNotificacao(

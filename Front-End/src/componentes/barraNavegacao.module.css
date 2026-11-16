@@ -5,9 +5,9 @@
 
   padding: 1rem 2rem;
 
-  background-color: #FFFFFF;
+  background-color: var(--palette-surface-ffffff);
 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--palette-shadow-rgba-0-0-0-0-1);
 }
 
 .logoNavegacao {
@@ -16,7 +16,7 @@
 
   gap: 10px;
 
-  color: #8D5B4C;
+  color: var(--palette-text-8d5b4c);
 
   text-decoration: none;
 
@@ -45,7 +45,7 @@
 }
 
 .linksNavegacao a {
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
 
   text-decoration: none;
 
@@ -53,7 +53,30 @@
 }
 
 .linksNavegacao a:hover {
-  color: #D2B48C;
+  color: var(--palette-text-d2b48c);
+}
+
+.botaoTema {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--palette-border-e2d5c8);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--palette-text-4a3b31);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoTema:hover {
+  background: var(--palette-surface-f5f5f5);
+  color: var(--palette-text-a0522d);
+}
+
+.botaoTema:focus-visible {
+  outline: 3px solid var(--theme-shadow-accent);
+  outline-offset: 2px;
 }
 
 /* BOTÃO LOGOUT */
@@ -63,7 +86,7 @@
 
   border: none;
 
-  color: #A0522D;
+  color: var(--palette-text-a0522d);
 
   cursor: pointer;
 
@@ -75,7 +98,7 @@
 }
 
 .botaoLogout:hover {
-  color: #D2B48C;
+  color: var(--palette-text-d2b48c);
 }
 
 /* CARRINHO */
@@ -90,7 +113,7 @@
 }
 
 .iconeCarrinho {
-  stroke: #4A3B31;
+  stroke: var(--palette-text-4a3b31);
 }
 
 .badgeCarrinho {
@@ -99,9 +122,9 @@
   top: -5px;
   right: -8px;
 
-  background-color: #c62828;
+  background-color: var(--palette-surface-c62828);
 
-  color: white;
+  color: var(--theme-text-on-accent);
 
   border-radius: 50%;
 
@@ -135,7 +158,7 @@
 
   flex-shrink: 0;
 
-  color: #333;
+  color: var(--palette-text-333);
 
   transition: color 0.2s ease;
 
@@ -143,7 +166,7 @@
 }
 
 .iconeFavoritos:hover {
-  color: #a0522d;
+  color: var(--palette-text-a0522d);
 }
 
 /* MENU USUÁRIO */
@@ -155,30 +178,31 @@
   align-items: center;
 }
 
-/* BOTÃO CONFIGURAÇÕES */
-
 .botaoMenu {
   background: transparent;
   border: none;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
   cursor: pointer;
   padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease-in-out, transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .botaoMenu:hover {
-  color: #a0522d;
+  transform: scale(1.05);
 }
 
-.iconeConfiguracoes {
-  width: 24px;
-  height: 24px;
+.avatarMenu {
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  stroke: currentColor;
-  transition: color 0.2s ease;
+  border-radius: 50%;
+  object-fit: cover;
+  color: var(--palette-text-8d5b4c);
+  background-color: var(--palette-surface-f5ece2);
+  border: 1px solid var(--palette-border-e2d5c8);
 }
 
 /* MENU SUSPENSO */
@@ -187,13 +211,13 @@
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  background: white;
+  background: var(--palette-surface-ffffff);
   border-radius: 12px;
   min-width: 220px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px var(--palette-shadow-rgba-0-0-0-0-15);
   z-index: 1000;
 }
 
@@ -211,7 +235,7 @@
 
   text-decoration: none;
 
-  color: #333;
+  color: var(--palette-text-333);
 
   font-size: 15px;
 
@@ -228,7 +252,7 @@
 
 .menuDropdown a:hover,
 .menuDropdown button:hover {
-  background: #f5f5f5;
+  background: var(--palette-surface-f5f5f5);
 }
 
 /* BOTÃO SAIR */
@@ -238,7 +262,7 @@
 
   text-align: left;
 
-  color: #c62828;
+  color: var(--palette-text-c62828);
 
   font-weight: 600;
 

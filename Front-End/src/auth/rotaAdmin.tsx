@@ -2,8 +2,14 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './authContext';
 
-function RotaAdmin({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isAdmin, isPending } = useAuth();
+function RotaAdmin({
+  children,
+  somenteAdmin = false,
+}: {
+  children: React.ReactNode;
+  somenteAdmin?: boolean;
+}) {
+  const { isAuthenticated, isAdmin, isArtisan, isPending } = useAuth();
 
   if (isPending) {
     return <div>A carregar sessão...</div>;
@@ -13,7 +19,7 @@ function RotaAdmin({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" />;
   }
 
-  if (!isAdmin) {
+  if (somenteAdmin ? !isAdmin : !isAdmin && !isArtisan) {
     return <Navigate to="/" />;
   }
 

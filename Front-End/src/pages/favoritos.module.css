@@ -18,7 +18,7 @@
 
 .secaoFavoritos h2 {
     margin-bottom: 1rem;
-    color: #a0522d; 
+    color: var(--palette-text-a0522d); 
 }
 
 .gradeProdutos {
@@ -31,7 +31,7 @@
 .mensagemVazia {
     grid-column: 1 / -1;
     font-style: italic;
-    color: #666;
+    color: var(--palette-text-666);
     margin-top: 2rem;
 }
 

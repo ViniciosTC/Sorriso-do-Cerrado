@@ -30,9 +30,10 @@ function Home() {
   const [favoritosIds, setFavoritosIds] = useState<number[]>([]);
 
   const { isAdmin, isAuthenticated } = useAuth();
-  const { mostrarNotificacao } = useNotificacao();
+  const { mostrarNotificacao, confirmarAcao } = useNotificacao();
 
   const carrosselRef = useRef<HTMLDivElement>(null);
+  const inputNovoBannerRef = useRef<HTMLInputElement>(null);
 
   const navegarBanners = (direcao: number) => {
     const carrossel = carrosselRef.current;
@@ -104,6 +105,54 @@ function Home() {
     }
   };
 
+  const adicionarBanner = async (arquivo: File) => {
+    if (banners.length >= 10) {
+      mostrarNotificacao('Limite máximo de 10 banners atingido.', 'aviso');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('imagem', arquivo);
+      formData.append('titulo', `Banner ${banners.length + 1}`);
+
+      await axios.post('http://localhost:3000/banners', formData, {
+        withCredentials: true,
+      });
+
+      await buscarBanners();
+      mostrarNotificacao('Banner adicionado com sucesso!', 'sucesso');
+    } catch (error: unknown) {
+      console.error('Erro ao adicionar banner:', error);
+      const mensagem = axios.isAxiosError(error)
+        ? error.response?.data?.error
+        : undefined;
+      mostrarNotificacao(mensagem || 'Erro ao adicionar banner.', 'erro');
+    }
+  };
+
+  const excluirBanner = async (bannerId: number) => {
+    const confirmar = await confirmarAcao(
+      'Tem certeza que deseja excluir este banner?'
+    );
+    if (!confirmar) return;
+
+    try {
+      await axios.delete(`http://localhost:3000/banners/${bannerId}`, {
+        withCredentials: true,
+      });
+
+      await buscarBanners();
+      mostrarNotificacao('Banner excluído com sucesso!', 'sucesso');
+    } catch (error: unknown) {
+      console.error('Erro ao excluir banner:', error);
+      const mensagem = axios.isAxiosError(error)
+        ? error.response?.data?.error
+        : undefined;
+      mostrarNotificacao(mensagem || 'Erro ao excluir banner.', 'erro');
+    }
+  };
+
   useEffect(() => {
     const carregarDadosIniciais = async () => {
       await buscarFavoritos();
@@ -126,6 +175,48 @@ function Home() {
         />
 
         <div className={styles.bannersContainer}>
+          {isAdmin && (
+            <div className={styles.barraAdminBanners}>
+              <button
+                type="button"
+                className={styles.botaoAdicionarBanner}
+                onClick={() => inputNovoBannerRef.current?.click()}
+                disabled={banners.length >= 10}
+              >
+                + Adicionar Banner
+              </button>
+              <span className={styles.contadorBanners}>
+                {banners.length} / 10 banners
+              </span>
+              <input
+                ref={inputNovoBannerRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const arquivo = e.target.files?.[0];
+                  if (arquivo) {
+                    adicionarBanner(arquivo);
+                  }
+                  e.target.value = '';
+                }}
+              />
+            </div>
+          )}
+
+          {banners.length === 0 && isAdmin && (
+            <div className={styles.bannerPlaceholderAdmin}>
+              <p>Nenhum banner cadastrado no momento.</p>
+              <button
+                type="button"
+                className={styles.botaoAdicionarBanner}
+                onClick={() => inputNovoBannerRef.current?.click()}
+              >
+                + Fazer upload do primeiro banner
+              </button>
+            </div>
+          )}
+
           {banners.length > 0 && (
             <div
               className={styles.carrossel}
@@ -144,8 +235,9 @@ function Home() {
                     <img src={banner.imagemURL} alt={banner.titulo} />
 
                     {isAdmin && (
-                      <>
+                      <div className={styles.acoesBanner}>
                         <button
+                          type="button"
                           className={styles.botaoEditarBanner}
                           onClick={(event) =>
                             event.currentTarget.parentElement
@@ -156,6 +248,14 @@ function Home() {
                           }
                         >
                           Editar
+                        </button>
+
+                        <button
+                          type="button"
+                          className={styles.botaoExcluirBanner}
+                          onClick={() => excluirBanner(banner.id)}
+                        >
+                          Excluir
                         </button>
 
                         <input
@@ -171,7 +271,7 @@ function Home() {
                             e.target.value = '';
                           }}
                         />
-                      </>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -217,7 +317,7 @@ function Home() {
         </section>
       </main>
 
-      <Rodape />
+      <Rodape piadaEscondida />
     </div>
   );
 }

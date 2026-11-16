@@ -31,73 +31,18 @@ const categorias = [
     'Presentes e lembranças',
 ];
 
-const artesãos = [
-    {
-        id: 1,
-        nome: 'Ateliê Dona Maria',
-        iniciais: 'AD',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=800',
-        localizacao: 'Pirenópolis, GO',
-        categoria: 'Crochê e peças artesanais',
-        avaliacao: '4,9'
-    },
-    {
-        id: 2,
-        nome: 'Mãos do Cerrado',
-        iniciais: 'MC',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800',
-        localizacao: 'Goiânia, GO',
-        categoria: 'Decoração',
-        avaliacao: '4,8'
-    },
-    {
-        id: 3,
-        nome: 'Arte em Barro',
-        iniciais: 'AB',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800',
-        localizacao: 'Pirenópolis, GO',
-        categoria: 'Mesa e cozinha',
-        avaliacao: '5,0'
-    }
-];
+interface Artesao {
+    id: number;
+    nome: string;
+    iniciais: string;
+    avatar: string | null;
+    bannerImage: string | null;
+    localizacao: string;
+    categoria: string;
+    avaliacao: string;
+}
 
-const produtos = [
-    {
-        id: 101,
-        nome: 'Vaso de cerâmica artesanal',
-        artesao: 'Ateliê Raízes',
-        categoria: 'Jardim e plantas',
-        preco: '89,90',
-        imagemURL: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600',
-    },
-    {
-        id: 102,
-        nome: 'Cesto de fibras naturais',
-        artesao: 'Mãos do Cerrado',
-        categoria: 'Organização e armazenamento',
-        preco: '120,00',
-        imagemURL: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=600',
-    },
-    {
-        id: 103,
-        nome: 'Peça decorativa em madeira',
-        artesao: 'Arte Viva',
-        categoria: 'Decoração',
-        preco: '75,00',
-        imagemURL: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=600',
-    },
-    {
-        id: 104,
-        nome: 'Objeto decorativo artesanal',
-        artesao: 'Flor de Barro',
-        categoria: 'Presentes e lembranças',
-        preco: '65,00',
-        imagemURL: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=600',
-    },
-];
+const artesãos: Artesao[] = [];
 
 function Explorar() {
     const [termoBusca, setTermoBusca] = useState('');
@@ -152,7 +97,7 @@ function Explorar() {
         return correspondeBusca && correspondeCategoria;
     });
 
-    const todosProdutos: Produto[] = [...produtosBanco, ...produtos];
+    const todosProdutos: Produto[] = produtosBanco;
 
     const produtosFiltrados = todosProdutos.filter((produto) => {
         const termo = termoBusca.toLowerCase();

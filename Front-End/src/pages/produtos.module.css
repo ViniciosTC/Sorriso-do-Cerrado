@@ -3,7 +3,7 @@
   flex-direction: column;
   min-height: 100vh;
   flex-shrink: 0;
-  background: #FAF3E0;
+  background: var(--palette-surface-faf3e0);
 }
 
 .conteudo {
@@ -25,7 +25,7 @@
 .linkVoltar {
   display: inline-block;
   margin-bottom: 16px;
-  color: #8D5B4C;
+  color: var(--palette-text-8d5b4c);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -39,7 +39,7 @@
 
 .cabecalhoPagina h1 {
   margin: 8px 0 14px;
-  color: #8B5A4B;
+  color: var(--palette-text-8b5a4b);
   font-family: 'Inter', sans-serif;
   font-size: 40px;
   line-height: 48px;
@@ -50,7 +50,7 @@
   font-family: 'Inter', sans-serif;
   max-width: 600px;
   margin: 0 auto;
-  color: #817268;
+  color: var(--palette-text-817268);
   font-size: 16.5px;
   line-height: 25px;
 }
@@ -67,10 +67,10 @@
   align-items: center;
   gap: 14px;
   padding: 10px 12px 10px 22px;
-  background: #FFFFFF;
-  border: 1px solid #E9DED0;
+  background: var(--palette-surface-ffffff);
+  border: 1px solid var(--palette-border-e9ded0);
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(74, 59, 49, 0.06);
+  box-shadow: 0 8px 25px var(--palette-shadow-rgba-74-59-49-0-06);
 }
 
 .campoBusca input {
@@ -80,21 +80,21 @@
   border: none;
   outline: none;
   background: transparent;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
   font-size: 0.95rem;
   font-family: inherit;
 }
 
 .campoBusca input::placeholder {
-  color: #A99D93;
+  color: var(--palette-text-a99d93);
 }
 
 .campoBusca button {
   padding: 13px 28px;
   border: none;
   border-radius: 8px;
-  background: #8D5B4C;
-  color: #FFFFFF;
+  background: var(--palette-surface-8d5b4c);
+  color: var(--palette-text-ffffff);
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -116,19 +116,19 @@
 .categoria,
 .categoriaAtiva {
   padding: 9px 19px;
-  border: 1px solid #E4D6C7;
+  border: 1px solid var(--palette-border-e4d6c7);
   border-radius: 30px;
-  background: #FFFFFF;
-  color: #756357;
+  background: var(--palette-surface-ffffff);
+  color: var(--palette-text-756357);
   font-size: 0.85rem;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .categoriaAtiva {
-  border-color: #8D5B4C;
-  background: #8D5B4C;
-  color: white;
+  border-color: var(--palette-border-8d5b4c);
+  background: var(--palette-surface-8d5b4c);
+  color: var(--theme-text-on-accent);
 }
 
 /* LISTAGEM DE PRODUTOS */
@@ -147,10 +147,10 @@
 .mensagemVazia {
   text-align: center;
   padding: 48px 20px;
-  background: #FFFFFF;
+  background: var(--palette-surface-ffffff);
   border-radius: 16px;
-  border: 1px solid #EFE6D8;
-  color: #65483E;
+  border: 1px solid var(--palette-border-efe6d8);
+  color: var(--palette-text-65483e);
   font-family: 'Inter', sans-serif;
 }
 

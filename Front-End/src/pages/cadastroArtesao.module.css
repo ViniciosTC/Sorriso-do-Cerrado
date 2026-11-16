@@ -1,0 +1,446 @@
+.paginaCadastro {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--palette-surface-faf3e0);
+}
+
+.conteudo {
+  flex: 1;
+  width: min(940px, 100%);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3.5rem;
+}
+
+.cabecalho {
+  max-width: 720px;
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+
+.sobretitulo {
+  margin: 0 0 0.4rem;
+  color: var(--palette-text-a0522d);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.cabecalho h1 {
+  margin: 0;
+  color: var(--palette-text-8d5b4c);
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+}
+
+.cabecalho > p:last-child {
+  margin: 0.65rem 0 0;
+  color: var(--palette-text-6b584b);
+}
+
+.cartao {
+  overflow: hidden;
+  background: var(--palette-surface-ffffff);
+  border: 1px solid var(--palette-border-efe6d8);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px var(--palette-shadow-rgba-74-59-49-0-06);
+}
+
+.progresso {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--palette-surface-f7f2ea);
+  border-bottom: 1px solid var(--palette-border-efe6d8);
+}
+
+.etapa,
+.etapaAtiva {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  color: var(--palette-text-7a6b60);
+}
+
+.etapa span,
+.etapaAtiva span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 1px solid var(--palette-border-d9cbbe);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.etapaAtiva {
+  color: var(--palette-text-8d5b4c);
+  font-weight: 600;
+}
+
+.etapaAtiva span {
+  border-color: var(--palette-border-8d5b4c);
+  background: var(--palette-surface-8d5b4c);
+  color: var(--palette-text-ffffff);
+}
+
+.etapa p {
+  overflow: hidden;
+  margin: 0;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.etapaAtiva p {
+  overflow: hidden;
+  margin: 0;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conteudoEtapa {
+  padding: 1.75rem 2rem 1.25rem;
+}
+
+.tituloEtapa {
+  margin-bottom: 1.5rem;
+}
+
+.tituloEtapa h2 {
+  margin: 0;
+  color: var(--palette-text-8d5b4c);
+  font-family: 'Inter', sans-serif;
+  font-size: 1.45rem;
+}
+
+.tituloEtapa p {
+  margin: 0.35rem 0 0;
+  color: var(--palette-text-6b584b);
+  font-size: 0.92rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.15rem;
+  color: var(--palette-text-4a3b31);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.campo input,
+.campo textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--palette-border-e5dcd0);
+  border-radius: 8px;
+  background: var(--palette-surface-ffffff);
+  color: var(--palette-text-4a3b31);
+  font: inherit;
+  font-weight: 400;
+  outline: none;
+}
+
+.campo input:focus,
+.campo textarea:focus {
+  border-color: var(--palette-border-8d5b4c);
+  box-shadow: 0 0 0 3px var(--palette-shadow-rgba-141-91-76-0-13);
+}
+
+.campo input[type='file'] {
+  padding: 0.55rem;
+}
+
+.campo textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.duasColunas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.grupoCampos,
+.blocoEmail {
+  margin: 0 0 1.15rem;
+  padding: 0;
+  border: 0;
+}
+
+.grupoCampos legend,
+.blocoEmail legend {
+  margin-bottom: 0.55rem;
+  color: var(--palette-text-4a3b31);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 1.1rem 0.5rem 0;
+  color: var(--palette-text-5c473b);
+  font-size: 0.9rem;
+}
+
+.opcao input,
+.aceite input {
+  accent-color: var(--theme-surface-accent);
+}
+
+.blocoEmail {
+  padding: 1rem;
+  border: 1px solid var(--palette-border-efe6d8);
+  border-radius: 10px;
+  background: var(--palette-surface-fdfbf7);
+}
+
+.blocoEmail .duasColunas {
+  margin-top: 0.75rem;
+}
+
+.blocoEmail .campo {
+  margin-bottom: 0.5rem;
+}
+
+.ajuda {
+  margin: 0.5rem 0 1rem;
+  color: var(--palette-text-77685e);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.tituloGrupo {
+  margin: 1.5rem 0 0.75rem;
+  color: var(--palette-text-4a3b31);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.linkTexto {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--palette-text-a0522d);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  text-decoration: underline;
+}
+
+.avisoFinanceiro,
+.avisoErro {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--palette-border-d7e5d1);
+  border-radius: 10px;
+  background: var(--palette-surface-f4f8f1);
+  color: var(--palette-text-3f5c39);
+  font-size: 0.9rem;
+}
+
+.avisoFinanceiro p {
+  margin: 0.35rem 0 0;
+}
+
+.avisoErro {
+  border-color: var(--palette-border-e8c9c4);
+  background: var(--palette-surface-fff6f4);
+  color: var(--palette-text-a33b2f);
+}
+
+.resumo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.resumo section {
+  padding: 1rem;
+  border: 1px solid var(--palette-border-efe6d8);
+  border-radius: 10px;
+  background: var(--palette-surface-fdfbf7);
+}
+
+.cabecalhoResumo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+
+.cabecalhoResumo h3,
+.termos h3 {
+  margin: 0;
+  color: var(--palette-text-8d5b4c);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+}
+
+.cabecalhoResumo button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--palette-text-a0522d);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.resumo section p {
+  margin: 0.3rem 0;
+  color: var(--palette-text-5c473b);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.termos {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--palette-border-e5dcd0);
+  border-radius: 10px;
+  background: var(--palette-surface-f7f2ea);
+}
+
+.termos ul {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+  color: var(--palette-text-5c473b);
+  font-size: 0.83rem;
+}
+
+.termos li + li {
+  margin-top: 0.45rem;
+}
+
+.aceite {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: var(--palette-text-4a3b31);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.aceite input {
+  margin-top: 0.25rem;
+}
+
+.erroFormulario {
+  margin: 0 2rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  background: var(--palette-surface-fff1ef);
+  color: var(--palette-text-a33b2f);
+  font-size: 0.9rem;
+}
+
+.acoes {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 2rem 1.5rem;
+}
+
+.botaoVoltar,
+.botaoAvancar {
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0.7rem 1.15rem;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoVoltar {
+  border: 1px solid var(--palette-border-e5dcd0);
+  background: var(--palette-surface-ffffff);
+  color: var(--palette-text-8d5b4c);
+}
+
+.botaoAvancar {
+  margin-left: auto;
+  border: 1px solid var(--palette-border-8d5b4c);
+  background: var(--palette-surface-8d5b4c);
+  color: var(--palette-text-ffffff);
+}
+
+.botaoAvancar:hover {
+  background: var(--palette-surface-744a3e);
+}
+
+.botaoAvancar:disabled,
+.botaoVoltar:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  .conteudo {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .progresso {
+    gap: 0.35rem;
+    padding: 1rem 0.75rem;
+  }
+
+  .etapa,
+  .etapaAtiva {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    text-align: center;
+  }
+
+  .etapa p,
+  .etapaAtiva p {
+    width: 100%;
+    font-size: 0.7rem;
+  }
+
+  .conteudoEtapa {
+    padding: 1.4rem 1.1rem 1rem;
+  }
+
+  .duasColunas {
+    grid-template-columns: 1fr;
+  }
+
+  .acoes {
+    padding: 1rem 1.1rem 1.3rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .progresso {
+    gap: 0.15rem;
+  }
+
+  .progresso span,
+  .etapaAtiva span {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .botaoVoltar,
+  .botaoAvancar {
+    min-width: 0;
+    flex: 1;
+  }
+}

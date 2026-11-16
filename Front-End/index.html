@@ -5,6 +5,22 @@
     <link rel="icon" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sorriso do Cerrado</title>
+    <script>
+      const savedTheme = localStorage.getItem('sorriso-do-cerrado-theme');
+      const currentPath = location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+      const authPage = ['/login', '/cadastro'].includes(currentPath);
+      document.documentElement.dataset.theme =
+        authPage || savedTheme !== 'dark' ? 'light' : 'dark';
+    </script>
+    <style>
+      html {
+        background: #faf3e0;
+      }
+
+      html[data-theme='dark'] {
+        background: #252422;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

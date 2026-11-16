@@ -16,8 +16,8 @@
   max-width: 100%;
   padding: 12px;
   border-radius: 5px;
-  background-color: #eee;
-  color: #333;
+  background-color: var(--palette-surface-eee);
+  color: var(--palette-text-333);
   word-break: break-all;
 }
 
@@ -28,10 +28,10 @@
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  background-color: #2E7D32;
-  color: white;
+  background-color: var(--palette-surface-2e7d32);
+  color: var(--theme-text-on-accent);
 }
 
 .aguardando {
-  color: #555;
+  color: var(--palette-text-555);
 }

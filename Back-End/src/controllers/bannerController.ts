@@ -27,6 +27,11 @@ export const listarBannersAtivos = async (
 
 export const criarBanner = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
+    const bannersAtuais = await BannerModel.listarTodos();
+    if (bannersAtuais.length >= 10) {
+      return reply.code(400).send({ error: "Limite máximo de 10 banners atingido." });
+    }
+
     const { fields, file } = await parseUploadRequest(request, "imagem");
     const { titulo, imagemURL, link, ordem } = fields;
     const imageUrl = file
@@ -38,10 +43,10 @@ export const criarBanner = async (request: FastifyRequest, reply: FastifyReply) 
     }
 
     const novoBanner = await BannerModel.criar({
-      titulo,
+      titulo: titulo || `Banner ${bannersAtuais.length + 1}`,
       imagemURL: imageUrl,
       link,
-      ordem: ordem ? Number(ordem) : 0,
+      ordem: ordem ? Number(ordem) : bannersAtuais.length + 1,
     });
 
     return reply.code(201).send(novoBanner);

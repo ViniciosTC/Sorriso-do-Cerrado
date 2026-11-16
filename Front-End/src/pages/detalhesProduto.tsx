@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
+import ImagemProduto from '../componentes/imagemProduto';
 import Rodape from '../componentes/rodape';
 import styles from './detalhesProduto.module.css';
 
@@ -54,17 +55,18 @@ function DetalheProduto() {
     }
   };
 
-  if (loading) return <div>A carregar...</div>;
-  if (error) return <div>Erro: {error}</div>;
-
   return (
     <div className={styles.pagina}>
       <BarraNavegacao />
 
       <main className={styles.conteudo}>
-        {produto && (
+        {loading ? (
+          <p>A carregar...</p>
+        ) : error ? (
+          <p>Erro: {error}</p>
+        ) : produto && (
           <div className={styles.detalheProdutoContainer}>
-            <img
+            <ImagemProduto
               src={produto.imagemURL}
               alt={produto.nome}
               className={styles.detalheProdutoImagem}

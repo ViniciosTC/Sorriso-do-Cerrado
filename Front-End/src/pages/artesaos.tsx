@@ -19,80 +19,19 @@ const categorias = [
     'Presentes e lembranças',
 ];
 
-export const listaArtesaosMock = [
-    {
-        id: 1,
-        nome: 'Ateliê Dona Maria',
-        iniciais: 'AD',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=800',
-        localizacao: 'Pirenópolis, GO',
-        categoria: 'Crochê e peças artesanais',
-        avaliacao: '4,9',
-        descricao:
-            'Peças de crochê feitas à mão com fios naturais. Cada bolsa leva dias para ficar pronta, do primeiro ponto ao acabamento.',
-    },
-    {
-        id: 2,
-        nome: 'Mãos do Cerrado',
-        iniciais: 'MC',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800',
-        localizacao: 'Goiânia, GO',
-        categoria: 'Decoração',
-        avaliacao: '4,8',
-        descricao:
-            'Arte e decoração inspiradas nas cores, fibras e texturas do bioma Cerrado, produzidas artesanalmente por famílias locais.',
-    },
-    {
-        id: 3,
-        nome: 'Arte em Barro',
-        iniciais: 'AB',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800',
-        localizacao: 'Pirenópolis, GO',
-        categoria: 'Mesa e cozinha',
-        avaliacao: '5,0',
-        descricao:
-            'Cerâmicas utilitárias e decorativas modeladas manualmente e queimadas em forno de alta temperatura.',
-    },
-    {
-        id: 4,
-        nome: 'Fios da Chapada',
-        iniciais: 'FC',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800',
-        localizacao: 'Alto Paraíso, GO',
-        categoria: 'Organização e armazenamento',
-        avaliacao: '4,9',
-        descricao:
-            'Tapetes, mantas e redes tecidos em tear manual utilizando algodão agroecológico do Cerrado.',
-    },
-    {
-        id: 5,
-        nome: 'Oficina Raiz do Pequi',
-        iniciais: 'RP',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=800',
-        localizacao: 'Cidade de Goiás, GO',
-        categoria: 'Presentes e lembranças',
-        avaliacao: '4,7',
-        descricao:
-            'Esculturas, tábuas e luminárias entalhadas em madeira de reaproveitamento e galhos caídos do Cerrado.',
-    },
-    {
-        id: 6,
-        nome: 'Biojoias Douradas',
-        iniciais: 'BD',
-        avatar: null,
-        bannerImage: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
-        localizacao: 'Caldas Novas, GO',
-        categoria: 'Joias e bijuterias',
-        avaliacao: '5,0',
-        descricao:
-            'Colares, brincos e pulseiras produzidos artesanalmente com capim-dourado e sementes nativas.',
-    },
-];
+export interface Artesao {
+    id: number;
+    nome: string;
+    iniciais: string;
+    avatar: string | null;
+    bannerImage: string | null;
+    localizacao: string;
+    categoria: string;
+    avaliacao: string;
+    descricao: string;
+}
+
+export const listaArtesaos: Artesao[] = [];
 
 function Artesaos() {
     const [termoBusca, setTermoBusca] = useState('');
@@ -102,7 +41,7 @@ function Artesaos() {
         window.scrollTo(0, 0);
     }, []);
 
-    const artesaosFiltrados = listaArtesaosMock.filter((artesao) => {
+    const artesaosFiltrados = listaArtesaos.filter((artesao) => {
         const correspondeCategoria =
             categoriaSelecionada === 'Todas' ||
             artesao.categoria === categoriaSelecionada;
