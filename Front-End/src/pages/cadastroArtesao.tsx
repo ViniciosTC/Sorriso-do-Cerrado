@@ -129,6 +129,57 @@ const validarDocumentoFiscal = (
   return false;
 };
 
+const formatarDocumentoFiscal = (
+  valor: string,
+  tipoPessoa: 'fisica' | 'juridica'
+) => {
+  const limite = tipoPessoa === 'fisica' ? 11 : 14;
+  const digitos = valor.replace(/\D/g, '').slice(0, limite);
+
+  if (tipoPessoa === 'fisica') {
+    if (digitos.length > 9) {
+      return `${digitos.slice(0, 3)}.${digitos.slice(3, 6)}.${digitos.slice(6, 9)}-${digitos.slice(9)}`;
+    }
+    if (digitos.length > 6) {
+      return `${digitos.slice(0, 3)}.${digitos.slice(3, 6)}.${digitos.slice(6)}`;
+    }
+    if (digitos.length > 3) {
+      return `${digitos.slice(0, 3)}.${digitos.slice(3)}`;
+    }
+    return digitos;
+  }
+
+  if (digitos.length > 12) {
+    return `${digitos.slice(0, 2)}.${digitos.slice(2, 5)}.${digitos.slice(5, 8)}/${digitos.slice(8, 12)}-${digitos.slice(12)}`;
+  }
+  if (digitos.length > 8) {
+    return `${digitos.slice(0, 2)}.${digitos.slice(2, 5)}.${digitos.slice(5, 8)}/${digitos.slice(8)}`;
+  }
+  if (digitos.length > 5) {
+    return `${digitos.slice(0, 2)}.${digitos.slice(2, 5)}.${digitos.slice(5)}`;
+  }
+  if (digitos.length > 2) {
+    return `${digitos.slice(0, 2)}.${digitos.slice(2)}`;
+  }
+  return digitos;
+};
+
+const formatarTelefone = (valor: string) => {
+  const digitos = valor.replace(/\D/g, '').slice(0, 11);
+  if (digitos.length <= 2) return digitos;
+
+  const ddd = digitos.slice(0, 2);
+  const numero = digitos.slice(2);
+  const tamanhoPrefixo =
+    digitos.length > 10 || numero.startsWith('9') ? 5 : 4;
+
+  if (numero.length <= tamanhoPrefixo) {
+    return `(${ddd}) ${numero}`;
+  }
+
+  return `(${ddd}) ${numero.slice(0, tamanhoPrefixo)}-${numero.slice(tamanhoPrefixo)}`;
+};
+
 function CadastroArtesao() {
   const { user, isAdmin, isArtisan, isUser } = useAuth();
   const { mostrarNotificacao } = useNotificacao();
@@ -148,6 +199,20 @@ function CadastroArtesao() {
     setCadastro((atual) => ({
       ...atual,
       dadosPessoais: { ...atual.dadosPessoais, [campo]: valor },
+    }));
+  };
+
+  const atualizarTipoPessoa = (tipoPessoa: 'fisica' | 'juridica') => {
+    setCadastro((atual) => ({
+      ...atual,
+      dadosPessoais: {
+        ...atual.dadosPessoais,
+        tipoPessoa,
+        documento: formatarDocumentoFiscal(
+          atual.dadosPessoais.documento,
+          tipoPessoa
+        ),
+      },
     }));
   };
 
@@ -368,7 +433,7 @@ function CadastroArtesao() {
                       type="radio"
                       name="tipoPessoa"
                       checked={cadastro.dadosPessoais.tipoPessoa === 'fisica'}
-                      onChange={() => atualizarPessoal('tipoPessoa', 'fisica')}
+                      onChange={() => atualizarTipoPessoa('fisica')}
                     />
                     Pessoa física
                   </label>
@@ -379,9 +444,7 @@ function CadastroArtesao() {
                       checked={
                         cadastro.dadosPessoais.tipoPessoa === 'juridica'
                       }
-                      onChange={() =>
-                        atualizarPessoal('tipoPessoa', 'juridica')
-                      }
+                      onChange={() => atualizarTipoPessoa('juridica')}
                     />
                     Pessoa jurídica
                   </label>
@@ -393,10 +456,21 @@ function CadastroArtesao() {
                     <input
                       value={cadastro.dadosPessoais.documento}
                       onChange={(event) =>
-                        atualizarPessoal('documento', event.target.value)
+                        atualizarPessoal(
+                          'documento',
+                          formatarDocumentoFiscal(
+                            event.target.value,
+                            cadastro.dadosPessoais.tipoPessoa
+                          )
+                        )
                       }
                       inputMode="numeric"
                       autoComplete="off"
+                      maxLength={
+                        cadastro.dadosPessoais.tipoPessoa === 'fisica'
+                          ? 14
+                          : 18
+                      }
                       required
                     />
                   </label>
@@ -406,9 +480,14 @@ function CadastroArtesao() {
                       type="tel"
                       value={cadastro.dadosPessoais.telefone}
                       onChange={(event) =>
-                        atualizarPessoal('telefone', event.target.value)
+                        atualizarPessoal(
+                          'telefone',
+                          formatarTelefone(event.target.value)
+                        )
                       }
+                      inputMode="numeric"
                       autoComplete="tel"
+                      maxLength={15}
                       required
                     />
                   </label>

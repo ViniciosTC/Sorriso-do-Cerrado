@@ -36,8 +36,8 @@ function BarraNavegacao({
     };
   }, [menuAberto]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 

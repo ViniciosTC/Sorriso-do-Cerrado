@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useSession, signOut } from './auth-client';
 import { useNotificacao } from '../context/notificacaoContext';
 
@@ -26,6 +32,8 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = useSession();
   const { mostrarNotificacao } = useNotificacao();
+  const logoutManualRef = useRef(false);
+  const [encerrandoSessao, setEncerrandoSessao] = useState(false);
 
   const user = session?.user
     ? {
@@ -51,20 +59,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isPending) return;
 
-    if (user) {
+    if (user && !logoutManualRef.current) {
       sessionStorage.setItem('sessaoAtiva', 'true');
-    } else if (sessionStorage.getItem('sessaoAtiva') === 'true') {
+    } else if (!user) {
+      const sessaoAtiva = sessionStorage.getItem('sessaoAtiva') === 'true';
       sessionStorage.removeItem('sessaoAtiva');
-      mostrarNotificacao(
-        'O tempo da sua sessão acabou por inatividade ou expiração. Faça login novamente.',
-        'aviso'
-      );
+      if (sessaoAtiva && !logoutManualRef.current) {
+        mostrarNotificacao(
+          'O tempo da sua sessão acabou por inatividade ou expiração. Faça login novamente.',
+          'aviso'
+        );
+      }
+      logoutManualRef.current = false;
+      setEncerrandoSessao(false);
     }
   }, [user, isPending, mostrarNotificacao]);
 
   const logout = async () => {
+    logoutManualRef.current = true;
+    setEncerrandoSessao(true);
     sessionStorage.removeItem('sessaoAtiva');
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      logoutManualRef.current = false;
+      setEncerrandoSessao(false);
+      throw error;
+    }
   };
 
   return (
@@ -72,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         logout,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !encerrandoSessao,
         isAdmin,
         isSuperAdmin,
         isArtisan,

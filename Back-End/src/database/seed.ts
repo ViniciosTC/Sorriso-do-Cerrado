@@ -6,8 +6,8 @@ import { randomUUID } from 'node:crypto';
 
 export const criarAdminPadrao = async () => {
   try {
-    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminEmail = (process.env.ADMIN_EMAIL?.trim() || "admin@email.com").toLowerCase();
+    const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
 
     if (adminEmail) {
       const encontrados = await db

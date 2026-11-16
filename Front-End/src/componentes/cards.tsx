@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
 import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
+import ImagemProduto from './imagemProduto';
 import styles from './cards.module.css';
 
 interface Product {
@@ -103,7 +104,7 @@ function CartaoProduto({
   return (
     <Link to={`/produto/${product.id}`} className={styles.cartaoProdutoLink}>
       <div className={styles.cartaoProduto}>
-        <img
+        <ImagemProduto
           src={product.imagemURL || ''}
           alt={product.nome}
           className={styles.cartaoProdutoImagem}

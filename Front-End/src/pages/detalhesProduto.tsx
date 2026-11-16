@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
+import ImagemProduto from '../componentes/imagemProduto';
 import Rodape from '../componentes/rodape';
 import styles from './detalhesProduto.module.css';
 
@@ -65,7 +66,7 @@ function DetalheProduto() {
           <p>Erro: {error}</p>
         ) : produto && (
           <div className={styles.detalheProdutoContainer}>
-            <img
+            <ImagemProduto
               src={produto.imagemURL}
               alt={produto.nome}
               className={styles.detalheProdutoImagem}

@@ -5,6 +5,7 @@ import { useCart } from '../context/carrinhoContext';
 import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
+import ImagemProduto from '../componentes/imagemProduto';
 import Rodape from '../componentes/rodape';
 import PagamentoPix, { type DadosPix } from '../componentes/pagamentoPix';
 import styles from './carrinho.module.css';
@@ -57,8 +58,12 @@ function Carrinho() {
       setEtapa('pagamento');
     } catch (error) {
       console.error('Erro ao registrar venda:', error);
+      const mensagemErro =
+        axios.isAxiosError(error) && error.response?.status === 409
+          ? 'A loja responsável por este produto ainda não está habilitada para receber pagamentos. Tente novamente mais tarde.'
+          : 'Falha ao registrar pedido. Tente novamente.';
       mostrarNotificacao(
-        'Falha ao registrar pedido. Tente novamente.',
+        mensagemErro,
         'erro'
       );
     } finally {
@@ -130,7 +135,7 @@ function Carrinho() {
                 <div className={styles.tabelaCarrinho}>
                   {cartItems.map((item) => (
                     <div key={item.id} className={styles.itemCarrinho}>
-                      <img
+                      <ImagemProduto
                         src={item.imageUrl}
                         alt={item.name}
                         className={styles.imagemProdutoCarrinho}
