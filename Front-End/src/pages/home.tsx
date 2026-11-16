@@ -317,7 +317,7 @@ function Home() {
         </section>
       </main>
 
-      <Rodape />
+      <Rodape piadaEscondida />
     </div>
   );
 }

@@ -11,3 +11,13 @@
 .rodape p {
   margin: 0;
 }
+
+.linkPiada {
+  color: inherit;
+  text-decoration: none;
+}
+
+.linkPiada:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
