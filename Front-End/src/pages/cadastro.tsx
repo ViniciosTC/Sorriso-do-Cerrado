@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signUp } from '../auth/auth-client';
 import { useNotificacao } from '../context/notificacaoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
+import Rodape from '../componentes/rodape';
+import { imagens } from '../imagens';
 import styles from './cadastro.module.css';
 
 function Cadastro() {
@@ -66,17 +68,35 @@ function Cadastro() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <BarraNavegacao />
-      <main className="conteudo-geral" style={{ padding: '2rem' }}>
-        <div className={styles.formularioContainer}>
-          <form onSubmit={handleSubmit}>
-            <h2>Registrar-se</h2>
+    <div className="pageContainer">
+      <BarraNavegacao modoAutenticacao />
+      <main className={styles.main}>
+        <section
+          className={styles.composicao}
+          aria-labelledby="cadastro-titulo"
+        >
+          <div className={styles.areaVisual}>
+            <img
+              src={imagens.cadastro}
+              alt="Ateliê com peças artesanais e tecidos feitos à mão"
+              className={styles.imagemVisual}
+            />
+          </div>
+
+          <div className={styles.areaFormulario}>
+            <div className={styles.formularioContainer}>
+              <div className={styles.introducao}>
+                <span className={styles.sobretitulo}>Sorriso do Cerrado</span>
+                <h1 id="cadastro-titulo">Crie sua conta</h1>
+                <p>Faça parte da nossa comunidade de arte e tradição.</p>
+              </div>
+              <form onSubmit={handleSubmit} className={styles.formulario}>
             <div className={styles.campoFormulario}>
               <label htmlFor="nome">Nome</label>
               <input
                 type="text"
                 id="nome"
+                autoComplete="name"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 required
@@ -87,6 +107,7 @@ function Cadastro() {
               <input
                 type="email"
                 id="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -98,6 +119,7 @@ function Cadastro() {
                 <input
                   type={mostrarSenha ? 'text' : 'password'}
                   id="senha"
+                  autoComplete="new-password"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                   required
@@ -141,9 +163,6 @@ function Cadastro() {
                   )}
                 </button>
               </div>
-              <span className={styles.ajudaSenha}>
-                Mínimo de 8 caracteres, com letra maiúscula, minúscula, número e caractere especial.
-              </span>
             </div>
             <div className={styles.campoFormulario}>
               <label htmlFor="confirmarSenha">Confirmar Senha</label>
@@ -151,6 +170,7 @@ function Cadastro() {
                 <input
                   type={mostrarConfirmarSenha ? 'text' : 'password'}
                   id="confirmarSenha"
+                  autoComplete="new-password"
                   value={confirmarSenha}
                   onChange={(e) => setConfirmarSenha(e.target.value)}
                   required
@@ -195,13 +215,26 @@ function Cadastro() {
                 </button>
               </div>
             </div>
-            {error && <p className={styles.mensagemErro}>{error}</p>}
+            <span className={styles.ajudaSenha}>
+              Mínimo de 8 caracteres, com letra maiúscula, minúscula, número e caractere especial.
+            </span>
+            {error && (
+              <p className={styles.mensagemErro} role="alert">
+                {error}
+              </p>
+            )}
             <button type="submit" className={styles.botaoSubmit}>
               Registrar
             </button>
+            <Link to="/login" className={styles.linkLogin}>
+              Já tem uma conta? <span>Voltar para login</span>
+            </Link>
           </form>
-        </div>
+            </div>
+          </div>
+        </section>
       </main>
+      <Rodape />
     </div>
   );
 }

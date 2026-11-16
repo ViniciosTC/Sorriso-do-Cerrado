@@ -1,14 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { imagens } from '../imagens';
 import { useAuth } from '../auth/authContext';
 import { useCart } from '../context/carrinhoContext';
+import { useTheme } from '../context/themeContext';
 import AvatarUsuario from './avatarUsuario';
 import styles from './barraNavegacao.module.css';
 
-function BarraNavegacao() {
+function BarraNavegacao({
+  modoAutenticacao = false,
+}: {
+  modoAutenticacao?: boolean;
+}) {
   const { user, isAuthenticated, isAdmin, isArtisan, isUser, logout } = useAuth();
   const { cartItems } = useCart();
+  const { tema, alternarTema } = useTheme();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const [menuAberto, setMenuAberto] = useState(false);
@@ -35,6 +42,9 @@ function BarraNavegacao() {
   };
 
   const totalItemsNoCarrinho = cartItems.length;
+  const rotaAtual = pathname.toLowerCase().replace(/\/+$/, '') || '/';
+  const exibirAlternanciaTema =
+    !modoAutenticacao && rotaAtual !== '/login' && rotaAtual !== '/cadastro';
 
   return (
     <nav className={styles.barraNavegacao}>
@@ -48,14 +58,18 @@ function BarraNavegacao() {
       </Link>
 
       <ul className={styles.linksNavegacao}>
-        <li><Link to="/">Início</Link></li>
-        <li><Link to="/explorar">Explorar</Link></li>
+        {!modoAutenticacao && (
+          <li><Link to="/">Início</Link></li>
+        )}
+        {!modoAutenticacao && (
+          <li><Link to="/explorar">Explorar</Link></li>
+        )}
 
-        {!isAuthenticated && (
+        {!modoAutenticacao && !isAuthenticated && (
           <li><Link to="/login">Login</Link></li>
         )}
 
-        {isAuthenticated && (
+        {!modoAutenticacao && isAuthenticated && (
           <li>
             <Link to="/favoritos" className={styles.linkFavoritos}>
               <svg
@@ -76,34 +90,84 @@ function BarraNavegacao() {
           </li>
         )}
 
-        <li>
-          <Link to="/carrinho" className={styles.linkCarrinho}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={styles.iconeCarrinho}
+        {!modoAutenticacao && (
+          <li>
+            <Link to="/carrinho" className={styles.linkCarrinho}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={styles.iconeCarrinho}
+              >
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+
+              {totalItemsNoCarrinho > 0 && (
+                <span className={styles.badgeCarrinho}>
+                  {totalItemsNoCarrinho}
+                </span>
+              )}
+            </Link>
+          </li>
+        )}
+
+        {exibirAlternanciaTema && (
+          <li>
+            <button
+              type="button"
+              className={styles.botaoTema}
+              onClick={alternarTema}
+              aria-label={
+                tema === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'
+              }
+              aria-pressed={tema === 'dark'}
+              title={tema === 'dark' ? 'Modo claro' : 'Modo escuro'}
             >
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
+              {tema === 'dark' ? (
+                <svg
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+                </svg>
+              ) : (
+                <svg
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" />
+                </svg>
+              )}
+            </button>
+          </li>
+        )}
 
-            {totalItemsNoCarrinho > 0 && (
-              <span className={styles.badgeCarrinho}>
-                {totalItemsNoCarrinho}
-              </span>
-            )}
-          </Link>
-        </li>
-
-        {isAuthenticated && (
+        {!modoAutenticacao && isAuthenticated && (
           <li className={styles.menuUsuario} ref={menuRef}>
             <button
               className={styles.botaoMenu}
@@ -131,7 +195,16 @@ function BarraNavegacao() {
                   Configurações
                 </Link>
 
-                {(isArtisan || isAdmin) && (
+                {isAdmin && (
+                  <Link
+                    to="/painel-administrativo"
+                    onClick={() => setMenuAberto(false)}
+                  >
+                    Painel Administrativo
+                  </Link>
+                )}
+
+                {isArtisan && (
                   <Link
                     to="/admin"
                     onClick={() => setMenuAberto(false)}

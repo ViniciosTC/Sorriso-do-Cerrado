@@ -22,7 +22,9 @@ export const user = mysqlTable("user", {
   image: text("image"),
   createdAt: datetime("created_at").notNull(),
   updatedAt: datetime("updated_at").notNull(),
-  papel: mysqlEnum("papel", ["admin", "artesa", "cliente", "vendedor", "artisan"]).default("cliente"),
+  papel: mysqlEnum("papel", ["admin", "super_admin", "artesa", "cliente", "vendedor", "artisan"]).default("cliente"),
+  isActive: boolean("is_active").notNull().default(true),
+  deletedAt: datetime("deleted_at"),
 });
 
 export const usuarios = user;
@@ -153,5 +155,14 @@ export const eventosAbacatePay = mysqlTable("eventos_abacatepay", {
   id: varchar("id", { length: 100 }).primaryKey(),
   evento: varchar("evento", { length: 100 }).notNull(),
   criadoEm: datetime("criado_em").notNull(),
+});
+
+export const adminAuditLogs = mysqlTable("admin_audit_logs", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  actorId: varchar("actor_id", { length: 36 }),
+  targetUserId: varchar("target_user_id", { length: 36 }),
+  action: varchar("action", { length: 100 }).notNull(),
+  details: text("details"),
+  createdAt: datetime("created_at").notNull(),
 });
 

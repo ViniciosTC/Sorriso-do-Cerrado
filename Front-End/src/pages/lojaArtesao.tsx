@@ -58,7 +58,12 @@ function LojaArtesao() {
                 <main className={styles.mainContainer}>
                     <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
                         <h2>Artesão ou loja não encontrada</h2>
-                        <p style={{ marginTop: '1rem', color: '#666' }}>
+                        <p
+                            style={{
+                                marginTop: '1rem',
+                                color: 'var(--theme-text-secondary)',
+                            }}
+                        >
                             Nenhum artesão cadastrado no momento.
                         </p>
                     </div>

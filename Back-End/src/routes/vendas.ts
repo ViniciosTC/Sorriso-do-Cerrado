@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { autenticar, autorizar } from "../middleware/authMiddleware.js";
+import { autenticar, autorizar, ehAdministrador } from "../middleware/authMiddleware.js";
 import ProdutoModel from "../models/produtoModel.js";
 import VendaModel from "../models/vendaModel.js";
 import ArtesaoModel from "../models/artesaoModel.js";
@@ -173,7 +173,7 @@ const vendasRoutes: FastifyPluginAsync = async (app) => {
         }
         if (
           venda.emailCliente !== request.usuario?.email &&
-          request.usuario?.papel !== "admin"
+          !ehAdministrador(request.usuario?.papel)
         ) {
           return reply.code(403).send({ error: "Acesso negado" });
         }

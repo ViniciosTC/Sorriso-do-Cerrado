@@ -125,11 +125,20 @@ function EditarProduto() {
     }
   };
 
-  if (loading) return <div>A carregar...</div>;
-  if (error) return <div>Erro: {error}</div>;
+  if (loading || error) {
+    return (
+      <div className="pageContainer">
+        <BarraNavegacao />
+        <main className="conteudo-geral" style={{ padding: '2rem' }}>
+          {loading ? <p>A carregar...</p> : <p>Erro: {error}</p>}
+        </main>
+        <Rodape />
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className="pageContainer">
       <BarraNavegacao />
 
       <main className="conteudo-geral" style={{ padding: '2rem' }}>

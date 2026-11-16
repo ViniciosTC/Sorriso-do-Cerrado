@@ -96,7 +96,7 @@ function AdicionarProduto() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="pageContainer">
       <BarraNavegacao />
 
       <main className="conteudo-geral" style={{ padding: '2rem', flex: 1 }}>

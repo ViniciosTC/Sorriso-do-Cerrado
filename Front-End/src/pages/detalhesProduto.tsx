@@ -54,15 +54,16 @@ function DetalheProduto() {
     }
   };
 
-  if (loading) return <div>A carregar...</div>;
-  if (error) return <div>Erro: {error}</div>;
-
   return (
     <div className={styles.pagina}>
       <BarraNavegacao />
 
       <main className={styles.conteudo}>
-        {produto && (
+        {loading ? (
+          <p>A carregar...</p>
+        ) : error ? (
+          <p>Erro: {error}</p>
+        ) : produto && (
           <div className={styles.detalheProdutoContainer}>
             <img
               src={produto.imagemURL}

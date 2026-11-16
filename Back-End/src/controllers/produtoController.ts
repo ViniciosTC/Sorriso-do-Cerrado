@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import ProdutoModel, { type Produto } from "../models/produtoModel.js";
+import { ehAdministrador } from "../middleware/authMiddleware.js";
 
 type ProductParams = { id: string };
 type ProductBody = Omit<Produto, "id">;
@@ -42,7 +43,7 @@ export const listarProdutosParaGerenciamento = async (
     return reply.send(
       await ProdutoModel.listarParaGerenciamento(
         request.usuario.id,
-        request.usuario.papel === "admin",
+        ehAdministrador(request.usuario.papel),
       ),
     );
   } catch (error) {
@@ -91,7 +92,7 @@ export const atualizarProduto = async (
     if (
       !produtoExistente ||
       (produtoExistente.usuarioId !== request.usuario.id &&
-        request.usuario.papel !== "admin")
+        !ehAdministrador(request.usuario.papel))
     ) {
       return reply.code(produtoExistente ? 403 : 404).send({
         error: produtoExistente ? "Acesso negado" : "Produto não encontrado",
@@ -133,7 +134,7 @@ export const deletarProduto = async (
     if (
       !produtoExistente ||
       (produtoExistente.usuarioId !== request.usuario.id &&
-        request.usuario.papel !== "admin")
+        !ehAdministrador(request.usuario.papel))
     ) {
       return reply.code(produtoExistente ? 403 : 404).send({
         error: produtoExistente ? "Acesso negado" : "Produto não encontrado",

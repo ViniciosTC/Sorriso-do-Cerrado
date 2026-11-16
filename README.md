@@ -87,11 +87,17 @@ npm run dev
 ```
 > O servidor back-end vai rodar na porta 3000.
 
-### Autenticação
+### Autenticação e administração
 
-O cadastro e o login usam os endpoints do Better Auth (`/api/auth/sign-up/email` e `/api/auth/sign-in/email`). O papel é atribuído pelo servidor; cadastros públicos sempre recebem o papel de cliente. Usuários com e-mail ainda não verificado podem alterá-lo sem confirmação, pois o projeto ainda não configura envio de e-mails. Em desenvolvimento, o seed cria o administrador `admin@email.com` com senha `Admin@123`. Não use essas credenciais fora do ambiente local.
+O cadastro e o login usam os endpoints do Better Auth (`/api/auth/sign-up/email` e `/api/auth/sign-in/email`). O papel é atribuído pelo servidor; cadastros públicos sempre recebem o papel de cliente. Usuários com e-mail ainda não verificado podem alterá-lo sem confirmação, pois o projeto ainda não configura envio de e-mails.
 
-Em produção, configure `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `FRONTEND_URL`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` no ambiente do back-end, e `VITE_API_URL` com a URL pública da API no front-end. O servidor recusa iniciar sem as variáveis do back-end quando `NODE_ENV=production`.
+O papel `admin` identifica administradores comuns e `super_admin` identifica o Super Admin. O Super Admin inicial é reconhecido pelo `ADMIN_EMAIL`; se essa variável não estiver definida, o servidor promove automaticamente o único administrador ativo existente. Se houver mais de um administrador e nenhum Super Admin, configure `ADMIN_EMAIL` para a conta correta antes de iniciar. Contas já existentes são promovidas sem alterar nome, e-mail ou senha. Em uma instalação sem conta administrativa, defina `ADMIN_EMAIL` e `ADMIN_PASSWORD` para criar explicitamente o Super Admin inicial. Para o Docker Compose, forneça essas variáveis no ambiente.
+
+Administradores comuns podem acessar as funções administrativas existentes e consultar o Painel Administrativo (`/painel-administrativo`), incluindo as listas de contas. Tanto `admin` quanto `super_admin` podem editar dados de clientes e artesãos; essa permissão não inclui editar contas administrativas. Somente o Super Admin pode cadastrar, editar, desativar, reativar ou excluir logicamente administradores, ou desativar contas de clientes e artesãos. As desativações e exclusões são registradas na auditoria e preservam os históricos; exclusões lógicas impedem novos logins sem apagar permanentemente as contas. A migração `0007_super_admin_soft_delete` é aplicada automaticamente na inicialização.
+
+As operações administrativas disponíveis no backend incluem `GET /usuarios/indicadores`, `GET /usuarios/administradores` e `GET /usuarios/clientes-vendedores` para administradores autenticados; `PUT /usuarios/:id` permite a `admin` e `super_admin` editar dados de clientes e artesãos, mas não de outras contas administrativas. `POST /usuarios/administradores` (cadastro com `{ "nome": "...", "email": "...", "senha": "..." }`), `PATCH /usuarios/administradores/:id` (edição de e-mail e/ou senha), `PATCH /usuarios/administradores/:id/estado` (reativação ou desativação com `{ "ativo": true }` ou `{ "ativo": false }`) e `DELETE /usuarios/administradores/:id` (exclusão lógica) são exclusivas do Super Admin. A exclusão lógica de uma conta não administrativa usa `DELETE /usuarios/:id` com `{ "confirmacao": true }` e também é exclusiva do Super Admin.
+
+Em produção, configure `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `FRONTEND_URL` e `ADMIN_EMAIL` no ambiente do back-end; `ADMIN_PASSWORD` é necessário somente para criar a conta inicial quando ela ainda não existir. Configure `VITE_API_URL` com a URL pública da API no front-end. O servidor recusa iniciar sem as variáveis de autenticação quando `NODE_ENV=production`.
 
 ### Cadastro de artesãos e AbacatePay
 

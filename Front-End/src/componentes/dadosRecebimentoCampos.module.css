@@ -6,7 +6,7 @@
 
 .grupoCampos legend {
   margin-bottom: 0.55rem;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -16,12 +16,12 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0 1.1rem 0.5rem 0;
-  color: #5C473B;
+  color: var(--palette-text-5c473b);
   font-size: 0.9rem;
 }
 
 .opcao input {
-  accent-color: #8D5B4C;
+  accent-color: var(--theme-surface-accent);
 }
 
 .campo {
@@ -29,7 +29,7 @@
   flex-direction: column;
   gap: 0.4rem;
   margin-bottom: 1.15rem;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -38,10 +38,10 @@
 .campo select {
   width: 100%;
   padding: 0.75rem 0.85rem;
-  border: 1px solid #E5DCD0;
+  border: 1px solid var(--palette-border-e5dcd0);
   border-radius: 8px;
-  background: #FFFFFF;
-  color: #4A3B31;
+  background: var(--palette-surface-ffffff);
+  color: var(--palette-text-4a3b31);
   font: inherit;
   font-weight: 400;
   outline: none;
@@ -49,8 +49,8 @@
 
 .campo input:focus,
 .campo select:focus {
-  border-color: #8D5B4C;
-  box-shadow: 0 0 0 3px rgba(141, 91, 76, 0.13);
+  border-color: var(--palette-border-8d5b4c);
+  box-shadow: 0 0 0 3px var(--palette-shadow-rgba-141-91-76-0-13);
 }
 
 .duasColunas {
@@ -61,7 +61,7 @@
 
 .ajuda {
   margin: 0.5rem 0 1rem;
-  color: #77685E;
+  color: var(--palette-text-77685e);
   font-size: 0.82rem;
   line-height: 1.5;
 }

@@ -1,6 +1,10 @@
 import type { FastifyReply, FastifyRequest, preHandlerHookHandler } from "fastify";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "../auth/better-auth.js";
+import UsuarioModel from "../models/usuarioModel.js";
+
+export const ehAdministrador = (papel?: string) =>
+  papel === "admin" || papel === "super_admin";
 
 export const autenticar: preHandlerHookHandler = async (
   request: FastifyRequest,
@@ -17,10 +21,15 @@ export const autenticar: preHandlerHookHandler = async (
       });
     }
 
+    const usuario = await UsuarioModel.buscarPorId(session.user.id);
+    if (!usuario || !usuario.isActive || usuario.deletedAt) {
+      return reply.code(401).send({ error: "Conta desativada" });
+    }
+
     request.usuario = {
       id: session.user.id,
-      email: session.user.email,
-      papel: (session.user as typeof session.user & { papel?: string }).papel || "cliente",
+      email: usuario.email,
+      papel: usuario.papel || "cliente",
     };
   } catch (error) {
     request.log.error({ err: error }, "Falha ao validar sessão");
@@ -39,7 +48,10 @@ export const autorizar = (...papeis: string[]): preHandlerHookHandler => {
     }
 
     const papelUsuario = request.usuario.papel?.trim().toLowerCase();
-    if (!papelUsuario || !papeisNormalizados.includes(papelUsuario)) {
+    const autorizado =
+      (papelUsuario && papeisNormalizados.includes(papelUsuario)) ||
+      (papeisNormalizados.includes("admin") && papelUsuario === "super_admin");
+    if (!autorizado) {
       return reply.code(403).send({ error: "Acesso negado" });
     }
   };

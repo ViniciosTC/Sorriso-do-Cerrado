@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: #FAF3E0;
+    background: var(--palette-surface-faf3e0);
 }
 
 .conteudo {
@@ -21,7 +21,7 @@
 
 .sobretitulo {
     display: inline-block;
-    color: #8D5B4C;
+    color: var(--palette-text-8d5b4c);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 2px;
@@ -29,7 +29,7 @@
 
 .hero h1 {
     margin: 20px 0;
-    color: #8B5A4B;
+    color: var(--palette-text-8b5a4b);
     font-family: 'Inter', sans-serif;
     font-size: 44px;
     line-height: 51px;
@@ -41,7 +41,7 @@
     font-family: 'Inter', sans-serif;
     max-width: 570px;
     margin: 0 auto;
-    color: #817268;
+    color: var(--palette-text-817268);
     font-size: 17px;
     line-height: 25px;
     font-weight: 400;
@@ -59,15 +59,15 @@
     align-items: center;
     gap: 14px;
     padding: 10px 12px 10px 22px;
-    background: white;
-    border: 1px solid #E9DED0;
+    background: var(--palette-surface-ffffff);
+    border: 1px solid var(--palette-border-e9ded0);
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(74, 59, 49, 0.06);
+    box-shadow: 0 8px 25px var(--palette-shadow-rgba-74-59-49-0-06);
 }
 
 .campoBusca svg {
     flex-shrink: 0;
-    color: #9A887A;
+    color: var(--palette-text-9a887a);
 }
 
 .campoBusca input {
@@ -77,22 +77,22 @@
     border: none;
     outline: none;
     background: transparent;
-    color: #4A3B31;
+    color: var(--palette-text-4a3b31);
     font-size: 0.95rem;
     flex: 1;
     font: inherit;
 }
 
 .campoBusca input::placeholder {
-    color: #A99D93;
+    color: var(--palette-text-a99d93);
 }
 
 .campoBusca button {
     padding: 13px 28px;
     border: none;
     border-radius: 8px;
-    background: #8D5B4C;
-    color: white;
+    background: var(--palette-surface-8d5b4c);
+    color: var(--theme-text-on-accent);
     font-weight: 600;
     cursor: pointer;
     font: inherit;
@@ -113,19 +113,19 @@
 .categoria,
 .categoriaAtiva {
     padding: 9px 19px;
-    border: 1px solid #E4D6C7;
+    border: 1px solid var(--palette-border-e4d6c7);
     border-radius: 30px;
-    background: #FFFFFF;
-    color: #756357;
+    background: var(--palette-surface-ffffff);
+    color: var(--palette-text-756357);
     font-size: 0.85rem;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
 }
 
 .categoriaAtiva {
-    border-color: #8D5B4C;
-    background: #8D5B4C;
-    color: white;
+    border-color: var(--palette-border-8d5b4c);
+    background: var(--palette-surface-8d5b4c);
+    color: var(--theme-text-on-accent);
 }
 
 /* SEÇÕES */
@@ -144,7 +144,7 @@
 
 .secaoCabecalho h2 {
     margin: 7px 0;
-    color: #4A3B31;
+    color: var(--palette-text-4a3b31);
     font-family: Georgia, serif;
     font-size: 2rem;
     font-weight: 500;
@@ -152,14 +152,14 @@
 
 .secaoCabecalho p {
     margin: 0;
-    color: #89796D;
+    color: var(--palette-text-89796d);
     font-size: 0.92rem;
 }
 
 .verTodos {
     flex-shrink: 0;
     padding-bottom: 5px;
-    color: #8D5B4C;
+    color: var(--palette-text-8d5b4c);
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
@@ -171,7 +171,7 @@
     font-size: 26px;
     line-height: 100%;
     letter-spacing: 0;
-    color: #8B5A4B;
+    color: var(--palette-text-8b5a4b);
 }
 
 /* CARROSSEL DE ARTESÃOS */
@@ -195,22 +195,22 @@
     width: 100%;
     height: 294px;
     min-width: 0;
-    background: #FFFFFF;
+    background: var(--palette-surface-ffffff);
     border-radius: 16px;
     overflow: hidden;
-    color: #4A3029;
+    color: var(--palette-text-4a3029);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cartaoArtesao:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(74, 59, 49, 0.08);
+    box-shadow: 0 8px 20px var(--palette-shadow-rgba-74-59-49-0-08);
 }
 
 .bannerArtesao {
     width: 100%;
     height: 125px;
-    background: #E6CDAA;
+    background: var(--palette-surface-e6cdaa);
     overflow: hidden;
 }
 
@@ -229,9 +229,9 @@
     width: 76px;
     height: 76px;
     border-radius: 50%;
-    background: #8D5B4C;
-    border: 4px solid #FFFFFF;
-    color: #FFFFFF;
+    background: var(--palette-surface-8d5b4c);
+    border: 4px solid var(--palette-border-ffffff);
+    color: var(--palette-text-ffffff);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -256,12 +256,12 @@
     font-size: 19px;
     font-weight: 600;
     margin: 0 0 6px;
-    color: #3F2B25;
+    color: var(--palette-text-3f2b25);
 }
 
 .localizacaoCategoriaArtesao {
     font-size: 13px;
-    color: #65483E;
+    color: var(--palette-text-65483e);
     margin: 0;
 }
 
@@ -273,14 +273,14 @@
 }
 
 .avaliacaoArtesao span {
-    color: #D28A20;
+    color: var(--palette-text-d28a20);
     font-size: 18px;
 }
 
 .avaliacaoArtesao p {
     margin: 0;
     font-size: 13px;
-    color: #65483E;
+    color: var(--palette-text-65483e);
 }
 
 @media (max-width: 600px) {
@@ -302,10 +302,10 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 32px;
-    background: #FFFFFF;
+    background: var(--palette-surface-ffffff);
     border-radius: 12px;
-    border: 1px solid #E9DED0;
-    color: #817268;
+    border: 1px solid var(--palette-border-e9ded0);
+    color: var(--palette-text-817268);
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
     margin: 0;

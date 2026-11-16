@@ -1,15 +1,15 @@
 .cartaoProduto {
-  background-color: #FFFFFF;
-  border: 1px solid #E0DCD1;
+  background-color: var(--palette-surface-ffffff);
+  border: 1px solid var(--palette-border-e0dcd1);
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px var(--palette-shadow-rgba-0-0-0-0-05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .cartaoProduto:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px var(--palette-shadow-rgba-0-0-0-0-1);
 }
 .cartaoProdutoLink {
   text-decoration: none;
@@ -25,17 +25,17 @@
 .cartaoProdutoNome {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
 }
 .cartaoProdutoPreco {
   font-size: 1.1rem;
   font-weight: bold;
-  color: #556B2F;
+  color: var(--palette-text-556b2f);
   margin-bottom: 1rem;
 }
 .botaoAdicionar {
-  background-color: #8D5B4C;
-  color: white;
+  background-color: var(--palette-surface-8d5b4c);
+  color: var(--theme-text-on-accent);
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
@@ -47,7 +47,7 @@
   transition: background-color 0.2s;
 }
 .botaoAdicionar:hover {
-  background-color: #714A3E;
+  background-color: var(--palette-surface-714a3e);
 }
 
 .containerAcoes {
@@ -62,7 +62,7 @@
   border: none;
   cursor: pointer;
   padding: 5px;
-  color: #8D5B4C; 
+  color: var(--palette-text-8d5b4c); 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,7 +74,7 @@
 }
 
 .botaoFavorito.favoritado {
-  color: #A0522D; 
+  color: var(--palette-text-a0522d); 
 }
 
 .botaoAdicionar {

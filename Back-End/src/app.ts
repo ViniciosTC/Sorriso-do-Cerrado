@@ -19,6 +19,7 @@ import conexao, { criarBanco } from "./database/conexao.js";
 import { db } from "./database/db.js";
 import { criarAdminPadrao, criarBannersPadrao } from "./database/seed.js";
 import { auth } from "./auth/better-auth.js";
+import UsuarioModel from "./models/usuarioModel.js";
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 await app.register(cors, {
   origin: FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 });
@@ -52,6 +53,23 @@ app.route({
       const headers = fromNodeHeaders(request.headers);
       const url = new URL(request.url, `http://${request.headers.host}`);
       const body = request.body;
+
+      if (request.method === "POST" && url.pathname === "/api/auth/sign-in/email") {
+        const email =
+          typeof body === "object" &&
+          body !== null &&
+          "email" in body &&
+          typeof body.email === "string"
+            ? body.email.trim().toLowerCase()
+            : null;
+        if (email) {
+          const usuario = await UsuarioModel.buscarPorEmail(email);
+          if (usuario && (!usuario.isActive || usuario.deletedAt)) {
+            return reply.code(403).send({ error: "Esta conta está desativada" });
+          }
+        }
+      }
+
       const authRequest = new Request(url, {
         method: request.method,
         headers,

@@ -19,31 +19,31 @@
   gap: 12px;
   padding: 13px 16px;
   border-radius: 10px;
-  background-color: #FFFFFF;
-  box-shadow: 0 8px 24px rgba(74, 59, 49, 0.14);
+  background-color: var(--palette-surface-ffffff);
+  box-shadow: 0 8px 24px var(--palette-shadow-rgba-74-59-49-0-14);
   font-family: 'Inter', 'Segoe UI', sans-serif;
   font-size: 0.92rem;
   line-height: 1.4;
-  border-left: 5px solid #8D5B4C;
+  border-left: 5px solid var(--palette-border-8d5b4c);
   animation: entrarToast 0.22s ease-out;
 }
 
 .sucesso {
-  border-left-color: #556B2F;
-  background-color: #F7FAF2;
-  color: #35471A;
+  border-left-color: var(--palette-border-556b2f);
+  background-color: var(--palette-surface-f7faf2);
+  color: var(--palette-text-35471a);
 }
 
 .erro {
-  border-left-color: #C62828;
-  background-color: #FFF5F5;
-  color: #8E1B1B;
+  border-left-color: var(--palette-border-c62828);
+  background-color: var(--palette-surface-fff5f5);
+  color: var(--palette-text-8e1b1b);
 }
 
 .aviso {
-  border-left-color: #8D5B4C;
-  background-color: #FFFBF5;
-  color: #4A3B31;
+  border-left-color: var(--palette-border-8d5b4c);
+  background-color: var(--palette-surface-fffbf5);
+  color: var(--palette-text-4a3b31);
 }
 
 .textoNotificacao {
@@ -83,7 +83,7 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background-color: rgba(63, 43, 37, 0.35);
+  background-color: var(--palette-surface-rgba-63-43-37-0-35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,13 +91,13 @@
 }
 
 .caixaModal {
-  background-color: #FFFFFF;
-  border: 1px solid #E9DED0;
+  background-color: var(--palette-surface-ffffff);
+  border: 1px solid var(--palette-border-e9ded0);
   border-radius: 14px;
   padding: 24px 28px;
   max-width: 380px;
   width: 100%;
-  box-shadow: 0 12px 32px rgba(74, 59, 49, 0.18);
+  box-shadow: 0 12px 32px var(--palette-shadow-rgba-74-59-49-0-18);
   text-align: center;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
@@ -106,7 +106,7 @@
   margin: 0 0 20px;
   font-size: 0.98rem;
   line-height: 1.5;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
   font-weight: 500;
 }
 
@@ -129,21 +129,21 @@
 }
 
 .botaoCancelar {
-  background-color: #FAF3E0;
-  border: 1px solid #E2D5C8;
-  color: #65483E;
+  background-color: var(--palette-surface-faf3e0);
+  border: 1px solid var(--palette-border-e2d5c8);
+  color: var(--palette-text-65483e);
 }
 
 .botaoCancelar:hover {
-  background-color: #F0E4CE;
+  background-color: var(--palette-surface-f0e4ce);
 }
 
 .botaoConfirmar {
-  background-color: #8D5B4C;
+  background-color: var(--palette-surface-8d5b4c);
   border: none;
-  color: #FFFFFF;
+  color: var(--palette-text-ffffff);
 }
 
 .botaoConfirmar:hover {
-  background-color: #714A3E;
+  background-color: var(--palette-surface-714a3e);
 }

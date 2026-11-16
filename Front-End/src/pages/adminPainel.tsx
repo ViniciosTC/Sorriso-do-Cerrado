@@ -5,11 +5,12 @@ import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
+import PedidosArtesao from './pedidosArtesao';
 import styles from './adminPainel.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-type AbaPainel = 'resumo' | 'produtos';
+type AbaPainel = 'resumo' | 'produtos' | 'pedidos';
 
 interface Produto {
   id: number;
@@ -147,8 +148,12 @@ function AdminPainel() {
 
               <button
                 type="button"
-                className={styles.itemMenuDesabilitado}
-                disabled
+                className={
+                  abaAtiva === 'pedidos'
+                    ? styles.itemMenuAtivo
+                    : styles.itemMenu
+                }
+                onClick={() => setAbaAtiva('pedidos')}
               >
                 Pedidos
               </button>
@@ -322,6 +327,8 @@ function AdminPainel() {
                 </div>
               </div>
             )}
+
+            {abaAtiva === 'pedidos' && <PedidosArtesao />}
           </section>
         </div>
       </main>

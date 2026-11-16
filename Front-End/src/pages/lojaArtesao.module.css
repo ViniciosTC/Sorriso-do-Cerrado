@@ -3,7 +3,7 @@
     flex-direction: column;
     min-height: 100vh;
     flex-shrink: 0;
-    background: #FAF3E0;
+    background: var(--palette-surface-faf3e0);
 }
 
 .mainContainer {
@@ -19,7 +19,7 @@
     height: 210px;
     min-height: 210px;
     flex-shrink: 0;
-    background: #D5BCA8;
+    background: var(--palette-surface-d5bca8);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -44,7 +44,7 @@
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.5px;
-    color: #5C473B;
+    color: var(--palette-text-5c473b);
     text-transform: uppercase;
 }
 
@@ -60,14 +60,14 @@
 /* CABEÇALHO DA LOJA DO ARTESÃO (CARD SOBREPOSTO) */
 
 .cartaoCabecalho {
-    background: #FFFFFF;
+    background: var(--palette-surface-ffffff);
     border-radius: 16px;
     padding: 28px 36px;
     margin-top: -65px;
     position: relative;
     z-index: 2;
-    box-shadow: 0 8px 25px rgba(74, 59, 49, 0.06);
-    border: 1px solid #EFE6D8;
+    box-shadow: 0 8px 25px var(--palette-shadow-rgba-74-59-49-0-06);
+    border: 1px solid var(--palette-border-efe6d8);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -85,8 +85,8 @@
     width: 88px;
     height: 88px;
     border-radius: 50%;
-    background: #7D5243;
-    color: #FFFFFF;
+    background: var(--palette-surface-7d5243);
+    color: var(--palette-text-ffffff);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -114,7 +114,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 28px;
     font-weight: 700;
-    color: #8B5A4B;
+    color: var(--palette-text-8b5a4b);
 }
 
 .metadados {
@@ -124,7 +124,7 @@
     gap: 18px;
     font-family: 'Inter', sans-serif;
     font-size: 13.5px;
-    color: #65483E;
+    color: var(--palette-text-65483e);
 }
 
 .itemMetadado {
@@ -134,7 +134,7 @@
 }
 
 .estrela {
-    color: #D28A20;
+    color: var(--palette-text-d28a20);
     font-size: 15px;
 }
 
@@ -144,7 +144,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     line-height: 1.5;
-    color: #5C473B;
+    color: var(--palette-text-5c473b);
 }
 
 /* BOTÕES DO CABEÇALHO */
@@ -160,8 +160,8 @@
     padding: 11px 22px;
     border: none;
     border-radius: 8px;
-    background: #7D5243;
-    color: #FFFFFF;
+    background: var(--palette-surface-7d5243);
+    color: var(--palette-text-ffffff);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 500;
@@ -170,15 +170,15 @@
 }
 
 .botaoSeguir:hover {
-    background: #694336;
+    background: var(--palette-surface-694336);
 }
 
 .botaoMensagem {
     padding: 10px 20px;
-    border: 1px solid #C4A99B;
+    border: 1px solid var(--palette-border-c4a99b);
     border-radius: 8px;
-    background: #FFFFFF;
-    color: #65483E;
+    background: var(--palette-surface-ffffff);
+    color: var(--palette-text-65483e);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 500;
@@ -187,8 +187,8 @@
 }
 
 .botaoMensagem:hover {
-    background: #FAF3E0;
-    border-color: #8D5B4C;
+    background: var(--palette-surface-faf3e0);
+    border-color: var(--palette-border-8d5b4c);
 }
 
 /* CORPO DA LOJA (2 COLUNAS) */
@@ -234,19 +234,19 @@
 }
 
 .aba {
-    background: #FFFFFF;
-    border: 1px solid #E4D6C7;
-    color: #65483E;
+    background: var(--palette-surface-ffffff);
+    border: 1px solid var(--palette-border-e4d6c7);
+    color: var(--palette-text-65483e);
 }
 
 .aba:hover {
-    border-color: #8D5B4C;
+    border-color: var(--palette-border-8d5b4c);
 }
 
 .abaAtiva {
-    background: #7D5243;
-    border: 1px solid #7D5243;
-    color: #FFFFFF;
+    background: var(--palette-surface-7d5243);
+    border: 1px solid var(--palette-border-7d5243);
+    color: var(--palette-text-ffffff);
 }
 
 .ordenacaoContainer {
@@ -255,15 +255,15 @@
     gap: 10px;
     font-family: 'Inter', sans-serif;
     font-size: 13.5px;
-    color: #65483E;
+    color: var(--palette-text-65483e);
 }
 
 .selectOrdenacao {
     padding: 8px 14px;
-    border: 1px solid #E4D6C7;
+    border: 1px solid var(--palette-border-e4d6c7);
     border-radius: 8px;
-    background: #FFFFFF;
-    color: #4A3B31;
+    background: var(--palette-surface-ffffff);
+    color: var(--palette-text-4a3b31);
     font-family: 'Inter', sans-serif;
     font-size: 13.5px;
     cursor: pointer;
@@ -293,7 +293,7 @@
     height: 100%;
     padding: 16px;
     border-radius: 14px;
-    border: 1px solid #EFE6D8;
+    border: 1px solid var(--palette-border-efe6d8);
     text-align: left;
 }
 
@@ -301,7 +301,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 600;
-    color: #3F2B25;
+    color: var(--palette-text-3f2b25);
     margin: 4px 0;
 }
 
@@ -309,7 +309,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 600;
-    color: #556B2F;
+    color: var(--palette-text-556b2f);
     margin: 0 0 10px;
 }
 
@@ -317,23 +317,23 @@
     width: 100%;
     height: 210px;
     object-fit: cover;
-    background-color: #E6D7C3;
+    background-color: var(--palette-surface-e6d7c3);
     border-radius: 10px;
     margin-bottom: 10px;
 }
 
 .cartaoSecundario {
-    background: #FFFFFF;
-    border: 1px solid #EFE6D8;
+    background: var(--palette-surface-ffffff);
+    border: 1px solid var(--palette-border-efe6d8);
     border-radius: 14px;
     padding: 28px;
-    color: #4A3B31;
+    color: var(--palette-text-4a3b31);
     font-family: 'Inter', sans-serif;
 }
 
 .cartaoSecundario h3 {
     margin: 0 0 12px;
-    color: #8B5A4B;
+    color: var(--palette-text-8b5a4b);
     font-size: 18px;
 }
 
@@ -341,7 +341,7 @@
     margin: 0;
     font-size: 14.5px;
     line-height: 1.6;
-    color: #5C473B;
+    color: var(--palette-text-5c473b);
 }
 
 /* COLUNA LATERAL DIREITA */
@@ -353,11 +353,11 @@
 }
 
 .cartaoLateral {
-    background: #FFFFFF;
-    border: 1px solid #EFE6D8;
+    background: var(--palette-surface-ffffff);
+    border: 1px solid var(--palette-border-efe6d8);
     border-radius: 14px;
     padding: 24px;
-    box-shadow: 0 4px 14px rgba(74, 59, 49, 0.04);
+    box-shadow: 0 4px 14px var(--palette-shadow-rgba-74-59-49-0-04);
     font-family: 'Inter', sans-serif;
 }
 
@@ -365,7 +365,7 @@
     margin: 0 0 16px;
     font-size: 16px;
     font-weight: 600;
-    color: #8B5A4B;
+    color: var(--palette-text-8b5a4b);
 }
 
 .blocoInfo {
@@ -380,7 +380,7 @@
     display: block;
     font-size: 13px;
     font-weight: 600;
-    color: #4A3B31;
+    color: var(--palette-text-4a3b31);
     margin-bottom: 3px;
 }
 
@@ -388,14 +388,14 @@
     margin: 0;
     font-size: 13px;
     line-height: 1.45;
-    color: #65483E;
+    color: var(--palette-text-65483e);
 }
 
 .textoDuvidas {
     margin: 0 0 12px;
     font-size: 13px;
     line-height: 1.45;
-    color: #65483E;
+    color: var(--palette-text-65483e);
 }
 
 .linkMensagemLoja {
@@ -405,7 +405,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: #8B5A4B;
+    color: var(--palette-text-8b5a4b);
     cursor: pointer;
     text-align: left;
 }

@@ -15,6 +15,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   isArtisan: boolean;
   isUser: boolean;
   isPending: boolean;
@@ -32,12 +33,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: session.user.email,
         name: session.user.name,
         image: session.user.image,
-        papel: (session.user as any).papel || 'cliente',
+        papel:
+          (session.user as typeof session.user & { papel?: string }).papel ||
+          'cliente',
       }
     : null;
 
   const papelNormalizado = user?.papel?.trim().toLowerCase();
-  const isAdmin = papelNormalizado === 'admin';
+  const isSuperAdmin = papelNormalizado === 'super_admin';
+  const isAdmin = papelNormalizado === 'admin' || isSuperAdmin;
   const isArtisan =
     papelNormalizado === 'artisan' ||
     papelNormalizado === 'artesa' ||
@@ -70,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         isAuthenticated: !!user,
         isAdmin,
+        isSuperAdmin,
         isArtisan,
         isUser,
         isPending,

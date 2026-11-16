@@ -66,8 +66,8 @@
   height: 300px;
   border-radius: 20px;
   overflow: hidden;
-  background: white;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  background: var(--palette-surface-ffffff);
+  box-shadow: 0 15px 40px var(--palette-shadow-rgba-0-0-0-0-25);
   scroll-snap-align: start;
 }
 
@@ -90,8 +90,8 @@
   height: 42px;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  color: #51372e;
+  background: var(--palette-surface-rgba-255-255-255-0-9);
+  color: var(--palette-text-51372e);
   font-size: 1.2rem;
   cursor: pointer;
   transform: translateY(-50%);
@@ -99,12 +99,12 @@
 }
 
 .controleCarrossel:hover {
-  background: #fff;
+  background: var(--palette-surface-fff);
   transform: translateY(-50%) scale(1.06);
 }
 
 .controleCarrossel:focus-visible {
-  outline: 3px solid #8d5b4c;
+  outline: 3px solid var(--palette-border-8d5b4c);
   outline-offset: 3px;
 }
 
@@ -127,35 +127,35 @@
 }
 
 .botaoAdicionarBanner {
-  background-color: #8D5B4C;
-  color: white;
+  background-color: var(--palette-surface-8d5b4c);
+  color: var(--theme-text-on-accent);
   border: none;
   padding: 8px 18px;
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px var(--palette-shadow-rgba-0-0-0-0-2);
   transition: background-color 0.2s, transform 0.2s;
 }
 
 .botaoAdicionarBanner:hover:not(:disabled) {
-  background-color: #714A3E;
+  background-color: var(--palette-surface-714a3e);
   transform: translateY(-2px);
 }
 
 .botaoAdicionarBanner:disabled {
-  background-color: #aaa;
+  background-color: var(--palette-surface-aaa);
   cursor: not-allowed;
 }
 
 .contadorBanners {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--palette-surface-rgba-255-255-255-0-85);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: bold;
-  color: #4A3B31;
+  color: var(--palette-text-4a3b31);
 }
 
 .acoesBanner {
@@ -169,8 +169,8 @@
 
 .botaoEditarBanner,
 .botaoExcluirBanner {
-  background-color: #8D5B4C;
-  color: white;
+  background-color: var(--palette-surface-8d5b4c);
+  color: var(--theme-text-on-accent);
   border: none;
   font-size: 0.75rem;
   padding: 5px 8px;
@@ -181,7 +181,7 @@
 }
 
 .botaoExcluirBanner {
-  background-color: #b91c1c;
+  background-color: var(--palette-surface-b91c1c);
 }
 
 .botaoEditarBanner:hover,
@@ -197,12 +197,12 @@
   width: clamp(380px, 32vw, 520px);
   min-height: 220px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px dashed #8D5B4C;
+  background: var(--palette-surface-rgba-255-255-255-0-95);
+  border: 2px dashed var(--palette-border-8d5b4c);
   border-radius: 20px;
   text-align: center;
   padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px var(--palette-shadow-rgba-0-0-0-0-15);
   gap: 12px;
 }
 

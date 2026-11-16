@@ -37,8 +37,8 @@ services:
       DB_NAME: sorrisodb
       BETTER_AUTH_URL: http://localhost:3000
       FRONTEND_URL: http://localhost:5173
-      ADMIN_EMAIL: admin@email.com
-      ADMIN_PASSWORD: Admin@123
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ABACATEPAY_MODE: ${ABACATEPAY_MODE:-test}
       ABACATEPAY_API_KEY_DEV: ${ABACATEPAY_API_KEY_DEV:-}
       ABACATEPAY_API_KEY_PROD: ${ABACATEPAY_API_KEY_PROD:-}
