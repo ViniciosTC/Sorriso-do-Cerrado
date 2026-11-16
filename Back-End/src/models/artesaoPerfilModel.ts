@@ -67,6 +67,10 @@ const obterChave = () => {
   return createHash("sha256").update(segredo).digest();
 };
 
+export const validarConfiguracaoCriptografiaArtesao = () => {
+  obterChave();
+};
+
 const criptografar = (dados: DadosCadastroArtesaoLocal) => {
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", obterChave(), iv);

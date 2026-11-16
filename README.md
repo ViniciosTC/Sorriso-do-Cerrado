@@ -101,7 +101,7 @@ Em produção, configure `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `FRONTEND_URL`
 
 ### Cadastro de artesãos e AbacatePay
 
-O cadastro profissional está disponível para usuários autenticados em **Torne-se um artesão**. A subconta da AbacatePay é criada somente na confirmação do cadastro; o papel `artisan` é atribuído pelo back-end após o provedor confirmar a criação. Os dados pessoais e financeiros do cadastro são cifrados no banco com AES-256-GCM. Configure `ARTESAO_DADOS_ENCRYPTION_KEY` com pelo menos 32 caracteres e mantenha uma cópia segura; sem essa chave, o cadastro não é concluído.
+O cadastro profissional está disponível para usuários autenticados em **Torne-se um artesão**. A subconta da AbacatePay é criada somente na confirmação do cadastro; o papel `artisan` é atribuído pelo back-end após o provedor confirmar a criação. Os dados pessoais e financeiros do cadastro são cifrados no banco com AES-256-GCM. Configure `ARTESAO_DADOS_ENCRYPTION_KEY` no ambiente do back-end (no `.env` raiz para Docker Compose) com pelo menos 32 caracteres. A chave é obrigatória na inicialização e deve permanecer estável: trocar a chave impede a leitura dos perfis já cifrados. Mantenha uma cópia segura; não a versione nem a gere novamente a cada deploy.
 
 O modo padrão da AbacatePay é teste. Use `ABACATEPAY_MODE=test` e uma chave `abc_dev_...` em `ABACATEPAY_API_KEY_DEV` (ou `ABACATEPAY_API_KEY` para compatibilidade local). A comissão de teste padrão é 10%, ajustável por `ABACATEPAY_COMMISSION_TEST`. Cobranças continuam na API v2 e, para produtos de artesãos, o backend envia os splits em centavos após calcular o repasse no servidor. Nenhuma simulação usa fundos reais.
 

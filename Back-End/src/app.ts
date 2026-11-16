@@ -20,6 +20,7 @@ import { db } from "./database/db.js";
 import { criarAdminPadrao, criarBannersPadrao } from "./database/seed.js";
 import { auth } from "./auth/better-auth.js";
 import UsuarioModel from "./models/usuarioModel.js";
+import { validarConfiguracaoCriptografiaArtesao } from "./models/artesaoPerfilModel.js";
 
 dotenv.config();
 
@@ -128,6 +129,7 @@ const esperarMySQL = async () => {
 
 async function inicializarServidor() {
   try {
+    validarConfiguracaoCriptografiaArtesao();
     await esperarMySQL();
     await criarBanco();
 
