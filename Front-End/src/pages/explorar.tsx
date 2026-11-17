@@ -1,23 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import CartaoProduto from '../componentes/cards';
-import { useAuth } from '../auth/authContext';
+import PainelFiltros from '../componentes/painelFiltros';
+import { useBuscaProdutos } from '../hooks/useBuscaProdutos';
+import { useFavoritosIds } from '../hooks/useFavoritosIds';
 
 import styles from './explorar.module.css';
-
-interface Produto {
-    id: number;
-    nome: string;
-    artesao?: string;
-    categoria?: string;
-    preco: string | number;
-    imagemURL?: string;
-}
 
 const categorias = [
     'Moda e acessórios',
@@ -45,42 +37,29 @@ interface Artesao {
 const artesãos: Artesao[] = [];
 
 function Explorar() {
-    const [termoBusca, setTermoBusca] = useState('');
-    const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<string[]>([]);
-    const [produtosBanco, setProdutosBanco] = useState<Produto[]>([]);
-    const [favoritosIds, setFavoritosIds] = useState<number[]>([]);
+    const {
+        filtros,
+        produtos,
+        erro,
+        atualizarFiltro,
+        limparFiltros,
+        temFiltrosAtivos,
+    } = useBuscaProdutos();
+    const favoritosIds = useFavoritosIds();
 
-    const { isAuthenticated } = useAuth();
-
-    useEffect(() => {
-        const carregarDados = async () => {
-            try {
-                const resProdutos = await axios.get<Produto[]>('http://localhost:3000/produtos');
-                setProdutosBanco(resProdutos.data);
-
-                if (isAuthenticated) {
-                    const resFavoritos = await axios.get<Produto[]>('http://localhost:3000/favoritos', {
-                        withCredentials: true,
-                    });
-                    setFavoritosIds(resFavoritos.data.map((fav) => fav.id));
-                }
-            } catch (error) {
-                console.error('Erro ao buscar produtos na tela explorar:', error);
-            }
-        };
-
-        carregarDados();
-    }, [isAuthenticated]);
+    const termoBusca = filtros.busca;
+    const categoriasSelecionadas = filtros.categorias;
 
     function handleBuscar(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
     }
 
     function handleCategoriaClick(categoria: string) {
-        setCategoriasSelecionadas((selecionadas) =>
-            selecionadas.includes(categoria)
-                ? selecionadas.filter((item) => item !== categoria)
-                : [...selecionadas, categoria]
+        atualizarFiltro(
+            'categorias',
+            categoriasSelecionadas.includes(categoria)
+                ? categoriasSelecionadas.filter((item) => item !== categoria)
+                : [...categoriasSelecionadas, categoria]
         );
     }
 
@@ -93,22 +72,6 @@ function Explorar() {
         const correspondeCategoria =
             categoriasSelecionadas.length === 0 ||
             categoriasSelecionadas.includes(artesao.categoria);
-
-        return correspondeBusca && correspondeCategoria;
-    });
-
-    const todosProdutos: Produto[] = produtosBanco;
-
-    const produtosFiltrados = todosProdutos.filter((produto) => {
-        const termo = termoBusca.toLowerCase();
-        const correspondeBusca =
-            produto.nome.toLowerCase().includes(termo) ||
-            (produto.artesao || '').toLowerCase().includes(termo) ||
-            (produto.categoria || '').toLowerCase().includes(termo);
-
-        const correspondeCategoria =
-            categoriasSelecionadas.length === 0 ||
-            (!!produto.categoria && categoriasSelecionadas.includes(produto.categoria));
 
         return correspondeBusca && correspondeCategoria;
     });
@@ -134,9 +97,9 @@ function Explorar() {
                     <form className={styles.campoBusca} onSubmit={handleBuscar}>
                         <input
                             type="text"
-                            placeholder="O que você está procurando?"
+                            placeholder="Busque por produto, artesão ou categoria"
                             value={termoBusca}
-                            onChange={(event) => setTermoBusca(event.target.value)}
+                            onChange={(event) => atualizarFiltro('busca', event.target.value)}
                         />
 
                         <button type="submit">
@@ -160,6 +123,13 @@ function Explorar() {
                             </button>
                         ))}
                     </div>
+
+                    <PainelFiltros
+                        filtros={filtros}
+                        onChange={atualizarFiltro}
+                        onLimpar={limparFiltros}
+                        temFiltrosAtivos={temFiltrosAtivos}
+                    />
                 </section>
 
                 {/* Artesãos */}
@@ -215,7 +185,7 @@ function Explorar() {
                 )}
 
                 {/* Produtos */}
-                {produtosFiltrados.length > 0 && (
+                {produtos.length > 0 && (
                     <section className={styles.secao}>
                         <div className={styles.secaoCabecalho}>
                             <div>
@@ -228,7 +198,7 @@ function Explorar() {
                         </div>
 
                         <div className={styles.gradeProdutos}>
-                            {produtosFiltrados.map((produto) => (
+                            {produtos.map((produto) => (
                                 <CartaoProduto
                                     key={produto.id}
                                     product={produto}
@@ -239,7 +209,9 @@ function Explorar() {
                     </section>
                 )}
 
-                {artesaosFiltrados.length === 0 && produtosFiltrados.length === 0 && (
+                {erro && <p className={styles.mensagemSemResultado}>{erro}</p>}
+
+                {!erro && artesaosFiltrados.length === 0 && produtos.length === 0 && (
                     <p className={styles.mensagemSemResultado}>
                         Nenhum artesão ou produto encontrado para os filtros selecionados.
                     </p>
