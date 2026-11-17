@@ -4,7 +4,7 @@ import {
   createHash,
   randomBytes,
 } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "../database/db.js";
 import { artesaoPerfis, user } from "../database/schema.js";
 
@@ -280,6 +280,34 @@ const ArtesaoPerfilModel = {
 
     const dados = descriptografar(registro.dadosCriptografados);
     return mapearLojaPublica(registro.usuarioId, dados);
+  },
+
+  buscarNomesPublicosPorUsuarios: async (usuarioIds: string[]) => {
+    const nomes = new Map<string, string>();
+    const idsUnicos = [...new Set(usuarioIds.filter(Boolean))];
+    if (idsUnicos.length === 0) return nomes;
+
+    const registros = await db
+      .select({
+        usuarioId: artesaoPerfis.usuarioId,
+        dadosCriptografados: artesaoPerfis.dadosCriptografados,
+      })
+      .from(artesaoPerfis)
+      .where(inArray(artesaoPerfis.usuarioId, idsUnicos));
+
+    for (const registro of registros) {
+      try {
+        const dados = descriptografar(registro.dadosCriptografados);
+        const nomePublico = dados.trabalho?.nomePublico?.trim();
+        if (nomePublico) {
+          nomes.set(registro.usuarioId, nomePublico);
+        }
+      } catch {
+        // Ignora perfis que não puderem ser descriptografados e mantém user.name
+      }
+    }
+
+    return nomes;
   },
 };
 

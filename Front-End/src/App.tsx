@@ -15,6 +15,7 @@ import Cadastro from './pages/cadastro';
 import Explorar from './pages/explorar';
 import LojaArtesao from './pages/lojaArtesao';
 import Artesaos from './pages/artesaos';
+import Mensagens from './pages/mensagens';
 
 import Perfil from './pages/perfil';
 import CadastroArtesao from './pages/cadastroArtesao';
@@ -52,6 +53,14 @@ function App() {
             element={
               <RotaProtegida>
                 <Perfil />
+              </RotaProtegida>
+            }
+          />
+          <Route
+            path="/mensagens"
+            element={
+              <RotaProtegida>
+                <Mensagens />
               </RotaProtegida>
             }
           />

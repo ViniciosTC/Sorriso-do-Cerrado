@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/authContext';
 import { authClient } from '../auth/auth-client';
 import { useNotificacao } from '../context/notificacaoContext';
@@ -33,8 +33,21 @@ function Perfil() {
   const { user, isAuthenticated } = useAuth();
   const { mostrarNotificacao } = useNotificacao();
   const inputFotoRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
 
-  const [abaAtiva, setAbaAtiva] = useState<AbaPerfil>('visao-geral');
+  const abasValidas: AbaPerfil[] = ['visao-geral', 'editar-dados', 'alterar-senha'];
+  const abaDaUrl = new URLSearchParams(location.search).get('aba');
+  const abaInicial: AbaPerfil = abasValidas.includes(abaDaUrl as AbaPerfil)
+    ? (abaDaUrl as AbaPerfil)
+    : 'visao-geral';
+
+  const [abaAtiva, setAbaAtiva] = useState<AbaPerfil>(abaInicial);
+
+  useEffect(() => {
+    if (abaDaUrl && abasValidas.includes(abaDaUrl as AbaPerfil)) {
+      setAbaAtiva(abaDaUrl as AbaPerfil);
+    }
+  }, [abaDaUrl]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [mostrarTodosPedidos, setMostrarTodosPedidos] = useState(false);
   const [favoritos, setFavoritos] = useState<ProdutoFavorito[]>([]);
@@ -250,6 +263,13 @@ function Perfil() {
               >
                 Visão geral
               </button>
+
+              <Link
+                to="/mensagens"
+                className={styles.itemMenu}
+              >
+                Mensagens
+              </Link>
 
               <button
                 type="button"
