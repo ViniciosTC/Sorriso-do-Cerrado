@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import CartaoProduto from '../componentes/cards';
+import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
 
 import styles from './lojaArtesao.module.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 interface Produto {
     id: number;
@@ -17,7 +21,7 @@ interface Produto {
 }
 
 interface LojaArtesaoInfo {
-    id: number;
+    id: string | number;
     nome: string;
     iniciais: string;
     avatar: string | null;
@@ -32,24 +36,164 @@ interface LojaArtesaoInfo {
     pagamento: string;
 }
 
-const lojasArtesaos: LojaArtesaoInfo[] = [];
+interface PerfilArtesaoApi {
+    dadosPessoais?: {
+        endereco?: {
+            cidade?: string;
+            estado?: string;
+        };
+    };
+    trabalho?: {
+        nomePublico?: string;
+        apresentacao?: string;
+        artesanato?: string;
+        tecnicas?: string;
+        materiais?: string;
+        categoriaPrincipal?: string;
+        logoURL?: string;
+        capaURL?: string;
+        prazoProducao?: string;
+        envio?: string;
+        formasPagamento?: string;
+    };
+}
 
-const produtosLoja: Produto[] = [];
+const obterIniciais = (texto: string) => {
+    const partes = texto.trim().split(/\s+/).filter(Boolean);
+    if (partes.length === 0) return 'SC';
+    if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+    return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
+};
+
+const lojasArtesaos: LojaArtesaoInfo[] = [];
 
 function LojaArtesao() {
     const { id } = useParams<{ id: string }>();
+    const { isArtisan, isAdmin, user } = useAuth();
     const { mostrarNotificacao } = useNotificacao();
 
     const [abaAtiva, setAbaAtiva] = useState<'produtos' | 'sobre' | 'avaliacoes'>('produtos');
     const [ordenacao, setOrdenacao] = useState('mais_vendidos');
     const [seguindo, setSeguindo] = useState(false);
-
-    const lojaArtesaoAtual =
-        lojasArtesaos.find((item) => item.id === Number(id)) || lojasArtesaos[0];
+    const [lojaPropria, setLojaPropria] = useState<LojaArtesaoInfo | null>(null);
+    const [produtosLoja, setProdutosLoja] = useState<Produto[]>([]);
+    const [carregando, setCarregando] = useState(
+        Boolean(id) || isArtisan || isAdmin
+    );
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
+
+    useEffect(() => {
+        if (!id && !isArtisan && !isAdmin) {
+            setCarregando(false);
+            return;
+        }
+
+        let ativo = true;
+        setCarregando(true);
+
+        const carregarLoja = async () => {
+            try {
+                if (id) {
+                    const { data } = await axios.get<{
+                        loja: LojaArtesaoInfo;
+                        produtos: Produto[];
+                    }>(`${API_URL}/usuarios/artesaos/${id}`);
+
+                    if (!ativo) return;
+                    setLojaPropria(data.loja);
+                    setProdutosLoja(data.produtos || []);
+                    return;
+                }
+
+                const [resPerfil, resProdutos] = await Promise.all([
+                    axios.get<{ perfil: PerfilArtesaoApi | null }>(
+                        `${API_URL}/usuarios/artesao/perfil`,
+                        { withCredentials: true }
+                    ),
+                    axios.get<Produto[]>(`${API_URL}/produtos/meus`, {
+                        withCredentials: true,
+                    }),
+                ]);
+
+                if (!ativo) return;
+
+                const perfil = resPerfil.data?.perfil;
+                if (perfil?.trabalho) {
+                    const nome = perfil.trabalho.nomePublico || user?.name || 'Minha Loja';
+                    const cidade = perfil.dadosPessoais?.endereco?.cidade || '';
+                    const estado = perfil.dadosPessoais?.endereco?.estado || '';
+                    const localizacao = [cidade, estado].filter(Boolean).join(', ') || 'Brasil';
+
+                    setLojaPropria({
+                        id: 0,
+                        nome,
+                        iniciais: obterIniciais(nome),
+                        avatar: perfil.trabalho.logoURL || null,
+                        bannerImage: perfil.trabalho.capaURL || null,
+                        localizacao,
+                        categoria:
+                            perfil.trabalho.categoriaPrincipal ||
+                            perfil.trabalho.artesanato ||
+                            'Artesanato',
+                        avaliacao: '5,0',
+                        descricao: perfil.trabalho.apresentacao || '',
+                        sobre: [
+                            perfil.trabalho.apresentacao,
+                            perfil.trabalho.tecnicas
+                                ? `Técnicas: ${perfil.trabalho.tecnicas}`
+                                : '',
+                            perfil.trabalho.materiais
+                                ? `Materiais: ${perfil.trabalho.materiais}`
+                                : '',
+                        ]
+                            .filter(Boolean)
+                            .join('\n\n'),
+                        envio: perfil.trabalho.envio || 'Todo o Brasil',
+                        prazoProducao: perfil.trabalho.prazoProducao || '5 a 10 dias',
+                        pagamento: perfil.trabalho.formasPagamento || 'Pix',
+                    });
+                }
+
+                setProdutosLoja(resProdutos.data || []);
+            } catch (error) {
+                console.error('Erro ao carregar dados da loja:', error);
+                if (ativo) {
+                    setLojaPropria(null);
+                    setProdutosLoja([]);
+                }
+            } finally {
+                if (ativo) setCarregando(false);
+            }
+        };
+
+        void carregarLoja();
+
+        return () => {
+            ativo = false;
+        };
+    }, [id, isArtisan, isAdmin, user?.name]);
+
+    const lojaArtesaoAtual =
+        lojaPropria ||
+        lojasArtesaos.find((item) => item.id === Number(id)) ||
+        lojasArtesaos[0];
+
+    if (carregando) {
+        return (
+            <div className={styles.paginaLojaArtesao}>
+                <BarraNavegacao />
+                <main className={styles.mainContainer}>
+                    <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+                        <p>Carregando loja...</p>
+                    </div>
+                </main>
+                <Rodape />
+            </div>
+        );
+    }
 
     if (!lojaArtesaoAtual) {
         return (

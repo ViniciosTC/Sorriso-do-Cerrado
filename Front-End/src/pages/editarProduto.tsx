@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import { useNotificacao } from '../context/notificacaoContext';
-import styles from './editarProduto.module.css';
+import styles from './adicionarProduto.module.css';
 
 const CATEGORIAS = [
   'Moda e acessórios',
@@ -30,9 +30,28 @@ function EditarProduto() {
   const [estoque, setEstoque] = useState('');
   const [imagemURL, setImagemURL] = useState('');
   const [arquivoImagem, setArquivoImagem] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [arrastando, setArrastando] = useState(false);
 
+  const [salvando, setSalvando] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const inputArquivoRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!arquivoImagem) {
+      setPreviewUrl('');
+      return;
+    }
+
+    const urlTemporaria = URL.createObjectURL(arquivoImagem);
+    setPreviewUrl(urlTemporaria);
+
+    return () => {
+      URL.revokeObjectURL(urlTemporaria);
+    };
+  }, [arquivoImagem]);
 
   useEffect(() => {
     const fetchProduto = async () => {
@@ -46,9 +65,9 @@ function EditarProduto() {
         if (produto) {
           setNome(produto.nome);
           setCategoria(produto.categoria || '');
-          setDescricao(produto.descricao);
-          setPreco(produto.preco);
-          setEstoque(produto.estoque);
+          setDescricao(produto.descricao || '');
+          setPreco(String(produto.preco ?? ''));
+          setEstoque(String(produto.estoque ?? ''));
           setImagemURL(produto.imagemURL || '');
         } else {
           setError('Produto não encontrado.');
@@ -64,6 +83,35 @@ function EditarProduto() {
 
     fetchProduto();
   }, [id]);
+
+  const selecionarArquivo = (arquivo: File | null) => {
+    if (!arquivo) return;
+
+    if (!arquivo.type.startsWith('image/')) {
+      mostrarNotificacao('Selecione um arquivo de imagem válido.', 'erro');
+      return;
+    }
+
+    setArquivoImagem(arquivo);
+    setError('');
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setArrastando(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setArrastando(false);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setArrastando(false);
+    const arquivo = event.dataTransfer.files?.[0] ?? null;
+    selecionarArquivo(arquivo);
+  };
 
   const handleUploadImagem = async () => {
     if (!arquivoImagem) return imagemURL;
@@ -92,6 +140,7 @@ function EditarProduto() {
       return;
     }
 
+    setSalvando(true);
     try {
       const urlFinal = await handleUploadImagem();
 
@@ -122,101 +171,223 @@ function EditarProduto() {
         : undefined;
 
       setError(mensagem || 'Falha ao atualizar o produto.');
+    } finally {
+      setSalvando(false);
     }
   };
 
-  if (loading || error) {
+  if (loading || (error && !nome)) {
     return (
-      <div className="pageContainer">
+      <div className={styles.pagina}>
         <BarraNavegacao />
-        <main className="conteudo-geral" style={{ padding: '2rem' }}>
-          {loading ? <p>A carregar...</p> : <p>Erro: {error}</p>}
+        <main className={styles.conteudo}>
+          <div className={styles.formularioContainer}>
+            {loading ? <p>A carregar...</p> : <p className={styles.mensagemErro}>Erro: {error}</p>}
+          </div>
         </main>
         <Rodape />
       </div>
     );
   }
 
+  const imagemParaExibir = previewUrl || imagemURL;
+
   return (
-    <div className="pageContainer">
+    <div className={styles.pagina}>
       <BarraNavegacao />
 
-      <main className="conteudo-geral" style={{ padding: '2rem' }}>
+      <main className={styles.conteudo}>
         <div className={styles.formularioContainer}>
-          <form onSubmit={handleSubmit}>
-            <h2>Editar Produto</h2>
+          <header className={styles.cabecalho}>
+            <div>
+              <p className={styles.sobretitulo}>Sua loja</p>
+              <h2>Editar Produto</h2>
+              <p className={styles.subtitulo}>
+                Atualize as informações e a imagem do produto selecionado.
+              </p>
+            </div>
 
-            <div className={styles.campoFormulario}>
-              <label>Nome do Produto</label>
-              <input
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                required
-              />
+            <Link
+              to="/admin"
+              state={{ aba: 'produtos' }}
+              className={styles.botaoVoltar}
+            >
+              Voltar
+            </Link>
+          </header>
+
+          <form onSubmit={handleSubmit} className={styles.formulario}>
+            <div className={styles.duasColunas}>
+              <div className={styles.campoFormulario}>
+                <label htmlFor="nomeProduto">Nome do Produto *</label>
+                <input
+                  id="nomeProduto"
+                  type="text"
+                  placeholder="Ex: Vaso de cerâmica artesanal"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className={styles.campoFormulario}>
+                <label htmlFor="categoria">Categoria *</label>
+                <select
+                  id="categoria"
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value)}
+                  required
+                >
+                  <option value="">Selecione uma categoria</option>
+                  {CATEGORIAS.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className={styles.campoFormulario}>
-              <label htmlFor="categoria">Categoria</label>
-              <select
-                id="categoria"
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
-                required
-              >
-                <option value="">Selecione uma categoria</option>
-                {CATEGORIAS.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.campoFormulario}>
-              <label>Descrição</label>
+              <label htmlFor="descricaoProduto">Descrição</label>
               <textarea
+                id="descricaoProduto"
+                placeholder="Descreva os materiais, dimensões e detalhes da peça..."
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
+                rows={4}
               />
             </div>
 
-            <div className={styles.campoFormulario}>
-              <label>Preço</label>
-              <input
-                type="number"
-                value={preco}
-                onChange={(e) => setPreco(e.target.value)}
-                required
-                step="0.01"
-                min="0.1"
-              />
+            <div className={styles.duasColunas}>
+              <div className={styles.campoFormulario}>
+                <label htmlFor="precoProduto">Preço (R$) *</label>
+                <input
+                  id="precoProduto"
+                  type="number"
+                  placeholder="0,00"
+                  value={preco}
+                  onChange={(e) => setPreco(e.target.value)}
+                  required
+                  step="0.01"
+                  min="0.1"
+                />
+              </div>
+
+              <div className={styles.campoFormulario}>
+                <label htmlFor="estoqueProduto">Estoque *</label>
+                <input
+                  id="estoqueProduto"
+                  type="number"
+                  placeholder="Quantidade disponível"
+                  value={estoque}
+                  onChange={(e) => setEstoque(e.target.value)}
+                  required
+                  min="0"
+                />
+              </div>
             </div>
 
             <div className={styles.campoFormulario}>
-              <label>Estoque</label>
-              <input
-                type="number"
-                value={estoque}
-                onChange={(e) => setEstoque(e.target.value)}
-                required
-              />
+              <label>Imagem do Produto</label>
+              <div
+                role="button"
+                tabIndex={0}
+                className={`${styles.zonaUpload} ${
+                  arrastando ? styles.zonaUploadAtiva : ''
+                }`}
+                onClick={() => inputArquivoRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    inputArquivoRef.current?.click();
+                  }
+                }}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={inputArquivoRef}
+                  type="file"
+                  accept="image/*"
+                  className={styles.inputArquivoOculto}
+                  onChange={(e) => {
+                    selecionarArquivo(e.target.files?.[0] ?? null);
+                    e.target.value = '';
+                  }}
+                />
+
+                {imagemParaExibir ? (
+                  <div className={styles.previewContainer}>
+                    <img
+                      src={imagemParaExibir}
+                      alt="Pré-visualização do produto"
+                      className={styles.previewImagem}
+                    />
+                    <div className={styles.previewInfo}>
+                      <span className={styles.nomeArquivo}>
+                        {arquivoImagem
+                          ? arquivoImagem.name
+                          : 'Imagem atual do produto'}
+                      </span>
+                      <span className={styles.dicaTroca}>
+                        Arraste outra imagem ou clique para substituir
+                      </span>
+                      {arquivoImagem && (
+                        <button
+                          type="button"
+                          className={styles.botaoRemoverArquivo}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setArquivoImagem(null);
+                          }}
+                        >
+                          Desfazer troca de imagem
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.conteudoUpload}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={styles.iconeUpload}
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <p className={styles.textoPrincipalUpload}>
+                      <strong>Arraste a foto aqui</strong> ou clique para
+                      selecionar do computador
+                    </p>
+                    <span className={styles.textoSecundarioUpload}>
+                      PNG, JPG ou WEBP
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.divisorOu}>
+              <span>ou informe o link da imagem</span>
             </div>
 
             <div className={styles.campoFormulario}>
-              <label>Alterar imagem</label>
+              <label htmlFor="urlImagem">URL da imagem</label>
               <input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setArquivoImagem(e.target.files?.[0] ?? null)
-                }
-              />
-            </div>
-
-            <div className={styles.campoFormulario}>
-              <label>URL atual (opcional)</label>
-              <input
+                id="urlImagem"
                 type="text"
+                placeholder="https://exemplo.com/foto-do-produto.jpg"
                 value={imagemURL}
                 onChange={(e) => setImagemURL(e.target.value)}
               />
@@ -224,8 +395,12 @@ function EditarProduto() {
 
             {error && <p className={styles.mensagemErro}>{error}</p>}
 
-            <button type="submit" className={styles.botaoSubmit}>
-              Salvar Alterações
+            <button
+              type="submit"
+              className={styles.botaoSubmit}
+              disabled={salvando}
+            >
+              {salvando ? 'Salvando...' : 'Salvar Alterações'}
             </button>
           </form>
         </div>
