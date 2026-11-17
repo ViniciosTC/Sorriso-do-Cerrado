@@ -1,6 +1,18 @@
-import { eq } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  gte,
+  inArray,
+  like,
+  lte,
+  or,
+  type SQL,
+} from "drizzle-orm";
 import { db } from "../database/db.js";
-import { produtos } from "../database/schema.js";
+import { produtos, user } from "../database/schema.js";
 
 export interface Produto {
   id?: number;
@@ -13,9 +25,57 @@ export interface Produto {
   categoria?: string | null;
 }
 
+export const ORDENS_PRODUTO = [
+  "recentes",
+  "antigos",
+  "maior_preco",
+  "menor_preco",
+] as const;
+
+export type OrdemProduto = (typeof ORDENS_PRODUTO)[number];
+
+export interface FiltrosProduto {
+  busca?: string;
+  categoria?: string[];
+  precoMin?: number;
+  precoMax?: number;
+  ordem?: OrdemProduto;
+}
+
+const ORDENACOES: Record<OrdemProduto, SQL[]> = {
+  recentes: [desc(produtos.criadoEm), desc(produtos.id)],
+  antigos: [asc(produtos.criadoEm), asc(produtos.id)],
+  maior_preco: [desc(produtos.preco), desc(produtos.id)],
+  menor_preco: [asc(produtos.preco), asc(produtos.id)],
+};
+
+const montarCondicoes = (filtros: FiltrosProduto) => {
+  const { categoria, precoMin, precoMax } = filtros;
+  const termo = filtros.busca?.trim();
+  const contem = `%${termo}%`;
+
+  return and(
+    termo
+      ? or(
+          like(produtos.nome, contem),
+          like(produtos.categoria, contem),
+          like(user.name, contem),
+        )
+      : undefined,
+    categoria?.length ? inArray(produtos.categoria, categoria) : undefined,
+    precoMin !== undefined ? gte(produtos.preco, String(precoMin)) : undefined,
+    precoMax !== undefined ? lte(produtos.preco, String(precoMax)) : undefined,
+  );
+};
+
 const ProdutoModel = {
-  listarTodos: async (): Promise<Produto[]> => {
-    return await db.select().from(produtos);
+  buscar: async (filtros: FiltrosProduto = {}) => {
+    return await db
+      .select({ ...getTableColumns(produtos), artesao: user.name })
+      .from(produtos)
+      .leftJoin(user, eq(produtos.usuarioId, user.id))
+      .where(montarCondicoes(filtros))
+      .orderBy(...ORDENACOES[filtros.ordem ?? "recentes"]);
   },
 
   listarParaGerenciamento: async (usuarioId: string, isAdmin: boolean) => {

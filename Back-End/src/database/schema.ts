@@ -9,6 +9,7 @@ import {
   decimal,
   unique,
 } from "drizzle-orm/mysql-core";
+import { sql } from "drizzle-orm";
 
 // ==========================================
 // TABELAS DO BETTER AUTH
@@ -80,6 +81,7 @@ export const produtos = mysqlTable("produtos", {
   estoque: int("estoque").default(0),
   imagemURL: varchar("imagemURL", { length: 255 }),
   categoria: varchar("categoria", { length: 100 }),
+  criadoEm: datetime("criado_em").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const vendas = mysqlTable("vendas", {

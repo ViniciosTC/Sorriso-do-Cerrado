@@ -1,13 +1,19 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import ProdutoModel, { type Produto } from "../models/produtoModel.js";
+import ProdutoModel, {
+  type FiltrosProduto,
+  type Produto,
+} from "../models/produtoModel.js";
 import { ehAdministrador } from "../middleware/authMiddleware.js";
 
 type ProductParams = { id: string };
 type ProductBody = Omit<Produto, "id">;
 
-export const listarProdutos = async (request: FastifyRequest, reply: FastifyReply) => {
+export const listarProdutos = async (
+  request: FastifyRequest<{ Querystring: FiltrosProduto }>,
+  reply: FastifyReply,
+) => {
   try {
-    const produtos = await ProdutoModel.listarTodos();
+    const produtos = await ProdutoModel.buscar(request.query);
     return reply.send(produtos);
   } catch (error) {
     request.log.error({ err: error }, "Erro ao buscar produtos");
