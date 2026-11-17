@@ -166,3 +166,48 @@ export const adminAuditLogs = mysqlTable("admin_audit_logs", {
   createdAt: datetime("created_at").notNull(),
 });
 
+
+export const conversas = mysqlTable(
+  "conversas",
+  {
+    id: int("id").autoincrement().primaryKey(),
+
+    clienteId: varchar("cliente_id", { length: 36 })
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+
+    artesaoId: varchar("artesao_id", { length: 36 })
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+
+    assunto: varchar("assunto", { length: 150 }),
+
+    criadoEm: datetime("criado_em").notNull(),
+
+    atualizadoEm: datetime("atualizado_em").notNull(),
+  },
+  (table) => ({
+    conversaUnica: unique("conversa_cliente_artesao_unique").on(
+      table.clienteId,
+      table.artesaoId,
+    ),
+  }),
+);
+
+export const mensagens = mysqlTable("mensagens", {
+  id: int("id").autoincrement().primaryKey(),
+
+  conversaId: int("conversa_id")
+    .notNull()
+    .references(() => conversas.id, { onDelete: "cascade" }),
+
+  remetenteId: varchar("remetente_id", { length: 36 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  conteudo: text("conteudo").notNull(),
+
+  enviadoEm: datetime("enviado_em").notNull(),
+
+  lida: boolean("lida").notNull().default(false),
+});

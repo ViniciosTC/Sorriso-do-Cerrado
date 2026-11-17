@@ -14,6 +14,7 @@ import uploadRoutes from "./routes/upload.js";
 import bannersRoutes from "./routes/banners.js";
 import favoritosRoutes from "./routes/favoritos.js";
 import abacatePayWebhook from "./routes/abacatePayWebhook.js";
+import mensagensRoutes from "./routes/mensagens.js";
 
 import conexao, { criarBanco } from "./database/conexao.js";
 import { db } from "./database/db.js";
@@ -108,6 +109,7 @@ app.register(uploadRoutes, { prefix: "/upload" });
 app.register(bannersRoutes, { prefix: "/banners" });
 app.register(favoritosRoutes, { prefix: "/favoritos" });
 app.register(abacatePayWebhook, { prefix: "/webhooks/abacatepay" });
+app.register(mensagensRoutes, { prefix: "/mensagens" });
 
 app.get("/", async (_request, reply) => {
   return reply.code(200).send("API do Sorriso do Cerrado está funcionando!");
