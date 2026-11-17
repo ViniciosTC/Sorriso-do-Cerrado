@@ -135,6 +135,7 @@ export const validarDadosRecebimento = (
 interface Props {
   value: DadosRecebimento;
   onChange: (dados: DadosRecebimento) => void;
+  disabled?: boolean;
 }
 
 const rotuloTipoChave: Record<TipoChavePix, string> = {
@@ -145,7 +146,7 @@ const rotuloTipoChave: Record<TipoChavePix, string> = {
   aleatoria: 'Chave aleatória',
 };
 
-function DadosRecebimentoCampos({ value, onChange }: Props) {
+function DadosRecebimentoCampos({ value, onChange, disabled = false }: Props) {
   const pix = value.pix;
   const transferencia = value.transferencia;
   const { mostrarNotificacao } = useNotificacao();
@@ -199,9 +200,12 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
   };
 
   return (
-    <div>
+    <fieldset
+      disabled={disabled}
+      style={{ border: 'none', padding: 0, margin: 0, minWidth: 0 }}
+    >
       <fieldset className={styles.grupoCampos}>
-        <legend>Formas de recebimento (escolha uma ou ambas)</legend>
+        <legend>Formas de recebimento (escolha uma ou ambas) *</legend>
         <label className={styles.opcao}>
           <input
             type="checkbox"
@@ -223,7 +227,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
       {pix && (
         <>
           <label className={styles.campo}>
-            <span>Tipo de chave Pix</span>
+            <span>Tipo de chave Pix *</span>
             <select
               value={pix.tipoChavePix}
               onChange={(event) =>
@@ -245,7 +249,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
             </select>
           </label>
           <label className={styles.campo}>
-            <span>Chave Pix</span>
+            <span>Chave Pix *</span>
             <input
               value={pix.chavePix}
               onChange={(event) =>
@@ -276,7 +280,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
       {transferencia && (
         <>
           <label className={styles.campo}>
-            <span>Banco (nome ou código)</span>
+            <span>Banco (nome ou código) *</span>
             <input
               value={transferencia.banco}
               onChange={(event) =>
@@ -294,7 +298,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
           </label>
           <div className={styles.duasColunas}>
             <label className={styles.campo}>
-              <span>Agência</span>
+              <span>Agência *</span>
               <input
                 value={transferencia.agencia}
                 onChange={(event) =>
@@ -311,7 +315,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
               />
             </label>
             <label className={styles.campo}>
-              <span>Número da conta</span>
+              <span>Número da conta *</span>
               <input
                 value={transferencia.numeroConta}
                 onChange={(event) =>
@@ -346,7 +350,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
               />
             </label>
             <label className={styles.campo}>
-              <span>Tipo de conta</span>
+              <span>Tipo de conta *</span>
               <select
                 value={transferencia.tipoConta}
                 onChange={(event) =>
@@ -372,7 +376,7 @@ function DadosRecebimentoCampos({ value, onChange }: Props) {
           </p>
         </>
       )}
-    </div>
+    </fieldset>
   );
 }
 

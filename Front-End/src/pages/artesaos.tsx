@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 
 import styles from './artesaos.module.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const categorias = [
     'Todas',
@@ -20,7 +23,7 @@ const categorias = [
 ];
 
 export interface Artesao {
-    id: number;
+    id: string | number;
     nome: string;
     iniciais: string;
     avatar: string | null;
@@ -36,12 +39,28 @@ export const listaArtesaos: Artesao[] = [];
 function Artesaos() {
     const [termoBusca, setTermoBusca] = useState('');
     const [categoriaSelecionada, setCategoriaSelecionada] = useState('Todas');
+    const [artesaos, setArtesaos] = useState<Artesao[]>(listaArtesaos);
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    const artesaosFiltrados = listaArtesaos.filter((artesao) => {
+    useEffect(() => {
+        const carregarArtesaos = async () => {
+            try {
+                const { data } = await axios.get<Artesao[]>(
+                    `${API_URL}/usuarios/artesaos`
+                );
+                setArtesaos(data);
+            } catch (error) {
+                console.error('Erro ao buscar artesãos:', error);
+            }
+        };
+
+        void carregarArtesaos();
+    }, []);
+
+    const artesaosFiltrados = artesaos.filter((artesao) => {
         const correspondeCategoria =
             categoriaSelecionada === 'Todas' ||
             artesao.categoria === categoriaSelecionada;

@@ -135,14 +135,26 @@ function Carrinho() {
                 <div className={styles.tabelaCarrinho}>
                   {cartItems.map((item) => (
                     <div key={item.id} className={styles.itemCarrinho}>
-                      <ImagemProduto
-                        src={item.imageUrl}
-                        alt={item.name}
-                        className={styles.imagemProdutoCarrinho}
-                      />
+                      <Link
+                        to={`/produto/${item.id}`}
+                        className={styles.linkImagemProduto}
+                      >
+                        <ImagemProduto
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className={styles.imagemProdutoCarrinho}
+                        />
+                      </Link>
 
                       <div className={styles.infoProdutoCarrinho}>
-                        <h3>{item.name}</h3>
+                        <h3>
+                          <Link
+                            to={`/produto/${item.id}`}
+                            className={styles.linkNomeProduto}
+                          >
+                            {item.name}
+                          </Link>
+                        </h3>
                         <div className={styles.controleQuantidade}>
                           <span>Quantidade:</span>
                           <div className={styles.seletorQuantidade}>

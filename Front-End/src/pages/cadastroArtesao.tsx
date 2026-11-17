@@ -415,7 +415,7 @@ function CadastroArtesao() {
                 </div>
 
                 <label className={styles.campo}>
-                  <span>Nome completo do responsável</span>
+                  <span>Nome completo do responsável *</span>
                   <input
                     value={cadastro.dadosPessoais.nomeCompleto}
                     onChange={(event) =>
@@ -427,7 +427,7 @@ function CadastroArtesao() {
                 </label>
 
                 <fieldset className={styles.grupoCampos}>
-                  <legend>Tipo de pessoa</legend>
+                  <legend>Tipo de pessoa *</legend>
                   <label className={styles.opcao}>
                     <input
                       type="radio"
@@ -452,7 +452,7 @@ function CadastroArtesao() {
 
                 <div className={styles.duasColunas}>
                   <label className={styles.campo}>
-                    <span>{nomeDocumento} do responsável</span>
+                    <span>{nomeDocumento} do responsável *</span>
                     <input
                       value={cadastro.dadosPessoais.documento}
                       onChange={(event) =>
@@ -475,7 +475,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Telefone / WhatsApp</span>
+                    <span>Telefone / WhatsApp *</span>
                     <input
                       type="tel"
                       value={cadastro.dadosPessoais.telefone}
@@ -494,7 +494,7 @@ function CadastroArtesao() {
                 </div>
 
                 <fieldset className={styles.blocoEmail}>
-                  <legend>E-mail para contato profissional</legend>
+                  <legend>E-mail para contato profissional *</legend>
                   <label className={styles.opcao}>
                     <input
                       type="radio"
@@ -526,7 +526,7 @@ function CadastroArtesao() {
                   {!cadastro.usarEmailDaConta && (
                     <div className={styles.duasColunas}>
                       <label className={styles.campo}>
-                        <span>Novo e-mail profissional</span>
+                        <span>Novo e-mail profissional *</span>
                         <input
                           type="email"
                           value={cadastro.emailProfissional}
@@ -540,7 +540,7 @@ function CadastroArtesao() {
                         />
                       </label>
                       <label className={styles.campo}>
-                        <span>Confirme o e-mail profissional</span>
+                        <span>Confirme o e-mail profissional *</span>
                         <input
                           type="email"
                           value={cadastro.confirmacaoEmailProfissional}
@@ -564,7 +564,7 @@ function CadastroArtesao() {
                 <div className={styles.tituloGrupo}>Endereço completo</div>
                 <div className={styles.duasColunas}>
                   <label className={styles.campo}>
-                    <span>CEP</span>
+                    <span>CEP *</span>
                     <input
                       value={enderecoCompleto.cep}
                       onChange={(event) =>
@@ -575,7 +575,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Estado (UF)</span>
+                    <span>Estado (UF) *</span>
                     <input
                       value={enderecoCompleto.estado}
                       onChange={(event) =>
@@ -587,7 +587,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Logradouro</span>
+                    <span>Logradouro *</span>
                     <input
                       value={enderecoCompleto.logradouro}
                       onChange={(event) =>
@@ -598,7 +598,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Número</span>
+                    <span>Número *</span>
                     <input
                       value={enderecoCompleto.numero}
                       onChange={(event) =>
@@ -608,7 +608,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Complemento (opcional)</span>
+                    <span>Complemento</span>
                     <input
                       value={enderecoCompleto.complemento}
                       onChange={(event) =>
@@ -617,7 +617,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Bairro</span>
+                    <span>Bairro *</span>
                     <input
                       value={enderecoCompleto.bairro}
                       onChange={(event) =>
@@ -627,7 +627,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Cidade</span>
+                    <span>Cidade *</span>
                     <input
                       value={enderecoCompleto.cidade}
                       onChange={(event) =>
@@ -652,7 +652,7 @@ function CadastroArtesao() {
                 </div>
 
                 <label className={styles.campo}>
-                  <span>Nome público do artesão</span>
+                  <span>Nome público do artesão *</span>
                   <input
                     value={cadastro.trabalho.nomePublico}
                     onChange={(event) =>
@@ -662,7 +662,7 @@ function CadastroArtesao() {
                   />
                 </label>
                 <label className={styles.campo}>
-                  <span>Apresente-se</span>
+                  <span>Apresente-se *</span>
                   <textarea
                     value={cadastro.trabalho.apresentacao}
                     onChange={(event) =>
@@ -673,7 +673,7 @@ function CadastroArtesao() {
                   />
                 </label>
                 <label className={styles.campo}>
-                  <span>Tipo de artesanato produzido</span>
+                  <span>Tipo de artesanato produzido *</span>
                   <input
                     value={cadastro.trabalho.artesanato}
                     onChange={(event) =>
@@ -684,7 +684,7 @@ function CadastroArtesao() {
                 </label>
                 <div className={styles.duasColunas}>
                   <label className={styles.campo}>
-                    <span>Técnicas utilizadas</span>
+                    <span>Técnicas utilizadas *</span>
                     <textarea
                       value={cadastro.trabalho.tecnicas}
                       onChange={(event) =>
@@ -695,7 +695,7 @@ function CadastroArtesao() {
                     />
                   </label>
                   <label className={styles.campo}>
-                    <span>Materiais utilizados</span>
+                    <span>Materiais utilizados *</span>
                     <textarea
                       value={cadastro.trabalho.materiais}
                       onChange={(event) =>
@@ -864,7 +864,7 @@ function CadastroArtesao() {
                     />
                     <span>
                       Confirmo a veracidade dos dados e aceito os termos e
-                      condições acima.
+                      condições acima. *
                     </span>
                   </label>
                 </div>

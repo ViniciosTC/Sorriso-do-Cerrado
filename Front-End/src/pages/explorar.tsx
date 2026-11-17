@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
@@ -10,6 +11,8 @@ import { useBuscaProdutos } from '../hooks/useBuscaProdutos';
 import { useFavoritosIds } from '../hooks/useFavoritosIds';
 
 import styles from './explorar.module.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const categorias = [
     'Moda e acessórios',
@@ -24,7 +27,7 @@ const categorias = [
 ];
 
 interface Artesao {
-    id: number;
+    id: string | number;
     nome: string;
     iniciais: string;
     avatar: string | null;
@@ -33,8 +36,6 @@ interface Artesao {
     categoria: string;
     avaliacao: string;
 }
-
-const artesãos: Artesao[] = [];
 
 function Explorar() {
     const {
@@ -46,9 +47,19 @@ function Explorar() {
         temFiltrosAtivos,
     } = useBuscaProdutos();
     const favoritosIds = useFavoritosIds();
+    const [artesaosBanco, setArtesaosBanco] = useState<Artesao[]>([]);
 
     const termoBusca = filtros.busca;
     const categoriasSelecionadas = filtros.categorias;
+
+    useEffect(() => {
+        axios
+            .get<Artesao[]>(`${API_URL}/usuarios/artesaos`)
+            .then(({ data }) => setArtesaosBanco(data))
+            .catch((error) =>
+                console.error('Erro ao buscar artesãos na tela explorar:', error)
+            );
+    }, []);
 
     function handleBuscar(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -63,7 +74,7 @@ function Explorar() {
         );
     }
 
-    const artesaosFiltrados = artesãos.filter((artesao) => {
+    const artesaosFiltrados = artesaosBanco.filter((artesao) => {
         const correspondeBusca =
             artesao.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
             artesao.categoria.toLowerCase().includes(termoBusca.toLowerCase()) ||
@@ -132,6 +143,31 @@ function Explorar() {
                     />
                 </section>
 
+                {/* Produtos */}
+                {produtos.length > 0 && (
+                    <section className={styles.secao}>
+                        <div className={styles.secaoCabecalho}>
+                            <div>
+                                <h2 className={styles.tituloSecao}>Produtos em destaque</h2>
+                            </div>
+
+                            <Link to="/produtos" className={styles.verTodos}>
+                                Ver catálogo →
+                            </Link>
+                        </div>
+
+                        <div className={styles.gradeProdutos}>
+                            {produtos.map((produto) => (
+                                <CartaoProduto
+                                    key={produto.id}
+                                    product={produto}
+                                    favoritadoInicial={favoritosIds.includes(produto.id)}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* Artesãos */}
                 {artesaosFiltrados.length > 0 && (
                     <section className={styles.secao}>
@@ -179,31 +215,6 @@ function Explorar() {
                                         </div>
                                     </div>
                                 </Link>
-                            ))}
-                        </div>
-                    </section>
-                )}
-
-                {/* Produtos */}
-                {produtos.length > 0 && (
-                    <section className={styles.secao}>
-                        <div className={styles.secaoCabecalho}>
-                            <div>
-                                <h2 className={styles.tituloSecao}>Produtos em destaque</h2>
-                            </div>
-
-                            <Link to="/produtos" className={styles.verTodos}>
-                                Ver catálogo →
-                            </Link>
-                        </div>
-
-                        <div className={styles.gradeProdutos}>
-                            {produtos.map((produto) => (
-                                <CartaoProduto
-                                    key={produto.id}
-                                    product={produto}
-                                    favoritadoInicial={favoritosIds.includes(produto.id)}
-                                />
                             ))}
                         </div>
                     </section>
