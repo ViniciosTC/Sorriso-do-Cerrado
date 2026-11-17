@@ -153,7 +153,7 @@
 
 .gradeCardsResumo {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   margin-top: 28px;
 }
@@ -162,13 +162,14 @@
   background-color: var(--palette-surface-ffffff);
   border: 1px solid var(--palette-border-efe6d8);
   border-radius: 12px;
-  padding: 24px 28px;
-  min-height: 115px;
+  padding: 22px 24px;
+  min-height: 126px;
   box-sizing: border-box;
   box-shadow: 0 4px 14px var(--palette-shadow-rgba-74-59-49-0-04);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  gap: 6px;
 }
 
 .tituloCardResumo {
@@ -176,6 +177,232 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--palette-text-6b584b);
+}
+
+.valorCardResumo {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--palette-text-8d5b4c);
+  line-height: 1.2;
+}
+
+.detalheCardResumo {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--palette-text-6b584b);
+}
+
+.linkCardResumo {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--palette-text-8d5b4c);
+  cursor: pointer;
+}
+
+.linkCardResumo:hover {
+  text-decoration: underline;
+}
+
+.gradeSecoesResumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.secaoResumo {
+  background-color: var(--palette-surface-ffffff);
+  border: 1px solid var(--palette-border-efe6d8);
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 14px var(--palette-shadow-rgba-74-59-49-0-04);
+}
+
+.cabecalhoSecaoResumo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cabecalhoSecaoResumo h2 {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--palette-text-4a3b31);
+}
+
+.cabecalhoSecaoResumo p {
+  margin: 4px 0 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--palette-text-6b584b);
+}
+
+.estadoVazioResumo {
+  margin: 12px 0 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--palette-text-6b584b);
+}
+
+.listaPedidosResumo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemPedidoResumo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background-color: var(--palette-surface-fdfbf7);
+  border: 1px solid var(--palette-border-f2ebe1);
+}
+
+.infoPedidoResumo,
+.valoresPedidoResumo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.valoresPedidoResumo {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.infoPedidoResumo strong,
+.valoresPedidoResumo strong {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--palette-text-4a3b31);
+}
+
+.infoPedidoResumo span {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--palette-text-6b584b);
+}
+
+.statusConfirmadoResumo,
+.statusCanceladoResumo {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusConfirmadoResumo {
+  color: #2e6f40;
+}
+
+.statusCanceladoResumo {
+  color: #b42318;
+}
+
+.filtrosGrafico {
+  display: inline-flex;
+  gap: 6px;
+  background-color: var(--palette-surface-fdfbf7);
+  border: 1px solid var(--palette-border-efe6d8);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.botaoFiltro,
+.botaoFiltroAtivo {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoFiltro {
+  background: transparent;
+  color: var(--palette-text-6b584b);
+}
+
+.botaoFiltro:hover {
+  color: var(--palette-text-8d5b4c);
+}
+
+.botaoFiltroAtivo {
+  background-color: var(--palette-surface-8d5b4c);
+  color: var(--palette-text-ffffff);
+}
+
+.graficoBarras {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  padding-top: 8px;
+}
+
+.colunaGrafico {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.valorBarraGrafico {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--palette-text-6b584b);
+  min-height: 14px;
+  white-space: nowrap;
+}
+
+.trilhaBarraGrafico {
+  width: 100%;
+  max-width: 44px;
+  height: 150px;
+  border-radius: 8px;
+  background-color: var(--palette-surface-faf3e0);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+.barraGrafico {
+  width: 100%;
+  border-radius: 6px;
+  background-color: var(--palette-surface-8d5b4c);
+  transition: height 0.3s ease, opacity 0.2s ease;
+}
+
+.colunaGrafico:hover .barraGrafico {
+  opacity: 0.85;
+}
+
+.rotuloBarraGrafico {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--palette-text-5c473b);
+  text-transform: capitalize;
 }
 
 /* TABELA DE PRODUTOS */
