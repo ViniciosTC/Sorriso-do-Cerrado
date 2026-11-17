@@ -32,6 +32,15 @@ export type SubcontaAbacatePay = {
   devMode: boolean;
 };
 
+export type SaqueSubconta = {
+  id: string;
+  subAccountId: string;
+  status: "COMPLETE" | "FAILED";
+  amount: number;
+  platformFee: number;
+  externalId: string;
+};
+
 export type SplitPagamento = {
   subAccountId: string;
   amount: number;
@@ -52,7 +61,7 @@ const obterConfiguracao = () => {
   const apiKey =
     modo === "production"
       ? process.env.ABACATEPAY_API_KEY_PROD
-      : process.env.ABACATEPAY_API_KEY_DEV ?? process.env.ABACATEPAY_API_KEY;
+      : process.env.ABACATEPAY_API_KEY_DEV || process.env.ABACATEPAY_API_KEY;
   const prefixo = modo === "production" ? "abc_prod_" : "abc_dev_";
 
   if (!apiKey || !apiKey.startsWith(prefixo)) {
@@ -73,6 +82,9 @@ export const obterModoAbacatePay = (): "test" | "production" => {
   }
   return modo;
 };
+
+export const splitHabilitado = () =>
+  process.env.ABACATEPAY_SPLIT_HABILITADO !== "false";
 
 export const obterComissaoArtesao = () => {
   const modo = obterModoAbacatePay();
@@ -161,6 +173,20 @@ export const consultarSubcontaArtesao = (id: string) =>
   requisitar<SubcontaAbacatePay>(
     `/sub-accounts/get?id=${encodeURIComponent(id)}`,
   );
+
+export const sacarSubconta = (
+  subcontaId: string,
+  valorEmCentavos: number,
+  externalId: string,
+) =>
+  requisitar<SaqueSubconta>("/sub-accounts/withdraw", {
+    method: "POST",
+    body: JSON.stringify({
+      id: subcontaId,
+      amount: valorEmCentavos,
+      externalId,
+    }),
+  });
 
 export const simularPagamentoPix = (pagamentoId: string) =>
   requisitar<CobrancaPix>(

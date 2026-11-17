@@ -8,6 +8,7 @@ import DadosRecebimentoCampos, {
   validarDadosRecebimento,
 } from '../componentes/dadosRecebimentoCampos';
 import Rodape from '../componentes/rodape';
+import SaldoArtesao from '../componentes/saldoArtesao';
 import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
 import styles from './cadastroArtesao.module.css';
@@ -87,6 +88,8 @@ function DadosRecebimentoArtesao() {
             futuros.
           </p>
         </header>
+
+        <SaldoArtesao />
 
         <section className={styles.cartao}>
           {carregando ? (

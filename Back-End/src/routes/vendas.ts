@@ -2,13 +2,14 @@ import type { FastifyPluginAsync } from "fastify";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { autenticar, autorizar, ehAdministrador } from "../middleware/authMiddleware.js";
 import ProdutoModel from "../models/produtoModel.js";
-import VendaModel from "../models/vendaModel.js";
-import ArtesaoModel from "../models/artesaoModel.js";
+import VendaModel, { type ItemVendaNovo } from "../models/vendaModel.js";
+import { garantirSubconta } from "../services/subcontaArtesaoService.js";
 import {
   consultarStatusVenda,
   criarCobrancaPix,
   obterComissaoArtesao,
   obterModoAbacatePay,
+  splitHabilitado,
   simularPagamentoPix,
   type SplitPagamento,
 } from "../services/abacatePayService.js";
@@ -24,55 +25,100 @@ type CreateSaleBody = {
 type SaleParams = { id: string };
 
 const DESCRICAO_COBRANCA = "Pedido Sorriso do Cerrado";
-const calcularTotal = async (
-  itens: ItemVenda[],
-): Promise<{ total: number; splits: SplitPagamento[] } | null> => {
+
+type ItemPedido = {
+  idProduto: number;
+  idArtesao: string | null;
+  subcontaId: string | null;
+  quantidade: number;
+  precoEmCentavos: number;
+  repasseEmCentavos: number;
+};
+
+type Pedido = {
+  total: number;
+  itens: ItemPedido[];
+  splits: SplitPagamento[];
+};
+
+const buscarSubconta = async (artesaoId: string) => {
+  const subconta = await garantirSubconta(artesaoId);
+  if (subconta.devMode !== (obterModoAbacatePay() === "test")) {
+    throw new Error("A subconta do artesão pertence a outro ambiente da AbacatePay");
+  }
+  return subconta.subcontaId;
+};
+
+const calcularRepasse = (subtotalEmCentavos: number) =>
+  Math.floor((subtotalEmCentavos * (100 - obterComissaoArtesao())) / 100);
+
+const agruparSplits = (itens: ItemPedido[]): SplitPagamento[] => {
+  const repassePorSubconta = new Map<string, number>();
+  for (const { subcontaId, repasseEmCentavos } of itens) {
+    if (!subcontaId) continue;
+    repassePorSubconta.set(
+      subcontaId,
+      (repassePorSubconta.get(subcontaId) ?? 0) + repasseEmCentavos,
+    );
+  }
+
+  return [...repassePorSubconta]
+    .filter(([, amount]) => amount > 0)
+    .map(([subAccountId, amount]) => ({ subAccountId, amount }));
+};
+
+const montarPedido = async (itens: ItemVenda[]): Promise<Pedido | null> => {
   if (!Array.isArray(itens) || itens.length === 0) return null;
 
-  let totalCentavos = 0;
-  const subtotaisPorArtesao = new Map<string, number>();
+  const subcontas = new Map<string, string>();
+  const itensPedido: ItemPedido[] = [];
+
   for (const { id, quantidade } of itens) {
     const produto = await ProdutoModel.buscarPorId(id);
     if (!produto || !Number.isInteger(quantidade) || quantidade < 1) return null;
-    const subtotalCentavos = Math.round(Number(produto.preco) * 100) * quantidade;
-    totalCentavos += subtotalCentavos;
 
-    if (produto.usuarioId) {
-      subtotaisPorArtesao.set(
-        produto.usuarioId,
-        (subtotaisPorArtesao.get(produto.usuarioId) ?? 0) + subtotalCentavos,
-      );
+    const idArtesao = produto.usuarioId ?? null;
+    let subcontaId: string | null = null;
+    if (idArtesao && splitHabilitado()) {
+      subcontaId = subcontas.get(idArtesao) ?? (await buscarSubconta(idArtesao));
+      subcontas.set(idArtesao, subcontaId);
     }
+
+    const precoEmCentavos = Math.round(Number(produto.preco) * 100);
+    itensPedido.push({
+      idProduto: id,
+      idArtesao,
+      subcontaId,
+      quantidade,
+      precoEmCentavos,
+      repasseEmCentavos: idArtesao
+        ? calcularRepasse(precoEmCentavos * quantidade)
+        : 0,
+    });
   }
 
-  const splits: SplitPagamento[] = [];
-  for (const [artesaoId, subtotalCentavos] of subtotaisPorArtesao) {
-    const subconta =
-      await ArtesaoModel.buscarSubcontaPorUsuario(artesaoId);
-    if (!subconta) {
-      throw new Error("Produto de artesão sem subconta financeira vinculada");
-    }
+  const totalEmCentavos = itensPedido.reduce(
+    (soma, item) => soma + item.precoEmCentavos * item.quantidade,
+    0,
+  );
 
-    if (subconta.devMode !== (obterModoAbacatePay() === "test")) {
-      throw new Error(
-        "A subconta do artesão pertence a outro ambiente da AbacatePay",
-      );
-    }
-
-    const comissaoPlataforma = obterComissaoArtesao();
-    const repasseCentavos = Math.floor(
-      (subtotalCentavos * (100 - comissaoPlataforma)) / 100,
-    );
-    if (repasseCentavos > 0) {
-      splits.push({
-        subAccountId: subconta.subcontaId,
-        amount: repasseCentavos,
-      });
-    }
-  }
-
-  return { total: totalCentavos / 100, splits };
+  return {
+    total: totalEmCentavos / 100,
+    itens: itensPedido,
+    splits: agruparSplits(itensPedido),
+  };
 };
+
+const paraItensVenda = (itens: ItemPedido[]): ItemVendaNovo[] =>
+  itens.map(
+    ({ idProduto, idArtesao, quantidade, precoEmCentavos, repasseEmCentavos }) => ({
+      idProduto,
+      idArtesao,
+      quantidade,
+      precoUnitario: precoEmCentavos / 100,
+      valorRepasse: repasseEmCentavos / 100,
+    }),
+  );
 
 const vendasRoutes: FastifyPluginAsync = async (app) => {
   app.get(
@@ -107,6 +153,23 @@ const vendasRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
+  app.get(
+    "/artesao",
+    { preHandler: [autenticar, autorizar("artisan", "artesa", "vendedor")] },
+    async (request, reply) => {
+      try {
+        if (!request.usuario) {
+          return reply.code(401).send({ error: "Não autenticado" });
+        }
+
+        return reply.send(await VendaModel.listarPorArtesao(request.usuario.id));
+      } catch (error) {
+        request.log.error({ err: error }, "Erro ao buscar pedidos do artesão");
+        return reply.code(500).send({ error: "Erro ao buscar pedidos" });
+      }
+    },
+  );
+
   app.post<{ Body: CreateSaleBody }>(
     "/",
     { preHandler: [autenticar] },
@@ -117,15 +180,15 @@ const vendasRoutes: FastifyPluginAsync = async (app) => {
         }
 
         const { nomeCliente, telefoneCliente, itens } = request.body;
-        const calculo = await calcularTotal(itens);
-        if (calculo === null) {
+        const pedido = await montarPedido(itens);
+        if (pedido === null) {
           return reply.code(400).send({ error: "Itens do pedido inválidos" });
         }
 
         const { id: pagamentoId, ...pix } = await criarCobrancaPix(
-          calculo.total,
+          pedido.total,
           DESCRICAO_COBRANCA,
-          calculo.splits,
+          pedido.splits,
         );
         if (pix.devMode !== (obterModoAbacatePay() === "test")) {
           request.log.error(
@@ -136,15 +199,18 @@ const vendasRoutes: FastifyPluginAsync = async (app) => {
             error: "A cobrança foi criada em um ambiente diferente do configurado.",
           });
         }
-        const venda = await VendaModel.criar({
-          nomeCliente,
-          emailCliente: request.usuario.email,
-          telefoneCliente,
-          total: calculo.total,
-          pagamentoId,
-        });
+        const venda = await VendaModel.criar(
+          {
+            nomeCliente,
+            emailCliente: request.usuario.email,
+            telefoneCliente,
+            total: pedido.total,
+            pagamentoId,
+          },
+          paraItensVenda(pedido.itens),
+        );
 
-        return reply.code(201).send({ id: venda.id, total: calculo.total, pix });
+        return reply.code(201).send({ id: venda.id, total: pedido.total, pix });
       } catch (error) {
         request.log.error({ err: error }, "Erro ao registrar venda");
         const mensagem =
