@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import Home from './pages/home';
 import Produtos from './pages/produtos';
@@ -16,10 +16,7 @@ import Explorar from './pages/explorar';
 import LojaArtesao from './pages/lojaArtesao';
 import Artesaos from './pages/artesaos';
 
-import Configuracoes from './pages/configuracoes';
 import Perfil from './pages/perfil';
-import EditarDados from './pages/editarDados';
-import MudarSenha from './pages/mudarSenha';
 import CadastroArtesao from './pages/cadastroArtesao';
 import DadosRecebimentoArtesao from './pages/dadosRecebimentoArtesao';
 
@@ -48,11 +45,7 @@ function App() {
 
           <Route
             path="/configuracoes"
-            element={
-              <RotaProtegida>
-                <Configuracoes />
-              </RotaProtegida>
-            }
+            element={<Navigate to="/perfil" replace />}
           />
           <Route
             path="/perfil"
@@ -80,19 +73,11 @@ function App() {
           />
           <Route
             path="/editar-dados"
-            element={
-              <RotaProtegida>
-                <EditarDados />
-              </RotaProtegida>
-            }
+            element={<Navigate to="/perfil" replace />}
           />
           <Route
             path="/mudar-senha"
-            element={
-              <RotaProtegida>
-                <MudarSenha />
-              </RotaProtegida>
-            }
+            element={<Navigate to="/perfil" replace />}
           />
           <Route
             path="/admin"

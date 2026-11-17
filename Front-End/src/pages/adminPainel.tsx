@@ -191,22 +191,24 @@ function AdminPainel() {
                     <p className={styles.nomeVendedor}>{nomeVendedor}</p>
                   </div>
 
-                  <Link
-                    to="/admin/adicionar-produto"
-                    className={styles.linkBotaoAdicionar}
-                  >
-                    <button type="button" className={styles.botaoAdicionar}>
-                      Adicionar Novo Produto
-                    </button>
-                  </Link>
-                  {isArtisan && (
+                  <div className={styles.acoesHeader}>
                     <Link
-                      to="/dados-recebimento"
-                      className={`${styles.linkBotaoAdicionar} ${styles.botaoAdicionar}`}
+                      to="/admin/adicionar-produto"
+                      className={styles.linkBotaoAdicionar}
                     >
-                      Dados de recebimento
+                      <button type="button" className={styles.botaoAdicionar}>
+                        Adicionar Novo Produto
+                      </button>
                     </Link>
-                  )}
+                    {isArtisan && (
+                      <Link
+                        to="/dados-recebimento"
+                        className={`${styles.linkBotaoAdicionar} ${styles.botaoAdicionar}`}
+                      >
+                        Dados de recebimento
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 <div className={styles.gradeCardsResumo}>
