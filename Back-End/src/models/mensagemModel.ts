@@ -6,10 +6,11 @@ import {
     eq,
     ne,
     or,
+    sql,
 } from "drizzle-orm";
 
 import { db } from "../database/db.js";
-import { conversas, mensagens } from "../database/schema.js";
+import { conversas, mensagens, user } from "../database/schema.js";
 
 const MensagemModel = {
     // Busca uma conversa existente entre cliente e artesão
@@ -48,8 +49,52 @@ const MensagemModel = {
 
     // Lista conversas das quais o usuário participa
     listarConversas: async (usuarioId: string) => {
-        return await db
-            .select()
+        const consulta = db
+            .select({
+                id: conversas.id,
+                clienteId: conversas.clienteId,
+                artesaoId: conversas.artesaoId,
+                assunto: conversas.assunto,
+                criadoEm: conversas.criadoEm,
+                atualizadoEm: conversas.atualizadoEm,
+
+                clienteNome: sql<string>`(
+                    SELECT \`name\`
+                    FROM \`user\`
+                    WHERE \`user\`.\`id\` = \`conversas\`.\`cliente_id\`
+                )`,
+
+                artesaoNome: sql<string>`(
+                    SELECT \`name\`
+                    FROM \`user\`
+                    WHERE \`user\`.\`id\` = \`conversas\`.\`artesao_id\`
+                )`,
+
+                ultimaMensagem: sql<string | null>`(
+                    SELECT m.conteudo
+                    FROM mensagens m
+                    WHERE m.conversa_id = conversas.id
+                    ORDER BY m.enviado_em DESC, m.id DESC
+                    LIMIT 1
+                )`,
+
+                ultimaMensagemEm: sql<Date | null>`(
+                    SELECT m.enviado_em
+                    FROM mensagens m
+                    WHERE m.conversa_id = conversas.id
+                    ORDER BY m.enviado_em DESC, m.id DESC
+                    LIMIT 1
+                )`,
+
+                mensagensNaoLidas: sql<number>`(
+                    SELECT COUNT(*)
+                    FROM mensagens
+                    WHERE mensagens.conversa_id = conversas.id
+                        AND mensagens.remetente_id != ${usuarioId}
+                        AND mensagens.lida = false
+                )`,
+
+            })
             .from(conversas)
             .where(
                 or(
@@ -58,7 +103,11 @@ const MensagemModel = {
                 ),
             )
             .orderBy(desc(conversas.atualizadoEm));
+
+        const resultado = await consulta;
+        return resultado;
     },
+
 
     // Busca uma conversa pelo ID
     buscarConversaPorId: async (conversaId: number) => {

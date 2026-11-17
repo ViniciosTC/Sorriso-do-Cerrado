@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { signIn } from '../auth/auth-client';
 import { useNotificacao } from '../context/notificacaoContext';
 import BarraNavegacao from '../componentes/barraNavegacao';
@@ -13,23 +13,48 @@ function Login() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const paginaAnterior = (
+    location.state as { from?: string } | null
+  )?.from;
   const { mostrarNotificacao } = useNotificacao();
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const { error: err } = await signIn.email({
-      email: email.trim().toLowerCase(),
-      password,
-    });
+    try {
+      console.log('Tentando realizar login...');
 
-    if (err) {
-      mostrarNotificacao(err.message || 'Erro ao tentar fazer login.', 'erro');
-    } else {
+      const { error: err } = await signIn.email({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (err) {
+        console.error('Erro retornado pelo Better Auth:', err);
+        mostrarNotificacao(
+          err.message || 'Erro ao tentar fazer login.',
+          'erro'
+        );
+        return;
+      }
+
+      console.log('Login realizado com sucesso!');
       mostrarNotificacao('Login realizado com sucesso!', 'sucesso');
-      navigate('/');
+
+      navigate(paginaAnterior || '/', { replace: true });
+    } catch (error) {
+      console.error('Falha na requisição de login:', error);
+
+      mostrarNotificacao(
+        'Não foi possível conectar ao servidor. Verifique se o backend está funcionando.',
+        'erro'
+      );
     }
   };
+
 
   return (
     <div className="pageContainer">

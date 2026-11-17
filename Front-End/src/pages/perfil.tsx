@@ -251,6 +251,13 @@ function Perfil() {
                 Visão geral
               </button>
 
+              <Link
+                to="/mensagens"
+                className={styles.itemMenu}
+              >
+                Mensagens
+              </Link>
+
               <button
                 type="button"
                 className={

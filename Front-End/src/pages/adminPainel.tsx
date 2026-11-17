@@ -31,8 +31,22 @@ interface SubcontaFinanceira {
 
 function AdminPainel() {
   const location = useLocation();
-  const abaInicial: AbaPainel =
-    (location.state as { aba?: AbaPainel } | null)?.aba || 'resumo';
+
+  const abasValidas: AbaPainel[] = [
+    'resumo',
+    'produtos',
+    'pedidos',
+    'configuracoes-loja',
+  ];
+
+  const abaDaUrl = new URLSearchParams(location.search).get('aba');
+  const abaDoState = (location.state as { aba?: AbaPainel } | null)?.aba;
+
+  const abaInicial: AbaPainel = abasValidas.includes(abaDaUrl as AbaPainel)
+    ? (abaDaUrl as AbaPainel)
+    : abasValidas.includes(abaDoState as AbaPainel)
+      ? (abaDoState as AbaPainel)
+      : 'resumo';
 
   const [abaAtiva, setAbaAtiva] = useState<AbaPainel>(abaInicial);
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -161,8 +175,8 @@ function AdminPainel() {
 
               <button
                 type="button"
-                className={styles.itemMenuDesabilitado}
-                disabled
+                className={styles.itemMenu}
+                onClick={() => navigate('/mensagens')}
               >
                 Mensagens
               </button>

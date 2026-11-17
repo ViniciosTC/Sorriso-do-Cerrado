@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
@@ -69,7 +69,9 @@ const lojasArtesaos: LojaArtesaoInfo[] = [];
 
 function LojaArtesao() {
     const { id } = useParams<{ id: string }>();
-    const { isArtisan, isAdmin, user } = useAuth();
+    const { isArtisan, isAdmin, user, isAuthenticated, isPending } = useAuth();
+    const navigate = useNavigate();
+    const [enviandoMensagem, setEnviandoMensagem] = useState(false);
     const { mostrarNotificacao } = useNotificacao();
 
     const [abaAtiva, setAbaAtiva] = useState<'produtos' | 'sobre' | 'avaliacoes'>('produtos');
@@ -234,12 +236,80 @@ function LojaArtesao() {
         setSeguindo((estadoAnterior) => !estadoAnterior);
     }
 
-    function handleEnviarMensagem() {
-        mostrarNotificacao(
-            `Funcionalidade de mensagens para ${lojaArtesaoAtual.nome} estará disponível em breve!`,
-            'aviso'
-        );
+
+
+    async function handleEnviarMensagem() {
+        if (isPending || enviandoMensagem) return;
+
+        if (!isAuthenticated) {
+            mostrarNotificacao(
+                'Entre na sua conta para conversar com esta loja.',
+                'aviso'
+            );
+
+            navigate('/login', {
+                state: { from: `/loja-artesao/${lojaArtesaoAtual.id}` },
+            });
+
+            return;
+        }
+
+        if (isArtisan || isAdmin) {
+            mostrarNotificacao(
+                'Apenas clientes podem iniciar uma conversa com a loja.',
+                'aviso'
+            );
+            return;
+        }
+
+        const artesaoId = String(lojaArtesaoAtual.id);
+
+        if (!artesaoId || artesaoId === '0' || artesaoId === user?.id) {
+            mostrarNotificacao(
+                'Não é possível iniciar uma conversa com esta loja.',
+                'aviso'
+            );
+            return;
+        }
+
+        try {
+            setEnviandoMensagem(true);
+
+            const { data } = await axios.post(
+                `${API_URL}/mensagens/conversas`,
+                { artesaoId },
+                { withCredentials: true }
+            );
+
+            const conversaId = data.id;
+
+            if (!conversaId) {
+                throw new Error('O backend não retornou o ID da conversa.');
+            }
+
+            navigate(`/mensagens?conversa=${conversaId}`);
+
+        } catch (error) {
+            console.error('Erro ao iniciar conversa:', error);
+
+            if (axios.isAxiosError(error)) {
+                mostrarNotificacao(
+                    error.response?.data?.error ||
+                    'Não foi possível iniciar a conversa.',
+                    'erro'
+                );
+            } else {
+                mostrarNotificacao(
+                    'Ocorreu um erro ao iniciar a conversa.',
+                    'erro'
+                );
+            }
+        } finally {
+            setEnviandoMensagem(false);
+        }
     }
+
+
 
     return (
         <div className={styles.paginaLojaArtesao}>
@@ -260,198 +330,199 @@ function LojaArtesao() {
                 </div>
 
                 <div className={styles.conteudo}>
-                {/* Cabeçalho da Loja do Artesão */}
-                <section className={styles.cartaoCabecalho}>
-                    <div className={styles.infoPrincipal}>
-                        <div className={styles.avatarLojaArtesao}>
-                            {lojaArtesaoAtual.avatar ? (
-                                <img src={lojaArtesaoAtual.avatar} alt={lojaArtesaoAtual.nome} />
-                            ) : (
-                                <span>{lojaArtesaoAtual.iniciais}</span>
-                            )}
-                        </div>
-
-                        <div className={styles.dadosLojaArtesao}>
-                            <h1>{lojaArtesaoAtual.nome}</h1>
-
-                            <div className={styles.metadados}>
-                                <span className={styles.itemMetadado}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                        <circle cx="12" cy="10" r="3" />
-                                    </svg>
-                                    {lojaArtesaoAtual.localizacao}
-                                </span>
-
-                                <span className={styles.itemMetadado}>
-                                    <span className={styles.estrela}>★</span>
-                                    {lojaArtesaoAtual.avaliacao} de avaliação
-                                </span>
-
-                                <span className={styles.itemMetadado}>
-                                    {lojaArtesaoAtual.categoria}
-                                </span>
+                    {/* Cabeçalho da Loja do Artesão */}
+                    <section className={styles.cartaoCabecalho}>
+                        <div className={styles.infoPrincipal}>
+                            <div className={styles.avatarLojaArtesao}>
+                                {lojaArtesaoAtual.avatar ? (
+                                    <img src={lojaArtesaoAtual.avatar} alt={lojaArtesaoAtual.nome} />
+                                ) : (
+                                    <span>{lojaArtesaoAtual.iniciais}</span>
+                                )}
                             </div>
 
-                            <p className={styles.descricaoLojaArtesao}>
-                                {lojaArtesaoAtual.descricao}
-                            </p>
-                        </div>
-                    </div>
+                            <div className={styles.dadosLojaArtesao}>
+                                <h1>{lojaArtesaoAtual.nome}</h1>
 
-                    <div className={styles.acoesCabecalho}>
-                        <button
-                            type="button"
-                            className={styles.botaoSeguir}
-                            onClick={handleSeguirLoja}
-                        >
-                            {seguindo ? 'Seguindo loja' : 'Seguir loja'}
-                        </button>
+                                <div className={styles.metadados}>
+                                    <span className={styles.itemMetadado}>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" />
+                                        </svg>
+                                        {lojaArtesaoAtual.localizacao}
+                                    </span>
 
-                        <button
-                            type="button"
-                            className={styles.botaoMensagem}
-                            onClick={handleEnviarMensagem}
-                        >
-                            Enviar mensagem
-                        </button>
-                    </div>
-                </section>
+                                    <span className={styles.itemMetadado}>
+                                        <span className={styles.estrela}>★</span>
+                                        {lojaArtesaoAtual.avaliacao} de avaliação
+                                    </span>
 
-                {/* Área Principal: Produtos + Barra Lateral */}
-                <div className={styles.corpoLoja}>
-                    <section className={styles.colunaPrincipal}>
-                        {/* Abas e Ordenação */}
-                        <div className={styles.barraControles}>
-                            <div className={styles.abas}>
-                                <button
-                                    type="button"
-                                    className={
-                                        abaAtiva === 'produtos'
-                                            ? styles.abaAtiva
-                                            : styles.aba
-                                    }
-                                    onClick={() => setAbaAtiva('produtos')}
-                                >
-                                    Produtos
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={
-                                        abaAtiva === 'sobre'
-                                            ? styles.abaAtiva
-                                            : styles.aba
-                                    }
-                                    onClick={() => setAbaAtiva('sobre')}
-                                >
-                                    Sobre
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={
-                                        abaAtiva === 'avaliacoes'
-                                            ? styles.abaAtiva
-                                            : styles.aba
-                                    }
-                                    onClick={() => setAbaAtiva('avaliacoes')}
-                                >
-                                    Avaliações
-                                </button>
-                            </div>
-
-                            {abaAtiva === 'produtos' && (
-                                <div className={styles.ordenacaoContainer}>
-                                    <label htmlFor="ordenarPor">Ordenar por</label>
-                                    <select
-                                        id="ordenarPor"
-                                        value={ordenacao}
-                                        onChange={(e) => setOrdenacao(e.target.value)}
-                                        className={styles.selectOrdenacao}
-                                    >
-                                        <option value="mais_vendidos">Mais vendidos</option>
-                                        <option value="menor_preco">Menor preço</option>
-                                        <option value="maior_preco">Maior preço</option>
-                                    </select>
+                                    <span className={styles.itemMetadado}>
+                                        {lojaArtesaoAtual.categoria}
+                                    </span>
                                 </div>
-                            )}
-                        </div>
 
-                        {/* Conteúdo da Aba Selecionada */}
-                        {abaAtiva === 'produtos' && (
-                            <div className={styles.gradeProdutos}>
-                                {produtosOrdenados.map((produto) => (
-                                    <CartaoProduto
-                                        key={produto.id}
-                                        product={produto}
-                                        favoritadoInicial={false}
-                                    />
-                                ))}
-                            </div>
-                        )}
-
-                        {abaAtiva === 'sobre' && (
-                            <div className={styles.cartaoSecundario}>
-                                <h3>Sobre {lojaArtesaoAtual.nome}</h3>
-                                <p>{lojaArtesaoAtual.sobre}</p>
-                            </div>
-                        )}
-
-                        {abaAtiva === 'avaliacoes' && (
-                            <div className={styles.cartaoSecundario}>
-                                <h3>Avaliações da loja ({lojaArtesaoAtual.avaliacao} ★)</h3>
-                                <p>As avaliações detalhadas dos clientes estarão disponíveis em breve.</p>
-                            </div>
-                        )}
-                    </section>
-
-                    {/* Coluna Lateral Direita */}
-                    <aside className={styles.colunaLateral}>
-                        <div className={styles.cartaoLateral}>
-                            <h3>Informações da loja</h3>
-
-                            <div className={styles.blocoInfo}>
-                                <strong>Envio</strong>
-                                <p>{lojaArtesaoAtual.envio}</p>
-                            </div>
-
-                            <div className={styles.blocoInfo}>
-                                <strong>Prazo de produção</strong>
-                                <p>{lojaArtesaoAtual.prazoProducao}</p>
-                            </div>
-
-                            <div className={styles.blocoInfo}>
-                                <strong>Pagamento</strong>
-                                <p>{lojaArtesaoAtual.pagamento}</p>
+                                <p className={styles.descricaoLojaArtesao}>
+                                    {lojaArtesaoAtual.descricao}
+                                </p>
                             </div>
                         </div>
 
-                        <div className={styles.cartaoLateral}>
-                            <h3>Dúvidas?</h3>
-                            <p className={styles.textoDuvidas}>
-                                Fale direto com a artesã antes de comprar.
-                            </p>
+                        <div className={styles.acoesCabecalho}>
                             <button
                                 type="button"
-                                className={styles.linkMensagemLoja}
-                                onClick={handleEnviarMensagem}
+                                className={styles.botaoSeguir}
+                                onClick={handleSeguirLoja}
                             >
-                                Enviar mensagem para a loja
+                                {seguindo ? 'Seguindo loja' : 'Seguir loja'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className={styles.botaoMensagem}
+                                onClick={handleEnviarMensagem}
+                                disabled={enviandoMensagem}
+                            >
+                                {enviandoMensagem ? 'Iniciando conversa...' : 'Enviar mensagem para a loja'}
                             </button>
                         </div>
-                    </aside>
-                </div>
+                    </section>
+
+                    {/* Área Principal: Produtos + Barra Lateral */}
+                    <div className={styles.corpoLoja}>
+                        <section className={styles.colunaPrincipal}>
+                            {/* Abas e Ordenação */}
+                            <div className={styles.barraControles}>
+                                <div className={styles.abas}>
+                                    <button
+                                        type="button"
+                                        className={
+                                            abaAtiva === 'produtos'
+                                                ? styles.abaAtiva
+                                                : styles.aba
+                                        }
+                                        onClick={() => setAbaAtiva('produtos')}
+                                    >
+                                        Produtos
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={
+                                            abaAtiva === 'sobre'
+                                                ? styles.abaAtiva
+                                                : styles.aba
+                                        }
+                                        onClick={() => setAbaAtiva('sobre')}
+                                    >
+                                        Sobre
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={
+                                            abaAtiva === 'avaliacoes'
+                                                ? styles.abaAtiva
+                                                : styles.aba
+                                        }
+                                        onClick={() => setAbaAtiva('avaliacoes')}
+                                    >
+                                        Avaliações
+                                    </button>
+                                </div>
+
+                                {abaAtiva === 'produtos' && (
+                                    <div className={styles.ordenacaoContainer}>
+                                        <label htmlFor="ordenarPor">Ordenar por</label>
+                                        <select
+                                            id="ordenarPor"
+                                            value={ordenacao}
+                                            onChange={(e) => setOrdenacao(e.target.value)}
+                                            className={styles.selectOrdenacao}
+                                        >
+                                            <option value="mais_vendidos">Mais vendidos</option>
+                                            <option value="menor_preco">Menor preço</option>
+                                            <option value="maior_preco">Maior preço</option>
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Conteúdo da Aba Selecionada */}
+                            {abaAtiva === 'produtos' && (
+                                <div className={styles.gradeProdutos}>
+                                    {produtosOrdenados.map((produto) => (
+                                        <CartaoProduto
+                                            key={produto.id}
+                                            product={produto}
+                                            favoritadoInicial={false}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            {abaAtiva === 'sobre' && (
+                                <div className={styles.cartaoSecundario}>
+                                    <h3>Sobre {lojaArtesaoAtual.nome}</h3>
+                                    <p>{lojaArtesaoAtual.sobre}</p>
+                                </div>
+                            )}
+
+                            {abaAtiva === 'avaliacoes' && (
+                                <div className={styles.cartaoSecundario}>
+                                    <h3>Avaliações da loja ({lojaArtesaoAtual.avaliacao} ★)</h3>
+                                    <p>As avaliações detalhadas dos clientes estarão disponíveis em breve.</p>
+                                </div>
+                            )}
+                        </section>
+
+                        {/* Coluna Lateral Direita */}
+                        <aside className={styles.colunaLateral}>
+                            <div className={styles.cartaoLateral}>
+                                <h3>Informações da loja</h3>
+
+                                <div className={styles.blocoInfo}>
+                                    <strong>Envio</strong>
+                                    <p>{lojaArtesaoAtual.envio}</p>
+                                </div>
+
+                                <div className={styles.blocoInfo}>
+                                    <strong>Prazo de produção</strong>
+                                    <p>{lojaArtesaoAtual.prazoProducao}</p>
+                                </div>
+
+                                <div className={styles.blocoInfo}>
+                                    <strong>Pagamento</strong>
+                                    <p>{lojaArtesaoAtual.pagamento}</p>
+                                </div>
+                            </div>
+
+                            <div className={styles.cartaoLateral}>
+                                <h3>Dúvidas?</h3>
+                                <p className={styles.textoDuvidas}>
+                                    Fale direto com a artesã antes de comprar.
+                                </p>
+                                <button
+                                    type="button"
+                                    className={styles.botaoMensagem}
+                                    onClick={handleEnviarMensagem}
+                                >
+                                    Enviar mensagem para a loja
+                                </button>
+                            </div>
+                        </aside>
+                    </div>
                 </div>
             </main>
 

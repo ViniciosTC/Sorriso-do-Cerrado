@@ -174,21 +174,21 @@
 }
 
 .botaoMensagem {
-    padding: 10px 20px;
-    border: 1px solid var(--palette-border-c4a99b);
+    padding: 11px 22px;
     border-radius: 8px;
     background: var(--palette-surface-ffffff);
+    border: 1px solid var(--palette-border-e4d6c7);
     color: var(--palette-text-65483e);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: background-color 0.2s, opacity 0.2s;
 }
 
-.botaoMensagem:hover {
-    background: var(--palette-surface-faf3e0);
-    border-color: var(--palette-border-8d5b4c);
+.botaoMensagem:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* CORPO DA LOJA (2 COLUNAS) */
@@ -280,12 +280,12 @@
     align-items: stretch;
 }
 
-.gradeProdutos > a {
+.gradeProdutos>a {
     display: flex;
     height: 100%;
 }
 
-.gradeProdutos > a > div {
+.gradeProdutos>a>div {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -297,7 +297,7 @@
     text-align: left;
 }
 
-.gradeProdutos > a > div h3 {
+.gradeProdutos>a>div h3 {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 600;
@@ -305,7 +305,7 @@
     margin: 4px 0;
 }
 
-.gradeProdutos > a > div p {
+.gradeProdutos>a>div p {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 600;
