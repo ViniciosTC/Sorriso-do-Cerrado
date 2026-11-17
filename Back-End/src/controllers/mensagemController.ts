@@ -58,12 +58,6 @@ export const criarConversa = async (
     if (!autorizarUsuario(request, reply) || !request.usuario) return;
 
     try {
-        if (request.usuario.papel !== "cliente") {
-            return reply.code(403).send({
-                error: "Apenas clientes podem iniciar conversas",
-            });
-        }
-
         const { artesaoId, assunto } = request.body ?? {};
 
         if (!artesaoId || typeof artesaoId !== "string") {
@@ -111,11 +105,29 @@ export const criarConversa = async (
         );
 
         if (!conversa) {
-            conversa = await MensagemModel.criarConversa(
-                request.usuario.id,
-                artesaoId,
-                assunto?.trim(),
-            );
+            try {
+                conversa = await MensagemModel.criarConversa(
+                    request.usuario.id,
+                    artesaoId,
+                    assunto?.trim(),
+                );
+            } catch (erroCriacao: unknown) {
+                const codigoErro =
+                    typeof erroCriacao === "object" &&
+                    erroCriacao !== null &&
+                    "code" in erroCriacao
+                        ? String((erroCriacao as { code?: unknown }).code)
+                        : "";
+
+                if (codigoErro !== "ER_DUP_ENTRY") {
+                    throw erroCriacao;
+                }
+
+                conversa = await MensagemModel.buscarConversa(
+                    request.usuario.id,
+                    artesaoId,
+                );
+            }
         }
 
         return reply.code(200).send(conversa);

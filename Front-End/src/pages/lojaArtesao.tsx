@@ -254,14 +254,6 @@ function LojaArtesao() {
             return;
         }
 
-        if (isArtisan || isAdmin) {
-            mostrarNotificacao(
-                'Apenas clientes podem iniciar uma conversa com a loja.',
-                'aviso'
-            );
-            return;
-        }
-
         const artesaoId = String(lojaArtesaoAtual.id);
 
         if (!artesaoId || artesaoId === '0' || artesaoId === user?.id) {

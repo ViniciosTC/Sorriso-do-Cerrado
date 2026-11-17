@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authContext';
@@ -46,6 +46,13 @@ function Mensagens() {
     const [enviando, setEnviando] = useState(false);
     const [erro, setErro] = useState('');
 
+    const conversaInicialRef = useRef(Number(searchParams.get('conversa')));
+    const conversaAtivaRef = useRef<number | null>(conversaAtiva);
+
+    useEffect(() => {
+        conversaAtivaRef.current = conversaAtiva;
+    }, [conversaAtiva]);
+
     const buscarConversas = useCallback(async () => {
         try {
             const { data } = await axios.get<Conversa[]>(
@@ -55,10 +62,11 @@ function Mensagens() {
 
             setConversas(data);
 
-            const idUrl = Number(searchParams.get('conversa'));
+            const idUrl = conversaInicialRef.current;
             if (idUrl && data.some((item) => item.id === idUrl)) {
                 setConversaAtiva(idUrl);
-            } else if (!conversaAtiva && data.length > 0) {
+                conversaInicialRef.current = 0;
+            } else if (!conversaAtivaRef.current && data.length > 0) {
                 setConversaAtiva(data[0].id);
             }
         } catch (error) {
@@ -67,7 +75,7 @@ function Mensagens() {
         } finally {
             setCarregando(false);
         }
-    }, [searchParams, conversaAtiva]);
+    }, []);
 
     const buscarMensagens = useCallback(async (id: number) => {
         try {
@@ -80,16 +88,22 @@ function Mensagens() {
 
             setMensagens(data.mensagens);
 
-            await axios.patch(
-                `${API_URL}/mensagens/conversas/${id}/lidas`,
-                {},
-                { withCredentials: true }
+            const possuiNaoLidas = data.mensagens.some(
+                (msg) => msg.remetenteId !== user?.id && !msg.lida
             );
+
+            if (possuiNaoLidas) {
+                await axios.patch(
+                    `${API_URL}/mensagens/conversas/${id}/lidas`,
+                    {},
+                    { withCredentials: true }
+                );
+            }
         } catch (error) {
             console.error('Erro ao buscar mensagens:', error);
             setErro('Não foi possível carregar as mensagens.');
         }
-    }, []);
+    }, [user?.id]);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -217,7 +231,7 @@ function Mensagens() {
                                     <button
                                         type="button"
                                         className={styles.itemMenu}
-                                        onClick={() => navigate('/perfil')}
+                                        onClick={() => navigate('/perfil?aba=visao-geral')}
                                     >
                                         Visão Geral
                                     </button>
@@ -233,7 +247,7 @@ function Mensagens() {
                                     <button
                                         type="button"
                                         className={styles.itemMenu}
-                                        onClick={() => navigate('/editar-dados')}
+                                        onClick={() => navigate('/perfil?aba=editar-dados')}
                                     >
                                         Editar dados
                                     </button>
@@ -241,7 +255,7 @@ function Mensagens() {
                                     <button
                                         type="button"
                                         className={styles.itemMenu}
-                                        onClick={() => navigate('/mudar-senha')}
+                                        onClick={() => navigate('/perfil?aba=alterar-senha')}
                                     >
                                         Alterar senha
                                     </button>

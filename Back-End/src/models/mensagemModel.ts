@@ -10,18 +10,25 @@ import {
 } from "drizzle-orm";
 
 import { db } from "../database/db.js";
-import { conversas, mensagens, user } from "../database/schema.js";
+import { conversas, mensagens } from "../database/schema.js";
+import ArtesaoPerfilModel from "./artesaoPerfilModel.js";
 
 const MensagemModel = {
-    // Busca uma conversa existente entre cliente e artesão
+    // Busca uma conversa existente entre dois usuários (em qualquer direção)
     buscarConversa: async (clienteId: string, artesaoId: string) => {
         const resultado = await db
             .select()
             .from(conversas)
             .where(
-                and(
-                    eq(conversas.clienteId, clienteId),
-                    eq(conversas.artesaoId, artesaoId),
+                or(
+                    and(
+                        eq(conversas.clienteId, clienteId),
+                        eq(conversas.artesaoId, artesaoId),
+                    ),
+                    and(
+                        eq(conversas.clienteId, artesaoId),
+                        eq(conversas.artesaoId, clienteId),
+                    ),
                 ),
             );
 
@@ -105,7 +112,24 @@ const MensagemModel = {
             .orderBy(desc(conversas.atualizadoEm));
 
         const resultado = await consulta;
-        return resultado;
+        if (resultado.length === 0) return resultado;
+
+        const idsParticipantes = resultado.flatMap((conversa) => [
+            conversa.clienteId,
+            conversa.artesaoId,
+        ]);
+        const nomesPublicos =
+            await ArtesaoPerfilModel.buscarNomesPublicosPorUsuarios(
+                idsParticipantes,
+            );
+
+        return resultado.map((conversa) => ({
+            ...conversa,
+            clienteNome:
+                nomesPublicos.get(conversa.clienteId) ?? conversa.clienteNome,
+            artesaoNome:
+                nomesPublicos.get(conversa.artesaoId) ?? conversa.artesaoNome,
+        }));
     },
 
 
