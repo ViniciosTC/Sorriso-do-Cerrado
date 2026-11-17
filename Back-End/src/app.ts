@@ -8,7 +8,6 @@ import { fromNodeHeaders } from "better-auth/node";
 import { migrate } from "drizzle-orm/mysql2/migrator";
 
 import produtosRoutes from "./routes/produtos.js";
-import artesaosRoutes from "./routes/artesaos.js";
 import usuariosRoutes from "./routes/usuarios.js";
 import vendasRoutes from "./routes/vendas.js";
 import uploadRoutes from "./routes/upload.js";
@@ -103,7 +102,6 @@ app.route({
 });
 
 app.register(produtosRoutes, { prefix: "/produtos" });
-app.register(artesaosRoutes, { prefix: "/artesaos" });
 app.register(usuariosRoutes, { prefix: "/usuarios" });
 app.register(vendasRoutes, { prefix: "/vendas" });
 app.register(uploadRoutes, { prefix: "/upload" });

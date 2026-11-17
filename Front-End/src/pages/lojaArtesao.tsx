@@ -1,93 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import CartaoProduto from '../componentes/cards';
 import { useNotificacao } from '../context/notificacaoContext';
-import {
-    OPCOES_ORDEM_PRODUTOS,
-    useBuscaProdutos,
-    type Ordem,
-} from '../hooks/useBuscaProdutos';
 
 import styles from './lojaArtesao.module.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-interface ArtesaoApi {
-    id: string;
+interface Produto {
+    id: number;
     nome: string;
-    localizacao: string;
-    especialidade: string;
-    descricao: string;
+    preco: string | number;
+    imagemURL?: string;
+    lojaArtesaoId?: number;
 }
 
-const iniciais = (nome: string) =>
-    nome
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((parte) => parte[0].toUpperCase())
-        .join('');
+interface LojaArtesaoInfo {
+    id: number;
+    nome: string;
+    iniciais: string;
+    avatar: string | null;
+    bannerImage: string | null;
+    localizacao: string;
+    categoria: string;
+    avaliacao: string;
+    descricao: string;
+    sobre: string;
+    envio: string;
+    prazoProducao: string;
+    pagamento: string;
+}
+
+const lojasArtesaos: LojaArtesaoInfo[] = [];
+
+const produtosLoja: Produto[] = [];
 
 function LojaArtesao() {
     const { id } = useParams<{ id: string }>();
     const { mostrarNotificacao } = useNotificacao();
-    const { filtros, produtos, atualizarFiltro } = useBuscaProdutos(id);
 
     const [abaAtiva, setAbaAtiva] = useState<'produtos' | 'sobre' | 'avaliacoes'>('produtos');
+    const [ordenacao, setOrdenacao] = useState('mais_vendidos');
     const [seguindo, setSeguindo] = useState(false);
-    const [artesao, setArtesao] = useState<ArtesaoApi | null>(null);
-    const [carregando, setCarregando] = useState(true);
+
+    const lojaArtesaoAtual =
+        lojasArtesaos.find((item) => item.id === Number(id)) || lojasArtesaos[0];
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
 
-    useEffect(() => {
-        if (!id) {
-            setCarregando(false);
-            return;
-        }
-
-        let ativo = true;
-        setCarregando(true);
-        setArtesao(null);
-
-        axios
-            .get<ArtesaoApi>(`${API_URL}/artesaos/${encodeURIComponent(id)}`)
-            .then(({ data }) => {
-                if (ativo) setArtesao(data);
-            })
-            .catch(() => undefined)
-            .finally(() => {
-                if (ativo) setCarregando(false);
-            });
-
-        return () => {
-            ativo = false;
-        };
-    }, [id]);
-
-    if (!artesao) {
+    if (!lojaArtesaoAtual) {
         return (
             <div className={styles.paginaLojaArtesao}>
                 <BarraNavegacao />
                 <main className={styles.mainContainer}>
                     <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-                        <h2>{carregando ? 'Carregando loja...' : 'Artesão ou loja não encontrada'}</h2>
-                        {!carregando && (
-                            <p
-                                style={{
-                                    marginTop: '1rem',
-                                    color: 'var(--theme-text-secondary)',
-                                }}
-                            >
-                                <Link to="/artesaos">Ver todos os artesãos</Link>
-                            </p>
-                        )}
+                        <h2>Artesão ou loja não encontrada</h2>
+                        <p
+                            style={{
+                                marginTop: '1rem',
+                                color: 'var(--theme-text-secondary)',
+                            }}
+                        >
+                            Nenhum artesão cadastrado no momento.
+                        </p>
                     </div>
                 </main>
                 <Rodape />
@@ -95,15 +73,18 @@ function LojaArtesao() {
         );
     }
 
-    const lojaArtesaoAtual = {
-        nome: artesao.nome,
-        iniciais: iniciais(artesao.nome),
-        avatar: null as string | null,
-        bannerImage: null as string | null,
-        localizacao: artesao.localizacao,
-        categoria: artesao.especialidade,
-        descricao: artesao.descricao,
-    };
+    const produtosOrdenados = [...produtosLoja].sort((a, b) => {
+        const precoA = parseFloat(String(a.preco).replace(',', '.')) || 0;
+        const precoB = parseFloat(String(b.preco).replace(',', '.')) || 0;
+
+        if (ordenacao === 'menor_preco') {
+            return precoA - precoB;
+        }
+        if (ordenacao === 'maior_preco') {
+            return precoB - precoA;
+        }
+        return 0;
+    });
 
     function handleSeguirLoja() {
         setSeguindo((estadoAnterior) => !estadoAnterior);
@@ -168,6 +149,10 @@ function LojaArtesao() {
                                     {lojaArtesaoAtual.localizacao}
                                 </span>
 
+                                <span className={styles.itemMetadado}>
+                                    <span className={styles.estrela}>★</span>
+                                    {lojaArtesaoAtual.avaliacao} de avaliação
+                                </span>
 
                                 <span className={styles.itemMetadado}>
                                     {lojaArtesaoAtual.categoria}
@@ -247,15 +232,13 @@ function LojaArtesao() {
                                     <label htmlFor="ordenarPor">Ordenar por</label>
                                     <select
                                         id="ordenarPor"
-                                        value={filtros.ordem}
-                                        onChange={(e) => atualizarFiltro('ordem', e.target.value as Ordem)}
+                                        value={ordenacao}
+                                        onChange={(e) => setOrdenacao(e.target.value)}
                                         className={styles.selectOrdenacao}
                                     >
-                                        {OPCOES_ORDEM_PRODUTOS.map(({ valor, rotulo }) => (
-                                            <option key={valor} value={valor}>
-                                                {rotulo}
-                                            </option>
-                                        ))}
+                                        <option value="mais_vendidos">Mais vendidos</option>
+                                        <option value="menor_preco">Menor preço</option>
+                                        <option value="maior_preco">Maior preço</option>
                                     </select>
                                 </div>
                             )}
@@ -264,10 +247,7 @@ function LojaArtesao() {
                         {/* Conteúdo da Aba Selecionada */}
                         {abaAtiva === 'produtos' && (
                             <div className={styles.gradeProdutos}>
-                                {produtos.length === 0 && (
-                                    <p>Esta loja ainda não tem produtos.</p>
-                                )}
-                                {produtos.map((produto) => (
+                                {produtosOrdenados.map((produto) => (
                                     <CartaoProduto
                                         key={produto.id}
                                         product={produto}
@@ -280,13 +260,13 @@ function LojaArtesao() {
                         {abaAtiva === 'sobre' && (
                             <div className={styles.cartaoSecundario}>
                                 <h3>Sobre {lojaArtesaoAtual.nome}</h3>
-                                <p>{lojaArtesaoAtual.descricao}</p>
+                                <p>{lojaArtesaoAtual.sobre}</p>
                             </div>
                         )}
 
                         {abaAtiva === 'avaliacoes' && (
                             <div className={styles.cartaoSecundario}>
-                                <h3>Avaliações da loja</h3>
+                                <h3>Avaliações da loja ({lojaArtesaoAtual.avaliacao} ★)</h3>
                                 <p>As avaliações detalhadas dos clientes estarão disponíveis em breve.</p>
                             </div>
                         )}
@@ -299,17 +279,17 @@ function LojaArtesao() {
 
                             <div className={styles.blocoInfo}>
                                 <strong>Envio</strong>
-                                <p>Combinado diretamente com a artesã após a compra.</p>
+                                <p>{lojaArtesaoAtual.envio}</p>
                             </div>
 
                             <div className={styles.blocoInfo}>
                                 <strong>Prazo de produção</strong>
-                                <p>Informado pela artesã após a compra.</p>
+                                <p>{lojaArtesaoAtual.prazoProducao}</p>
                             </div>
 
                             <div className={styles.blocoInfo}>
                                 <strong>Pagamento</strong>
-                                <p>PIX, direto pelo site.</p>
+                                <p>{lojaArtesaoAtual.pagamento}</p>
                             </div>
                         </div>
 

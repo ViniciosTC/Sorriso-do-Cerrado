@@ -1,38 +1,36 @@
 import React from 'react';
-import type { Filtros } from '../hooks/useBusca';
+import type { Filtros, Ordem } from '../hooks/useBuscaProdutos';
 import styles from './painelFiltros.module.css';
 
-interface OpcaoOrdem<O extends string> {
-  valor: O;
-  rotulo: string;
-}
+const OPCOES_ORDEM: { valor: Ordem; rotulo: string }[] = [
+  { valor: 'recentes', rotulo: 'Adicionados recentemente' },
+  { valor: 'antigos', rotulo: 'Mais antigos' },
+  { valor: 'maior_preco', rotulo: 'Maior preço' },
+  { valor: 'menor_preco', rotulo: 'Menor preço' },
+];
 
-interface PainelFiltrosProps<O extends string> {
-  filtros: Filtros<O>;
-  opcoesOrdem: OpcaoOrdem<O>[];
-  rotuloPreco?: string;
-  onChange: <K extends keyof Filtros<O>>(chave: K, valor: Filtros<O>[K]) => void;
+interface PainelFiltrosProps {
+  filtros: Filtros;
+  onChange: <K extends keyof Filtros>(chave: K, valor: Filtros[K]) => void;
   onLimpar: () => void;
   temFiltrosAtivos: boolean;
 }
 
-function PainelFiltros<O extends string>({
+function PainelFiltros({
   filtros,
-  opcoesOrdem,
-  rotuloPreco = 'Preço (R$)',
   onChange,
   onLimpar,
   temFiltrosAtivos,
-}: PainelFiltrosProps<O>) {
+}: PainelFiltrosProps) {
   return (
     <div className={styles.painel}>
       <label className={styles.grupo}>
         <span className={styles.rotulo}>Ordenar por</span>
         <select
           value={filtros.ordem}
-          onChange={(event) => onChange('ordem', event.target.value as O)}
+          onChange={(event) => onChange('ordem', event.target.value as Ordem)}
         >
-          {opcoesOrdem.map(({ valor, rotulo }) => (
+          {OPCOES_ORDEM.map(({ valor, rotulo }) => (
             <option key={valor} value={valor}>
               {rotulo}
             </option>
@@ -41,7 +39,7 @@ function PainelFiltros<O extends string>({
       </label>
 
       <fieldset className={styles.grupo}>
-        <legend className={styles.rotulo}>{rotuloPreco}</legend>
+        <legend className={styles.rotulo}>Preço (R$)</legend>
         <div className={styles.faixa}>
           <input
             type="number"

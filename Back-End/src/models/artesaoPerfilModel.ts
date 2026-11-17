@@ -4,7 +4,7 @@ import {
   createHash,
   randomBytes,
 } from "node:crypto";
-import { and, eq, isNull, type SQL } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../database/db.js";
 import { artesaoPerfis, user } from "../database/schema.js";
 
@@ -144,48 +144,6 @@ const descriptografar = (conteudo: string): DadosCadastroArtesaoLocal => {
   return dados;
 };
 
-export interface ArtesaoPublico {
-  id: string;
-  nome: string;
-  localizacao: string;
-  especialidade: string;
-  descricao: string;
-  criadoEm: Date;
-}
-
-const consultarPerfisPublicos = (...condicoes: SQL[]) =>
-  db
-    .select({
-      id: artesaoPerfis.usuarioId,
-      dadosCriptografados: artesaoPerfis.dadosCriptografados,
-      criadoEm: artesaoPerfis.criadoEm,
-    })
-    .from(artesaoPerfis)
-    .innerJoin(user, eq(artesaoPerfis.usuarioId, user.id))
-    .where(and(eq(user.isActive, true), isNull(user.deletedAt), ...condicoes));
-
-const paraPublico = ({
-  id,
-  dadosCriptografados,
-  criadoEm,
-}: {
-  id: string;
-  dadosCriptografados: string;
-  criadoEm: Date;
-}): ArtesaoPublico => {
-  const { dadosPessoais, trabalho } = descriptografar(dadosCriptografados);
-  const { cidade, estado } = dadosPessoais.endereco;
-
-  return {
-    id,
-    nome: trabalho.nomePublico,
-    localizacao: `${cidade} - ${estado}`,
-    especialidade: trabalho.artesanato,
-    descricao: trabalho.apresentacao,
-    criadoEm,
-  };
-};
-
 const ArtesaoPerfilModel = {
   concluirCadastro: async (
     usuarioId: string,
@@ -211,18 +169,6 @@ const ArtesaoPerfilModel = {
         throw new Error("Somente contas de usuário podem virar artesãs");
       }
     });
-  },
-
-  listarPublicos: async (): Promise<ArtesaoPublico[]> => {
-    const perfis = await consultarPerfisPublicos();
-    return perfis.map(paraPublico);
-  },
-
-  buscarPublico: async (usuarioId: string): Promise<ArtesaoPublico | null> => {
-    const perfis = await consultarPerfisPublicos(
-      eq(artesaoPerfis.usuarioId, usuarioId),
-    );
-    return perfis[0] ? paraPublico(perfis[0]) : null;
   },
 
   buscarPorUsuario: async (usuarioId: string) => {
