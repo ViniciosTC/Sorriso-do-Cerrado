@@ -1,36 +1,38 @@
 import React from 'react';
-import type { Filtros, Ordem } from '../hooks/useBuscaProdutos';
+import type { Filtros } from '../hooks/useBusca';
 import styles from './painelFiltros.module.css';
 
-const OPCOES_ORDEM: { valor: Ordem; rotulo: string }[] = [
-  { valor: 'recentes', rotulo: 'Adicionados recentemente' },
-  { valor: 'antigos', rotulo: 'Mais antigos' },
-  { valor: 'maior_preco', rotulo: 'Maior preço' },
-  { valor: 'menor_preco', rotulo: 'Menor preço' },
-];
+interface OpcaoOrdem<O extends string> {
+  valor: O;
+  rotulo: string;
+}
 
-interface PainelFiltrosProps {
-  filtros: Filtros;
-  onChange: <K extends keyof Filtros>(chave: K, valor: Filtros[K]) => void;
+interface PainelFiltrosProps<O extends string> {
+  filtros: Filtros<O>;
+  opcoesOrdem: OpcaoOrdem<O>[];
+  rotuloPreco?: string;
+  onChange: <K extends keyof Filtros<O>>(chave: K, valor: Filtros<O>[K]) => void;
   onLimpar: () => void;
   temFiltrosAtivos: boolean;
 }
 
-function PainelFiltros({
+function PainelFiltros<O extends string>({
   filtros,
+  opcoesOrdem,
+  rotuloPreco = 'Preço (R$)',
   onChange,
   onLimpar,
   temFiltrosAtivos,
-}: PainelFiltrosProps) {
+}: PainelFiltrosProps<O>) {
   return (
     <div className={styles.painel}>
       <label className={styles.grupo}>
         <span className={styles.rotulo}>Ordenar por</span>
         <select
           value={filtros.ordem}
-          onChange={(event) => onChange('ordem', event.target.value as Ordem)}
+          onChange={(event) => onChange('ordem', event.target.value as O)}
         >
-          {OPCOES_ORDEM.map(({ valor, rotulo }) => (
+          {opcoesOrdem.map(({ valor, rotulo }) => (
             <option key={valor} value={valor}>
               {rotulo}
             </option>
@@ -39,7 +41,7 @@ function PainelFiltros({
       </label>
 
       <fieldset className={styles.grupo}>
-        <legend className={styles.rotulo}>Preço (R$)</legend>
+        <legend className={styles.rotulo}>{rotuloPreco}</legend>
         <div className={styles.faixa}>
           <input
             type="number"

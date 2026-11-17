@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
+import PainelFiltros from '../componentes/painelFiltros';
+import {
+  OPCOES_ORDEM_ARTESAOS,
+  useBuscaArtesaos,
+} from '../hooks/useBuscaArtesaos';
 
 import styles from './artesaos.module.css';
 
+const TODAS = 'Todas';
+
 const categorias = [
-    'Todas',
+    TODAS,
     'Moda e acessórios',
     'Joias e bijuterias',
     'Crochê e peças artesanais',
@@ -19,41 +26,30 @@ const categorias = [
     'Presentes e lembranças',
 ];
 
-export interface Artesao {
-    id: number;
-    nome: string;
-    iniciais: string;
-    avatar: string | null;
-    bannerImage: string | null;
-    localizacao: string;
-    categoria: string;
-    avaliacao: string;
-    descricao: string;
-}
-
-export const listaArtesaos: Artesao[] = [];
+const iniciais = (nome: string) =>
+    nome
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((parte) => parte[0].toUpperCase())
+        .join('');
 
 function Artesaos() {
-    const [termoBusca, setTermoBusca] = useState('');
-    const [categoriaSelecionada, setCategoriaSelecionada] = useState('Todas');
+    const {
+        filtros,
+        artesaos,
+        carregando,
+        erro,
+        atualizarFiltro,
+        limparFiltros,
+        temFiltrosAtivos,
+    } = useBuscaArtesaos();
+
+    const categoriaSelecionada = filtros.categorias[0] ?? TODAS;
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
-
-    const artesaosFiltrados = listaArtesaos.filter((artesao) => {
-        const correspondeCategoria =
-            categoriaSelecionada === 'Todas' ||
-            artesao.categoria === categoriaSelecionada;
-
-        const termo = termoBusca.toLowerCase();
-        const correspondeBusca =
-            artesao.nome.toLowerCase().includes(termo) ||
-            artesao.localizacao.toLowerCase().includes(termo) ||
-            artesao.categoria.toLowerCase().includes(termo);
-
-        return correspondeCategoria && correspondeBusca;
-    });
 
     function handleBuscar(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -75,14 +71,14 @@ function Artesaos() {
                     </p>
                 </section>
 
-                {/* Busca e Filtro por Categoria */}
+                {/* Busca, categoria e filtros */}
                 <section className={styles.buscaSecao}>
                     <form className={styles.campoBusca} onSubmit={handleBuscar}>
                         <input
                             type="text"
                             placeholder="Buscar artesão por nome, cidade ou especialidade..."
-                            value={termoBusca}
-                            onChange={(event) => setTermoBusca(event.target.value)}
+                            value={filtros.busca}
+                            onChange={(event) => atualizarFiltro('busca', event.target.value)}
                         />
                         <button type="submit">Buscar</button>
                     </form>
@@ -97,47 +93,61 @@ function Artesaos() {
                                         ? styles.categoriaAtiva
                                         : styles.categoria
                                 }
-                                onClick={() => setCategoriaSelecionada(categoria)}
+                                onClick={() =>
+                                    atualizarFiltro(
+                                        'categorias',
+                                        categoria === TODAS ? [] : [categoria]
+                                    )
+                                }
                             >
                                 {categoria}
                             </button>
                         ))}
                     </div>
+
+                    <PainelFiltros
+                        filtros={filtros}
+                        opcoesOrdem={OPCOES_ORDEM_ARTESAOS}
+                        rotuloPreco="Preço dos produtos (R$)"
+                        onChange={atualizarFiltro}
+                        onLimpar={limparFiltros}
+                        temFiltrosAtivos={temFiltrosAtivos}
+                    />
                 </section>
 
-                {/* Grade de todos os artesãos */}
+                {/* Grade de artesãos */}
                 <section className={styles.secaoListagem}>
-                    {artesaosFiltrados.length === 0 ? (
+                    {carregando ? (
+                        <div className={styles.mensagemVazia}>
+                            <p>Carregando artesãos...</p>
+                        </div>
+                    ) : erro ? (
+                        <div className={styles.mensagemVazia}>
+                            <p>{erro}</p>
+                        </div>
+                    ) : artesaos.length === 0 ? (
                         <div className={styles.mensagemVazia}>
                             <p>Nenhum artesão encontrado para os filtros selecionados.</p>
                         </div>
                     ) : (
                         <div className={styles.gradeArtesaos}>
-                            {artesaosFiltrados.map((artesao) => (
+                            {artesaos.map((artesao) => (
                                 <Link
                                     to={`/loja-artesao/${artesao.id}`}
                                     className={styles.cartaoArtesao}
                                     key={artesao.id}
                                 >
-                                    <div className={styles.bannerArtesao}>
-                                        {artesao.bannerImage && (
-                                            <img src={artesao.bannerImage} alt={artesao.nome} />
-                                        )}
-                                    </div>
+                                    <div className={styles.bannerArtesao} />
 
                                     <div className={styles.conteudoArtesao}>
                                         <div className={styles.avatarArtesao}>
-                                            {artesao.avatar ? (
-                                                <img src={artesao.avatar} alt={artesao.nome} />
-                                            ) : (
-                                                <span>{artesao.iniciais}</span>
-                                            )}
+                                            <span>{iniciais(artesao.nome)}</span>
                                         </div>
 
                                         <h3>{artesao.nome}</h3>
 
                                         <p className={styles.localizacaoCategoriaArtesao}>
-                                            {artesao.localizacao} • {artesao.categoria}
+                                            {artesao.localizacao} • {artesao.especialidade}
                                         </p>
 
                                         <p className={styles.descricaoCurta}>
@@ -145,11 +155,6 @@ function Artesaos() {
                                         </p>
 
                                         <div className={styles.rodapeCartao}>
-                                            <div className={styles.avaliacaoArtesao}>
-                                                <span>★</span>
-                                                <p>{artesao.avaliacao} de avaliação</p>
-                                            </div>
-
                                             <span className={styles.verLoja}>
                                                 Visitar loja →
                                             </span>

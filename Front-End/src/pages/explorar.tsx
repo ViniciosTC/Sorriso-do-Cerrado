@@ -6,7 +6,10 @@ import BarraNavegacao from '../componentes/barraNavegacao';
 import Rodape from '../componentes/rodape';
 import CartaoProduto from '../componentes/cards';
 import PainelFiltros from '../componentes/painelFiltros';
-import { useBuscaProdutos } from '../hooks/useBuscaProdutos';
+import {
+  OPCOES_ORDEM_PRODUTOS,
+  useBuscaProdutos,
+} from '../hooks/useBuscaProdutos';
 import { useFavoritosIds } from '../hooks/useFavoritosIds';
 
 import styles from './explorar.module.css';
@@ -126,6 +129,7 @@ function Explorar() {
 
                     <PainelFiltros
                         filtros={filtros}
+                        opcoesOrdem={OPCOES_ORDEM_PRODUTOS}
                         onChange={atualizarFiltro}
                         onLimpar={limparFiltros}
                         temFiltrosAtivos={temFiltrosAtivos}

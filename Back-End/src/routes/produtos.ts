@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
+import { propriedadesBusca } from "../schemas/filtrosBusca.js";
 import {
   listarProdutos,
   listarProdutosParaGerenciamento,
@@ -18,10 +19,8 @@ const esquemaFiltros = {
   querystring: {
     type: "object",
     properties: {
-      busca: { type: "string", maxLength: 100 },
-      categoria: { type: "array", items: { type: "string" } },
-      precoMin: { type: "number", minimum: 0 },
-      precoMax: { type: "number", minimum: 0 },
+      ...propriedadesBusca,
+      artesaoId: { type: "string", maxLength: 36 },
       ordem: { type: "string", enum: ORDENS_PRODUTO },
     },
   },

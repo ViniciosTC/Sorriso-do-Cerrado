@@ -39,6 +39,7 @@ export interface FiltrosProduto {
   categoria?: string[];
   precoMin?: number;
   precoMax?: number;
+  artesaoId?: string;
   ordem?: OrdemProduto;
 }
 
@@ -50,7 +51,7 @@ const ORDENACOES: Record<OrdemProduto, SQL[]> = {
 };
 
 const montarCondicoes = (filtros: FiltrosProduto) => {
-  const { categoria, precoMin, precoMax } = filtros;
+  const { categoria, precoMin, precoMax, artesaoId } = filtros;
   const termo = filtros.busca?.trim();
   const contem = `%${termo}%`;
 
@@ -65,10 +66,20 @@ const montarCondicoes = (filtros: FiltrosProduto) => {
     categoria?.length ? inArray(produtos.categoria, categoria) : undefined,
     precoMin !== undefined ? gte(produtos.preco, String(precoMin)) : undefined,
     precoMax !== undefined ? lte(produtos.preco, String(precoMax)) : undefined,
+    artesaoId ? eq(produtos.usuarioId, artesaoId) : undefined,
   );
 };
 
 const ProdutoModel = {
+  idsDeArtesaosComProduto: async (filtros: FiltrosProduto): Promise<Set<string>> => {
+    const linhas = await db
+      .selectDistinct({ id: produtos.usuarioId })
+      .from(produtos)
+      .where(montarCondicoes(filtros));
+
+    return new Set(linhas.flatMap(({ id }) => (id ? [id] : [])));
+  },
+
   buscar: async (filtros: FiltrosProduto = {}) => {
     return await db
       .select({ ...getTableColumns(produtos), artesao: user.name })
