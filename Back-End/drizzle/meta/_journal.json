@@ -64,6 +64,20 @@
       "when": 1794949800000,
       "tag": "0008_produtos_criado_em",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1795036200000,
+      "tag": "0009_itens_venda_repasse",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1795122600000,
+      "tag": "0010_artesao_cadastros_subconta",
+      "breakpoints": true
     }
   ]
 }

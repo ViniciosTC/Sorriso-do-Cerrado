@@ -10,7 +10,9 @@ import {
   consultarSubcontaArtesao,
   obterComissaoArtesao,
   validarConfiguracaoAbacatePay,
+  splitHabilitado,
 } from "../services/abacatePayService.js";
+import { garantirSubconta } from "../services/subcontaArtesaoService.js";
 
 type CorpoCadastroArtesao = {
   usarEmailDaConta?: boolean;
@@ -331,6 +333,15 @@ export const cadastrarArtesao = async (
     };
 
     await ArtesaoPerfilModel.concluirCadastro(usuario.id, dados);
+
+    if (splitHabilitado()) {
+      await garantirSubconta(usuario.id).catch((error: unknown) =>
+        request.log.warn(
+          { err: error },
+          "Subconta da AbacatePay não criada no cadastro; será criada no primeiro uso",
+        ),
+      );
+    }
 
     return reply.code(201).send({
       message: "Cadastro concluído e dados de recebimento armazenados.",

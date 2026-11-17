@@ -19,7 +19,10 @@ import {
 } from "../controllers/artesaoController.js";
 import {
   atualizarDadosRecebimentoArtesao,
+  listarSaquesArtesao,
   obterDadosRecebimentoArtesao,
+  obterSaldoArtesao,
+  solicitarSaqueArtesao,
 } from "../controllers/artesaoRecebimentoController.js";
 import { autenticar, autorizar } from "../middleware/authMiddleware.js";
 
@@ -50,6 +53,13 @@ const usuariosRoutes: FastifyPluginAsync = async (app) => {
     "/artesao/recebimentos",
     { preHandler: [autenticar] },
     atualizarDadosRecebimentoArtesao,
+  );
+  app.get("/artesao/saldo", { preHandler: [autenticar] }, obterSaldoArtesao);
+  app.get("/artesao/saques", { preHandler: [autenticar] }, listarSaquesArtesao);
+  app.post<{ Body: { valor?: unknown } }>(
+    "/artesao/saques",
+    { preHandler: [autenticar] },
+    solicitarSaqueArtesao,
   );
   app.get("/artesao", { preHandler: [autenticar] }, obterCadastroArtesao);
   app.post<{ Body: Parameters<typeof cadastrarArtesao>[0]["body"] }>(

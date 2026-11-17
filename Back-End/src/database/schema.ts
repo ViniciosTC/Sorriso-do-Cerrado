@@ -105,6 +105,24 @@ export const itensVenda = mysqlTable("itens_venda", {
     .references(() => produtos.id, { onDelete: "cascade" }),
   quantidade: int("quantidade").notNull(),
   precoUnitario: decimal("preco_unitario", { precision: 10, scale: 2 }).notNull(),
+  artesaoId: varchar("id_artesao", { length: 36 }).references(() => user.id, {
+    onDelete: "set null",
+  }),
+  valorRepasse: decimal("valor_repasse", { precision: 10, scale: 2 })
+    .notNull()
+    .default("0"),
+});
+
+export const saquesArtesao = mysqlTable("saques_artesao", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  usuarioId: varchar("id_usuario", { length: 36 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  valor: decimal("valor", { precision: 10, scale: 2 }).notNull(),
+  taxa: decimal("taxa", { precision: 10, scale: 2 }).notNull(),
+  status: mysqlEnum("status", ["concluido", "falhou"]).notNull(),
+  transferenciaId: varchar("transferencia_id", { length: 100 }).notNull().unique(),
+  criadoEm: datetime("criado_em").notNull(),
 });
 
 export const favoritos = mysqlTable(
@@ -137,7 +155,7 @@ export const artesaoCadastros = mysqlTable("artesao_cadastros", {
   usuarioId: varchar("id_usuario", { length: 36 })
     .primaryKey()
     .references(() => user.id, { onDelete: "cascade" }),
-  dadosCriptografados: text("dados_criptografados").notNull(),
+  dadosCriptografados: text("dados_criptografados"),
   subcontaId: varchar("subconta_id", { length: 100 }).notNull().unique(),
   devMode: boolean("dev_mode").notNull(),
   criadoEm: datetime("criado_em").notNull(),
