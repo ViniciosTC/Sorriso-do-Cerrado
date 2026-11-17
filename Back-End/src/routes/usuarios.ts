@@ -16,6 +16,10 @@ import {
   cadastrarArtesao,
   obterConfiguracaoArtesao,
   obterCadastroArtesao,
+  obterMeuPerfilArtesao,
+  atualizarMeuPerfilArtesao,
+  listarArtesaosPublicos,
+  obterLojaArtesaoPublica,
 } from "../controllers/artesaoController.js";
 import {
   atualizarDadosRecebimentoArtesao,
@@ -36,6 +40,11 @@ const usuariosRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
+  app.get("/artesaos", listarArtesaosPublicos);
+  app.get<{ Params: { id: string } }>(
+    "/artesaos/:id",
+    obterLojaArtesaoPublica,
+  );
   app.get(
     "/artesao/configuracao",
     { preHandler: [autenticar] },
@@ -50,6 +59,16 @@ const usuariosRoutes: FastifyPluginAsync = async (app) => {
     "/artesao/recebimentos",
     { preHandler: [autenticar] },
     atualizarDadosRecebimentoArtesao,
+  );
+  app.get(
+    "/artesao/perfil",
+    { preHandler: [autenticar] },
+    obterMeuPerfilArtesao,
+  );
+  app.put<{ Body: Parameters<typeof atualizarMeuPerfilArtesao>[0]["body"] }>(
+    "/artesao/perfil",
+    { preHandler: [autenticar] },
+    atualizarMeuPerfilArtesao,
   );
   app.get("/artesao", { preHandler: [autenticar] }, obterCadastroArtesao);
   app.post<{ Body: Parameters<typeof cadastrarArtesao>[0]["body"] }>(
