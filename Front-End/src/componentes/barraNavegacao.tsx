@@ -188,13 +188,6 @@ function BarraNavegacao({
                   Perfil
                 </Link>
 
-                <Link
-                  to="/configuracoes"
-                  onClick={() => setMenuAberto(false)}
-                >
-                  Configurações
-                </Link>
-
                 {isAdmin && (
                   <Link
                     to="/painel-administrativo"

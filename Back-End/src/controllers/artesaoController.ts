@@ -1,4 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { eq } from "drizzle-orm";
+import { db } from "../database/db.js";
+import { produtos } from "../database/schema.js";
 import ArtesaoModel from "../models/artesaoModel.js";
 import ArtesaoPerfilModel, {
   type DadosCadastroArtesaoLocal,
@@ -30,6 +33,12 @@ type CorpoCadastroArtesao = {
     artesanato?: string;
     tecnicas?: string;
     materiais?: string;
+    categoriaPrincipal?: string;
+    logoURL?: string;
+    capaURL?: string;
+    prazoProducao?: string;
+    envio?: string;
+    formasPagamento?: string;
   };
   dadosFinanceiros?: {
     pix?: {
@@ -350,6 +359,195 @@ export const cadastrarArtesao = async (
       reply,
       500,
       "Não foi possível salvar o cadastro do artesão.",
+    );
+  }
+};
+
+export const obterMeuPerfilArtesao = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  if (!request.usuario) {
+    return respostaErro(reply, 401, "Não autenticado");
+  }
+
+  try {
+    const perfil = await ArtesaoPerfilModel.buscarPorUsuario(request.usuario.id);
+    return reply.send({ perfil });
+  } catch (error) {
+    request.log.error({ err: error }, "Erro ao consultar perfil do artesão");
+    return respostaErro(
+      reply,
+      500,
+      "Não foi possível consultar os dados da loja.",
+    );
+  }
+};
+
+export const atualizarMeuPerfilArtesao = async (
+  request: FastifyRequest<{ Body: CorpoCadastroArtesao }>,
+  reply: FastifyReply,
+) => {
+  if (!request.usuario) {
+    return respostaErro(reply, 401, "Não autenticado");
+  }
+
+  try {
+    const { dadosPessoais, trabalho, dadosFinanceiros } = request.body ?? {};
+    if (!dadosPessoais || !trabalho || !dadosFinanceiros) {
+      return respostaErro(
+        reply,
+        400,
+        "Preencha todos os dados obrigatórios da loja.",
+      );
+    }
+
+    const nomeCompleto = comoTexto(dadosPessoais.nomeCompleto);
+    const tipoPessoa = comoTexto(dadosPessoais.tipoPessoa);
+    const documento = comoTexto(dadosPessoais.documento).replace(/\D/g, "");
+    const telefone = comoTexto(dadosPessoais.telefone);
+    const emailProfissional = comoTexto(
+      (dadosPessoais as { emailProfissional?: string }).emailProfissional ??
+        request.body?.emailProfissional ??
+        request.usuario.email,
+    ).toLowerCase();
+
+    const endereco = dadosPessoais.endereco ?? {};
+    const cep = comoTexto(endereco.cep);
+    const logradouro = comoTexto(endereco.logradouro);
+    const numero = comoTexto(endereco.numero);
+    const bairro = comoTexto(endereco.bairro);
+    const cidade = comoTexto(endereco.cidade);
+    const estado = comoTexto(endereco.estado).toUpperCase();
+
+    if (
+      nomeCompleto.length < 3 ||
+      !["fisica", "juridica"].includes(tipoPessoa) ||
+      !validarDocumento(documento, tipoPessoa) ||
+      telefone.replace(/\D/g, "").length < 10 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailProfissional) ||
+      cep.replace(/\D/g, "").length !== 8 ||
+      !logradouro ||
+      !numero ||
+      !bairro ||
+      !cidade ||
+      !/^[A-Z]{2}$/.test(estado)
+    ) {
+      return respostaErro(reply, 400, "Revise os dados pessoais, contato e endereço.");
+    }
+
+    const nomePublico = comoTexto(trabalho.nomePublico);
+    const apresentacao = comoTexto(trabalho.apresentacao);
+    const artesanato = comoTexto(trabalho.artesanato);
+    const tecnicas = comoTexto(trabalho.tecnicas);
+    const materiais = comoTexto(trabalho.materiais);
+    const dadosRecebimento = validarDadosRecebimento(dadosFinanceiros);
+
+    if (
+      !nomePublico ||
+      !apresentacao ||
+      !artesanato ||
+      !tecnicas ||
+      !materiais ||
+      !dadosRecebimento
+    ) {
+      return respostaErro(
+        reply,
+        400,
+        "Revise as informações da loja e os dados de recebimento.",
+      );
+    }
+
+    const dados: DadosCadastroArtesaoLocal = {
+      dadosPessoais: {
+        nomeCompleto,
+        tipoPessoa: tipoPessoa as "fisica" | "juridica",
+        documento,
+        telefone,
+        emailProfissional,
+        endereco: {
+          cep,
+          logradouro,
+          numero,
+          complemento: comoTexto(endereco.complemento),
+          bairro,
+          cidade,
+          estado,
+        },
+      },
+      trabalho: {
+        nomePublico,
+        apresentacao,
+        artesanato,
+        tecnicas,
+        materiais,
+        categoriaPrincipal: comoTexto(trabalho.categoriaPrincipal),
+        logoURL: comoTexto(trabalho.logoURL),
+        capaURL: comoTexto(trabalho.capaURL),
+        prazoProducao: comoTexto(trabalho.prazoProducao),
+        envio: comoTexto(trabalho.envio),
+        formasPagamento: comoTexto(trabalho.formasPagamento),
+      },
+      dadosFinanceiros: dadosRecebimento,
+      termosVersao: "artesao-cadastro-v1",
+    };
+
+    const perfilAtualizado = await ArtesaoPerfilModel.salvarPerfil(
+      request.usuario.id,
+      dados,
+    );
+
+    return reply.send({
+      message: "Configurações da loja salvas com sucesso!",
+      perfil: perfilAtualizado,
+    });
+  } catch (error) {
+    request.log.error({ err: error }, "Erro ao atualizar perfil do artesão");
+    return respostaErro(
+      reply,
+      500,
+      "Não foi possível salvar as configurações da loja.",
+    );
+  }
+};
+
+export const listarArtesaosPublicos = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  try {
+    const artesaos = await ArtesaoPerfilModel.listarPublicos();
+    return reply.send(artesaos);
+  } catch (error) {
+    request.log.error({ err: error }, "Erro ao listar artesãos públicos");
+    return respostaErro(reply, 500, "Não foi possível listar os artesãos.");
+  }
+};
+
+export const obterLojaArtesaoPublica = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply,
+) => {
+  try {
+    const loja = await ArtesaoPerfilModel.buscarPublicoPorUsuario(
+      request.params.id,
+    );
+    if (!loja) {
+      return respostaErro(reply, 404, "Loja do artesão não encontrada.");
+    }
+
+    const produtosDaLoja = await db
+      .select()
+      .from(produtos)
+      .where(eq(produtos.usuarioId, request.params.id));
+
+    return reply.send({ loja, produtos: produtosDaLoja });
+  } catch (error) {
+    request.log.error({ err: error }, "Erro ao consultar loja pública");
+    return respostaErro(
+      reply,
+      500,
+      "Não foi possível carregar a loja do artesão.",
     );
   }
 };

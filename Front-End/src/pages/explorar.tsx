@@ -10,6 +10,8 @@ import { useAuth } from '../auth/authContext';
 
 import styles from './explorar.module.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface Produto {
     id: number;
     nome: string;
@@ -32,7 +34,7 @@ const categorias = [
 ];
 
 interface Artesao {
-    id: number;
+    id: string | number;
     nome: string;
     iniciais: string;
     avatar: string | null;
@@ -42,12 +44,11 @@ interface Artesao {
     avaliacao: string;
 }
 
-const artesãos: Artesao[] = [];
-
 function Explorar() {
     const [termoBusca, setTermoBusca] = useState('');
     const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<string[]>([]);
     const [produtosBanco, setProdutosBanco] = useState<Produto[]>([]);
+    const [artesaosBanco, setArtesaosBanco] = useState<Artesao[]>([]);
     const [favoritosIds, setFavoritosIds] = useState<number[]>([]);
 
     const { isAuthenticated } = useAuth();
@@ -55,17 +56,21 @@ function Explorar() {
     useEffect(() => {
         const carregarDados = async () => {
             try {
-                const resProdutos = await axios.get<Produto[]>('http://localhost:3000/produtos');
+                const [resProdutos, resArtesaos] = await Promise.all([
+                    axios.get<Produto[]>(`${API_URL}/produtos`),
+                    axios.get<Artesao[]>(`${API_URL}/usuarios/artesaos`),
+                ]);
                 setProdutosBanco(resProdutos.data);
+                setArtesaosBanco(resArtesaos.data);
 
                 if (isAuthenticated) {
-                    const resFavoritos = await axios.get<Produto[]>('http://localhost:3000/favoritos', {
+                    const resFavoritos = await axios.get<Produto[]>(`${API_URL}/favoritos`, {
                         withCredentials: true,
                     });
                     setFavoritosIds(resFavoritos.data.map((fav) => fav.id));
                 }
             } catch (error) {
-                console.error('Erro ao buscar produtos na tela explorar:', error);
+                console.error('Erro ao buscar dados na tela explorar:', error);
             }
         };
 
@@ -84,7 +89,7 @@ function Explorar() {
         );
     }
 
-    const artesaosFiltrados = artesãos.filter((artesao) => {
+    const artesaosFiltrados = artesaosBanco.filter((artesao) => {
         const correspondeBusca =
             artesao.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
             artesao.categoria.toLowerCase().includes(termoBusca.toLowerCase()) ||
@@ -162,6 +167,31 @@ function Explorar() {
                     </div>
                 </section>
 
+                {/* Produtos */}
+                {produtosFiltrados.length > 0 && (
+                    <section className={styles.secao}>
+                        <div className={styles.secaoCabecalho}>
+                            <div>
+                                <h2 className={styles.tituloSecao}>Produtos em destaque</h2>
+                            </div>
+
+                            <Link to="/produtos" className={styles.verTodos}>
+                                Ver catálogo →
+                            </Link>
+                        </div>
+
+                        <div className={styles.gradeProdutos}>
+                            {produtosFiltrados.map((produto) => (
+                                <CartaoProduto
+                                    key={produto.id}
+                                    product={produto}
+                                    favoritadoInicial={favoritosIds.includes(produto.id)}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* Artesãos */}
                 {artesaosFiltrados.length > 0 && (
                     <section className={styles.secao}>
@@ -209,31 +239,6 @@ function Explorar() {
                                         </div>
                                     </div>
                                 </Link>
-                            ))}
-                        </div>
-                    </section>
-                )}
-
-                {/* Produtos */}
-                {produtosFiltrados.length > 0 && (
-                    <section className={styles.secao}>
-                        <div className={styles.secaoCabecalho}>
-                            <div>
-                                <h2 className={styles.tituloSecao}>Produtos em destaque</h2>
-                            </div>
-
-                            <Link to="/produtos" className={styles.verTodos}>
-                                Ver catálogo →
-                            </Link>
-                        </div>
-
-                        <div className={styles.gradeProdutos}>
-                            {produtosFiltrados.map((produto) => (
-                                <CartaoProduto
-                                    key={produto.id}
-                                    product={produto}
-                                    favoritadoInicial={favoritosIds.includes(produto.id)}
-                                />
                             ))}
                         </div>
                     </section>

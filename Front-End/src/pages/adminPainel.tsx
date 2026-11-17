@@ -6,11 +6,12 @@ import Rodape from '../componentes/rodape';
 import { useAuth } from '../auth/authContext';
 import { useNotificacao } from '../context/notificacaoContext';
 import PedidosArtesao from './pedidosArtesao';
+import ConfiguracoesLojaArtesao from './configuracoesLojaArtesao';
 import styles from './adminPainel.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-type AbaPainel = 'resumo' | 'produtos' | 'pedidos';
+type AbaPainel = 'resumo' | 'produtos' | 'pedidos' | 'configuracoes-loja';
 
 interface Produto {
   id: number;
@@ -168,8 +169,12 @@ function AdminPainel() {
 
               <button
                 type="button"
-                className={styles.itemMenuDesabilitado}
-                disabled
+                className={
+                  abaAtiva === 'configuracoes-loja'
+                    ? styles.itemMenuAtivo
+                    : styles.itemMenu
+                }
+                onClick={() => setAbaAtiva('configuracoes-loja')}
               >
                 Configurações da loja
               </button>
@@ -329,6 +334,8 @@ function AdminPainel() {
             )}
 
             {abaAtiva === 'pedidos' && <PedidosArtesao />}
+
+            {abaAtiva === 'configuracoes-loja' && <ConfiguracoesLojaArtesao />}
           </section>
         </div>
       </main>

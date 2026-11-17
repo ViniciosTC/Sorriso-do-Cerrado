@@ -52,6 +52,12 @@ export interface DadosCadastroArtesaoLocal {
     artesanato: string;
     tecnicas: string;
     materiais: string;
+    categoriaPrincipal?: string;
+    logoURL?: string;
+    capaURL?: string;
+    prazoProducao?: string;
+    envio?: string;
+    formasPagamento?: string;
   };
   dadosFinanceiros: DadosRecebimento;
   termosVersao: string;
@@ -208,6 +214,116 @@ const ArtesaoPerfilModel = {
 
     return dadosFinanceiros;
   },
+
+  salvarPerfil: async (
+    usuarioId: string,
+    dados: DadosCadastroArtesaoLocal,
+  ) => {
+    const agora = new Date();
+    const dadosCriptografados = criptografar(dados);
+
+    const resultado = await db
+      .select()
+      .from(artesaoPerfis)
+      .where(eq(artesaoPerfis.usuarioId, usuarioId));
+
+    if (resultado[0]) {
+      await db
+        .update(artesaoPerfis)
+        .set({
+          dadosCriptografados,
+          atualizadoEm: agora,
+        })
+        .where(eq(artesaoPerfis.usuarioId, usuarioId));
+    } else {
+      await db.insert(artesaoPerfis).values({
+        usuarioId,
+        dadosCriptografados,
+        criadoEm: agora,
+        atualizadoEm: agora,
+      });
+    }
+
+    return dados;
+  },
+
+  listarPublicos: async () => {
+    const registros = await db
+      .select({
+        usuarioId: artesaoPerfis.usuarioId,
+        dadosCriptografados: artesaoPerfis.dadosCriptografados,
+      })
+      .from(artesaoPerfis)
+      .innerJoin(user, eq(artesaoPerfis.usuarioId, user.id))
+      .where(eq(user.isActive, true));
+
+    return registros.map((item) => {
+      const dados = descriptografar(item.dadosCriptografados);
+      return mapearLojaPublica(item.usuarioId, dados);
+    });
+  },
+
+  buscarPublicoPorUsuario: async (usuarioId: string) => {
+    const registros = await db
+      .select({
+        usuarioId: artesaoPerfis.usuarioId,
+        dadosCriptografados: artesaoPerfis.dadosCriptografados,
+      })
+      .from(artesaoPerfis)
+      .innerJoin(user, eq(artesaoPerfis.usuarioId, user.id))
+      .where(
+        and(eq(artesaoPerfis.usuarioId, usuarioId), eq(user.isActive, true)),
+      );
+
+    const registro = registros[0];
+    if (!registro) return null;
+
+    const dados = descriptografar(registro.dadosCriptografados);
+    return mapearLojaPublica(registro.usuarioId, dados);
+  },
+};
+
+const obterIniciais = (texto: string) => {
+  const partes = texto.trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return "SC";
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
+};
+
+const mapearLojaPublica = (
+  usuarioId: string,
+  dados: DadosCadastroArtesaoLocal,
+) => {
+  const nome = dados.trabalho.nomePublico || "Artesão";
+  const cidade = dados.dadosPessoais.endereco?.cidade || "";
+  const estado = dados.dadosPessoais.endereco?.estado || "";
+  const localizacao =
+    [cidade, estado].filter(Boolean).join(", ") || "Brasil";
+
+  return {
+    id: usuarioId,
+    nome,
+    iniciais: obterIniciais(nome),
+    avatar: dados.trabalho.logoURL || null,
+    bannerImage: dados.trabalho.capaURL || null,
+    localizacao,
+    categoria:
+      dados.trabalho.categoriaPrincipal ||
+      dados.trabalho.artesanato ||
+      "Artesanato",
+    avaliacao: "5,0",
+    descricao: dados.trabalho.apresentacao || "",
+    sobre: [
+      dados.trabalho.apresentacao,
+      dados.trabalho.tecnicas ? `Técnicas: ${dados.trabalho.tecnicas}` : "",
+      dados.trabalho.materiais ? `Materiais: ${dados.trabalho.materiais}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n"),
+    envio: dados.trabalho.envio || "Todo o Brasil",
+    prazoProducao: dados.trabalho.prazoProducao || "5 a 10 dias",
+    pagamento: dados.trabalho.formasPagamento || "Pix",
+  };
 };
 
 export default ArtesaoPerfilModel;
