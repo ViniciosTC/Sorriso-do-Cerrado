@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import axios from 'axios';
 import styles from './pedidosArtesao.module.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 type StatusPedido =
   | 'em_producao'
@@ -27,11 +30,30 @@ interface Pedido {
   telefone: string;
   itens: ItemPedido[];
   total: number;
+  repasse: number;
   previsao?: string;
   historico: AtualizacaoStatus[];
 }
 
-const pedidos: Pedido[] = [];
+interface PedidoApi {
+  codigo: string;
+  data: string;
+  status: 'confirmada' | 'cancelada';
+  cliente: string;
+  email: string | null;
+  telefone: string | null;
+  itens: ItemPedido[];
+  total: number;
+  repasse: number;
+}
+
+const paraPedido = (pedido: PedidoApi): Pedido => ({
+  ...pedido,
+  email: pedido.email ?? '',
+  telefone: pedido.telefone ?? '',
+  status: pedido.status === 'cancelada' ? 'cancelado' : 'em_producao',
+  historico: [],
+});
 
 const rotuloStatus: Record<StatusPedido, string> = {
   em_producao: 'Em produção',
@@ -76,6 +98,7 @@ function IlustracaoProduto({ pequena = false }: { pequena?: boolean }) {
 }
 
 function PedidosArtesao() {
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [busca, setBusca] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('todos');
   const [filtroPeriodo, setFiltroPeriodo] = useState('todos');
@@ -87,7 +110,7 @@ function PedidosArtesao() {
 
   const pedidosParaEntrega = useMemo(
     () => pedidos.filter((pedido) => pedido.status === 'pronto_entrega'),
-    [],
+    [pedidos],
   );
 
   const pedidosFiltrados = useMemo(() => {
@@ -124,7 +147,7 @@ function PedidosArtesao() {
       if (ordenacao === 'menor_valor') return pedidoA.total - pedidoB.total;
       return new Date(pedidoB.data).getTime() - new Date(pedidoA.data).getTime();
     });
-  }, [busca, filtroStatus, filtroPeriodo, ordenacao]);
+  }, [pedidos, busca, filtroStatus, filtroPeriodo, ordenacao]);
 
   const totalPaginas = Math.max(1, Math.ceil(pedidosFiltrados.length / porPagina));
   const pedidosDaPagina = pedidosFiltrados.slice(
@@ -132,6 +155,21 @@ function PedidosArtesao() {
     pagina * porPagina,
   );
   const entregaEmDestaque = pedidosParaEntrega[entregaAtual];
+
+  useEffect(() => {
+    let ativo = true;
+
+    axios
+      .get<PedidoApi[]>(`${API_URL}/vendas/artesao`, { withCredentials: true })
+      .then(({ data }) => {
+        if (ativo) setPedidos(data.map(paraPedido));
+      })
+      .catch((error) => console.error('Erro ao carregar pedidos:', error));
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   useEffect(() => {
     setPagina((paginaAtual) => Math.min(paginaAtual, totalPaginas));
@@ -454,6 +492,7 @@ function PedidosArtesao() {
                   <span>Data<strong>{formatarData(pedidoSelecionado.data)}</strong></span>
                   <span>Status<strong>{rotuloStatus[pedidoSelecionado.status]}</strong></span>
                   <span>Valor total<strong>{formatarMoeda(pedidoSelecionado.total)}</strong></span>
+                  <span>Você recebe<strong>{formatarMoeda(pedidoSelecionado.repasse)}</strong></span>
                 </div>
               </section>
 

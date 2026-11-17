@@ -1,0 +1,2 @@
+ALTER TABLE `produtos`
+  ADD COLUMN `criado_em` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP;

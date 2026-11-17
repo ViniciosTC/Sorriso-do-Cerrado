@@ -107,11 +107,34 @@ const ArtesaoModel = {
     if (!cadastro) return null;
 
     return {
-      dados: descriptografar(cadastro.dadosCriptografados),
+      dados: cadastro.dadosCriptografados
+        ? descriptografar(cadastro.dadosCriptografados)
+        : null,
       subcontaId: cadastro.subcontaId,
       devMode: cadastro.devMode,
       criadoEm: cadastro.criadoEm,
     };
+  },
+
+  salvarSubconta: async (
+    usuarioId: string,
+    subcontaId: string,
+    devMode: boolean,
+  ) => {
+    const agora = new Date();
+
+    await db
+      .insert(artesaoCadastros)
+      .values({
+        usuarioId,
+        subcontaId,
+        devMode,
+        criadoEm: agora,
+        atualizadoEm: agora,
+      })
+      .onDuplicateKeyUpdate({
+        set: { subcontaId, devMode, atualizadoEm: agora },
+      });
   },
 
   concluirCadastro: async (

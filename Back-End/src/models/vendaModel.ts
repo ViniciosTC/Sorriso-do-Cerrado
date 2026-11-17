@@ -1,6 +1,11 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "../database/db.js";
-import { eventosAbacatePay, vendas } from "../database/schema.js";
+import {
+  eventosAbacatePay,
+  itensVenda,
+  produtos,
+  vendas,
+} from "../database/schema.js";
 
 export interface Venda {
   id?: number;
@@ -11,6 +16,28 @@ export interface Venda {
   status?: "pendente" | "confirmada" | "cancelada" | null;
   pagamentoId?: string | null;
 }
+
+export interface ItemVendaNovo {
+  idProduto: number;
+  idArtesao: string | null;
+  quantidade: number;
+  precoUnitario: number;
+  valorRepasse: number;
+}
+
+export interface PedidoArtesao {
+  codigo: string;
+  data: Date | null;
+  status: "confirmada" | "cancelada";
+  cliente: string;
+  email: string | null;
+  telefone: string | null;
+  itens: { nome: string; quantidade: number; valor: number }[];
+  total: number;
+  repasse: number;
+}
+
+const arredondar = (valor: number) => Math.round(valor * 100) / 100;
 
 const VendaModel = {
   listarTodas: async (): Promise<Venda[]> => {
@@ -40,20 +67,87 @@ const VendaModel = {
     return resultado[0] ?? null;
   },
 
-  criar: async (venda: Venda): Promise<Venda> => {
-    const resultado = await db.insert(vendas).values({
-      nomeCliente: venda.nomeCliente,
-      emailCliente: venda.emailCliente,
-      telefoneCliente: venda.telefoneCliente,
-      total: venda.total != null ? String(venda.total) : undefined,
-      status: venda.status ?? "pendente",
-      pagamentoId: venda.pagamentoId,
-    });
+  listarPorArtesao: async (artesaoId: string): Promise<PedidoArtesao[]> => {
+    const linhas = await db
+      .select({
+        vendaId: vendas.id,
+        data: vendas.data,
+        status: vendas.status,
+        cliente: vendas.nomeCliente,
+        email: vendas.emailCliente,
+        telefone: vendas.telefoneCliente,
+        nomeProduto: produtos.nome,
+        quantidade: itensVenda.quantidade,
+        precoUnitario: itensVenda.precoUnitario,
+        repasse: itensVenda.valorRepasse,
+      })
+      .from(itensVenda)
+      .innerJoin(vendas, eq(itensVenda.idVenda, vendas.id))
+      .innerJoin(produtos, eq(itensVenda.idProduto, produtos.id))
+      .where(
+        and(
+          eq(itensVenda.artesaoId, artesaoId),
+          inArray(vendas.status, ["confirmada", "cancelada"]),
+        ),
+      )
+      .orderBy(desc(vendas.data), desc(vendas.id));
 
-    return {
-      id: Number(resultado[0].insertId),
-      ...venda,
-    };
+    const pedidos = new Map<number, PedidoArtesao>();
+    for (const linha of linhas) {
+      const pedido = pedidos.get(linha.vendaId) ?? {
+        codigo: String(linha.vendaId),
+        data: linha.data,
+        status: linha.status === "cancelada" ? "cancelada" : "confirmada",
+        cliente: linha.cliente,
+        email: linha.email,
+        telefone: linha.telefone,
+        itens: [],
+        total: 0,
+        repasse: 0,
+      };
+      const valor = Number(linha.precoUnitario);
+
+      pedido.itens.push({
+        nome: linha.nomeProduto,
+        quantidade: linha.quantidade,
+        valor,
+      });
+      pedido.total = arredondar(pedido.total + valor * linha.quantidade);
+      pedido.repasse = arredondar(pedido.repasse + Number(linha.repasse));
+      pedidos.set(linha.vendaId, pedido);
+    }
+
+    return [...pedidos.values()];
+  },
+
+  criar: async (venda: Venda, itens: ItemVendaNovo[] = []): Promise<Venda> => {
+    return db.transaction(async (transacao) => {
+      const resultado = await transacao.insert(vendas).values({
+        nomeCliente: venda.nomeCliente,
+        emailCliente: venda.emailCliente,
+        telefoneCliente: venda.telefoneCliente,
+        data: new Date(),
+        total: venda.total != null ? String(venda.total) : undefined,
+        status: venda.status ?? "pendente",
+        pagamentoId: venda.pagamentoId,
+      });
+      const id = Number(resultado[0].insertId);
+
+      if (itens.length > 0) {
+        await transacao.insert(itensVenda).values(
+          itens.map((item) => ({
+            idVenda: id,
+            idProduto: item.idProduto,
+            artesaoId: item.idArtesao,
+            quantidade: item.quantidade,
+            precoUnitario: String(item.precoUnitario),
+            valorRepasse: String(item.valorRepasse),
+          })),
+        );
+      }
+
+      return { id, ...venda };
+    });
   },
 
   atualizarStatus: async (

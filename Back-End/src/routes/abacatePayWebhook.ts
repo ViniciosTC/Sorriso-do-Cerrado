@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { FastifyPluginAsync } from "fastify";
+import SaqueModel, { type StatusSaque } from "../models/saqueModel.js";
 import VendaModel from "../models/vendaModel.js";
 import { obterModoAbacatePay } from "../services/abacatePayService.js";
 
@@ -16,7 +17,15 @@ type PayloadWebhook = {
       id?: unknown;
       status?: unknown;
     };
+    transfer?: {
+      externalId?: unknown;
+    };
   };
+};
+
+const STATUS_SAQUE_POR_EVENTO: Record<string, StatusSaque> = {
+  "transfer.completed": "concluido",
+  "transfer.failed": "falhou",
 };
 
 const compararSeguramente = (recebido: string, esperado: string) => {
@@ -51,6 +60,14 @@ const eventoDePagamento = (payload: PayloadWebhook) => {
   }
 
   return { pagamentoId: null, status: null };
+};
+
+const eventoDeSaque = (payload: PayloadWebhook) => {
+  const evento = typeof payload.event === "string" ? payload.event : "";
+  const saqueId = payload.data?.transfer?.externalId;
+  const status = STATUS_SAQUE_POR_EVENTO[evento];
+
+  return typeof saqueId === "string" && status ? { saqueId, status } : null;
 };
 
 const abacatePayWebhook: FastifyPluginAsync = async (app) => {
@@ -112,7 +129,10 @@ const abacatePayWebhook: FastifyPluginAsync = async (app) => {
     }
 
     const { pagamentoId, status } = eventoDePagamento(payload);
+    const saque = eventoDeSaque(payload);
     try {
+      if (saque) await SaqueModel.atualizarStatus(saque.saqueId, saque.status);
+
       const resultado = await VendaModel.registrarEventoAbacatePay(
         payload.id,
         payload.event,
