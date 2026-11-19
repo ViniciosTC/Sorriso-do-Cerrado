@@ -29,6 +29,113 @@ interface SubcontaFinanceira {
   devMode: boolean;
 }
 
+interface PedidoResumo {
+  codigo: string;
+  data: string;
+  status: 'confirmada' | 'cancelada';
+  cliente: string;
+  total: number;
+  repasse: number;
+}
+
+interface ConversaResumo {
+  id: number;
+  mensagensNaoLidas: number;
+}
+
+type PeriodoGrafico = '6m' | '30d';
+
+interface PontoGrafico {
+  chave: string;
+  rotulo: string;
+  total: number;
+  quantidade: number;
+}
+
+const gerarSerieVendas = (
+  pedidos: PedidoResumo[],
+  periodo: PeriodoGrafico
+): PontoGrafico[] => {
+  const agora = new Date();
+  const confirmados = pedidos.filter((p) => p.status !== 'cancelada');
+
+  if (periodo === '6m') {
+    const meses: PontoGrafico[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const ref = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+      const chave = `${ref.getFullYear()}-${ref.getMonth()}`;
+      const rotulo = ref
+        .toLocaleDateString('pt-BR', { month: 'short' })
+        .replace('.', '');
+      meses.push({ chave, rotulo, total: 0, quantidade: 0 });
+    }
+
+    for (const pedido of confirmados) {
+      const d = new Date(pedido.data);
+      if (Number.isNaN(d.getTime())) continue;
+      const alvo = meses.find((m) => m.chave === `${d.getFullYear()}-${d.getMonth()}`);
+      if (alvo) {
+        alvo.total += Number(pedido.total || 0);
+        alvo.quantidade += 1;
+      }
+    }
+    return meses;
+  }
+
+  const hojeFim = new Date(
+    agora.getFullYear(),
+    agora.getMonth(),
+    agora.getDate(),
+    23,
+    59,
+    59,
+    999
+  );
+  const blocos: { inicio: number; fim: number; ponto: PontoGrafico }[] = [];
+
+  for (let b = 5; b >= 0; b--) {
+    const fimDia = new Date(hojeFim);
+    fimDia.setDate(hojeFim.getDate() - b * 5);
+    const inicioDia = new Date(fimDia);
+    inicioDia.setDate(fimDia.getDate() - 4);
+    inicioDia.setHours(0, 0, 0, 0);
+
+    const rotulo = fimDia.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+    });
+
+    blocos.push({
+      inicio: inicioDia.getTime(),
+      fim: fimDia.getTime(),
+      ponto: {
+        chave: `bloco-${b}`,
+        rotulo,
+        total: 0,
+        quantidade: 0,
+      },
+    });
+  }
+
+  for (const pedido of confirmados) {
+    const ts = new Date(pedido.data).getTime();
+    if (Number.isNaN(ts)) continue;
+    const bloco = blocos.find((item) => ts >= item.inicio && ts <= item.fim);
+    if (bloco) {
+      bloco.ponto.total += Number(pedido.total || 0);
+      bloco.ponto.quantidade += 1;
+    }
+  }
+
+  return blocos.map((b) => b.ponto);
+};
+
+const formatarMoeda = (valor: number) =>
+  new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(valor);
+
 function AdminPainel() {
   const location = useLocation();
 
@@ -50,6 +157,11 @@ function AdminPainel() {
 
   const [abaAtiva, setAbaAtiva] = useState<AbaPainel>(abaInicial);
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [pedidos, setPedidos] = useState<PedidoResumo[]>([]);
+  const [carregandoPedidos, setCarregandoPedidos] = useState(true);
+  const [mensagensNaoLidas, setMensagensNaoLidas] = useState(0);
+  const [periodoGrafico, setPeriodoGrafico] = useState<PeriodoGrafico>('6m');
+  const [barraAtiva, setBarraAtiva] = useState<string | null>(null);
   const [subconta, setSubconta] = useState<SubcontaFinanceira | null>(null);
   const [erroFinanceiro, setErroFinanceiro] = useState('');
   const [carregandoFinanceiro, setCarregandoFinanceiro] = useState(false);
@@ -82,6 +194,44 @@ function AdminPainel() {
 
   useEffect(() => {
     fetchProdutos();
+  }, []);
+
+  useEffect(() => {
+    let ativo = true;
+
+    axios
+      .get<PedidoResumo[]>(`${API_URL}/vendas/artesao`, {
+        withCredentials: true,
+      })
+      .then(({ data }) => {
+        if (ativo) setPedidos(data);
+      })
+      .catch((error: unknown) => {
+        console.error('Erro ao buscar pedidos do resumo:', error);
+      })
+      .finally(() => {
+        if (ativo) setCarregandoPedidos(false);
+      });
+
+    axios
+      .get<ConversaResumo[]>(`${API_URL}/mensagens/conversas`, {
+        withCredentials: true,
+      })
+      .then(({ data }) => {
+        if (!ativo) return;
+        const totalNaoLidas = data.reduce(
+          (acc, conversa) => acc + Number(conversa.mensagensNaoLidas || 0),
+          0
+        );
+        setMensagensNaoLidas(totalNaoLidas);
+      })
+      .catch((error: unknown) => {
+        console.error('Erro ao buscar mensagens não lidas:', error);
+      });
+
+    return () => {
+      ativo = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -127,6 +277,31 @@ function AdminPainel() {
       }
     }
   };
+
+  const agora = new Date();
+  const pedidosNoMes = pedidos.filter((pedido) => {
+    if (pedido.status === 'cancelada') return false;
+    const dataPedido = new Date(pedido.data);
+    return (
+      !Number.isNaN(dataPedido.getTime()) &&
+      dataPedido.getMonth() === agora.getMonth() &&
+      dataPedido.getFullYear() === agora.getFullYear()
+    );
+  });
+
+  const faturamentoMes = pedidosNoMes.reduce(
+    (acc, pedido) => acc + Number(pedido.total || 0),
+    0
+  );
+  const ultimosPedidos = pedidos.slice(0, 4);
+  const serieGrafico = gerarSerieVendas(pedidos, periodoGrafico);
+  const maiorValorGrafico = Math.max(...serieGrafico.map((p) => p.total), 0);
+  const totalPeriodoGrafico = serieGrafico.reduce((acc, p) => acc + p.total, 0);
+  const qtdPeriodoGrafico = serieGrafico.reduce(
+    (acc, p) => acc + p.quantidade,
+    0
+  );
+  const pontoEmFoco = serieGrafico.find((p) => p.chave === barraAtiva) ?? null;
 
   return (
     <div className={styles.paginaPainel}>
@@ -230,13 +405,56 @@ function AdminPainel() {
                     <span className={styles.tituloCardResumo}>
                       Vendas no mês
                     </span>
+                    <strong className={styles.valorCardResumo}>
+                      {carregandoPedidos ? '...' : formatarMoeda(faturamentoMes)}
+                    </strong>
+                    <span className={styles.detalheCardResumo}>
+                      {carregandoPedidos
+                        ? 'Carregando vendas...'
+                        : `${pedidosNoMes.length} ${
+                            pedidosNoMes.length === 1
+                              ? 'pedido confirmado'
+                              : 'pedidos confirmados'
+                          } neste mês`}
+                    </span>
                   </div>
 
                   <div className={styles.cardResumo}>
                     <span className={styles.tituloCardResumo}>
                       Produtos ativos
                     </span>
+                    <strong className={styles.valorCardResumo}>
+                      {produtos.length}
+                    </strong>
+                    <button
+                      type="button"
+                      className={styles.linkCardResumo}
+                      onClick={() => setAbaAtiva('produtos')}
+                    >
+                      Gerenciar catálogo
+                    </button>
                   </div>
+
+                  <div className={styles.cardResumo}>
+                    <span className={styles.tituloCardResumo}>
+                      Mensagens
+                    </span>
+                    <strong className={styles.valorCardResumo}>
+                      {mensagensNaoLidas}
+                    </strong>
+                    <button
+                      type="button"
+                      className={styles.linkCardResumo}
+                      onClick={() => navigate('/mensagens')}
+                    >
+                      {mensagensNaoLidas === 0
+                        ? 'Nenhuma pendente • Abrir chat'
+                        : mensagensNaoLidas === 1
+                          ? '1 não lida • Responder'
+                          : `${mensagensNaoLidas} não lidas • Responder`}
+                    </button>
+                  </div>
+
                   {isArtisan && (
                     <div className={styles.cardResumo}>
                       <span className={styles.tituloCardResumo}>
@@ -244,26 +462,20 @@ function AdminPainel() {
                       </span>
                       {subconta ? (
                         <>
-                          <strong>
-                            {new Intl.NumberFormat('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
-                            }).format(subconta.balance.available / 100)}
+                          <strong className={styles.valorCardResumo}>
+                            {formatarMoeda(subconta.balance.available / 100)}
                           </strong>
-                          <span className={styles.tituloCardResumo}>
+                          <span className={styles.detalheCardResumo}>
                             Saldo disponível •{' '}
                             {subconta.devMode ? 'Modo de Teste' : 'Produção'}
                           </span>
-                          <span className={styles.tituloCardResumo}>
+                          <span className={styles.detalheCardResumo}>
                             Saldo bloqueado:{' '}
-                            {new Intl.NumberFormat('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
-                            }).format(subconta.balance.blocked / 100)}
+                            {formatarMoeda(subconta.balance.blocked / 100)}
                           </span>
                         </>
                       ) : (
-                        <span className={styles.tituloCardResumo}>
+                        <span className={styles.detalheCardResumo}>
                           {erroFinanceiro ||
                             (carregandoFinanceiro
                               ? 'Consultando saldo...'
@@ -272,6 +484,152 @@ function AdminPainel() {
                       )}
                     </div>
                   )}
+                </div>
+
+                <div className={styles.gradeSecoesResumo}>
+                  <section className={styles.secaoResumo}>
+                    <div className={styles.cabecalhoSecaoResumo}>
+                      <div>
+                        <h2>Últimos pedidos</h2>
+                        <p>Acompanhe as vendas mais recentes da sua loja</p>
+                      </div>
+                      <button
+                        type="button"
+                        className={styles.linkCardResumo}
+                        onClick={() => setAbaAtiva('pedidos')}
+                      >
+                        Ver todos
+                      </button>
+                    </div>
+
+                    {carregandoPedidos ? (
+                      <p className={styles.estadoVazioResumo}>
+                        Carregando pedidos...
+                      </p>
+                    ) : ultimosPedidos.length === 0 ? (
+                      <p className={styles.estadoVazioResumo}>
+                        Você ainda não recebeu pedidos.
+                      </p>
+                    ) : (
+                      <div className={styles.listaPedidosResumo}>
+                        {ultimosPedidos.map((pedido) => (
+                          <div
+                            key={pedido.codigo}
+                            className={styles.itemPedidoResumo}
+                          >
+                            <div className={styles.infoPedidoResumo}>
+                              <strong>Pedido #{pedido.codigo}</strong>
+                              <span>
+                                {pedido.cliente} •{' '}
+                                {new Date(pedido.data).toLocaleDateString('pt-BR')}
+                              </span>
+                            </div>
+                            <div className={styles.valoresPedidoResumo}>
+                              <strong>{formatarMoeda(Number(pedido.total || 0))}</strong>
+                              <span
+                                className={
+                                  pedido.status === 'cancelada'
+                                    ? styles.statusCanceladoResumo
+                                    : styles.statusConfirmadoResumo
+                                }
+                              >
+                                {pedido.status === 'cancelada'
+                                  ? 'Cancelado'
+                                  : 'Confirmado'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+
+                  <section className={styles.secaoResumo}>
+                    <div className={styles.cabecalhoSecaoResumo}>
+                      <div>
+                        <h2>Vendas ao longo do tempo</h2>
+                        <p>
+                          {pontoEmFoco
+                            ? `${pontoEmFoco.rotulo}: ${formatarMoeda(pontoEmFoco.total)} (${pontoEmFoco.quantidade} ${pontoEmFoco.quantidade === 1 ? 'pedido' : 'pedidos'})`
+                            : `Total no período: ${formatarMoeda(totalPeriodoGrafico)} (${qtdPeriodoGrafico} ${qtdPeriodoGrafico === 1 ? 'pedido' : 'pedidos'})`}
+                        </p>
+                      </div>
+
+                      <div className={styles.filtrosGrafico}>
+                        <button
+                          type="button"
+                          className={
+                            periodoGrafico === '6m'
+                              ? styles.botaoFiltroAtivo
+                              : styles.botaoFiltro
+                          }
+                          onClick={() => {
+                            setPeriodoGrafico('6m');
+                            setBarraAtiva(null);
+                          }}
+                        >
+                          6 meses
+                        </button>
+                        <button
+                          type="button"
+                          className={
+                            periodoGrafico === '30d'
+                              ? styles.botaoFiltroAtivo
+                              : styles.botaoFiltro
+                          }
+                          onClick={() => {
+                            setPeriodoGrafico('30d');
+                            setBarraAtiva(null);
+                          }}
+                        >
+                          30 dias
+                        </button>
+                      </div>
+                    </div>
+
+                    {carregandoPedidos ? (
+                      <p className={styles.estadoVazioResumo}>
+                        Carregando gráfico...
+                      </p>
+                    ) : (
+                      <div
+                        className={styles.graficoBarras}
+                        role="img"
+                        aria-label="Gráfico de vendas ao longo do tempo"
+                      >
+                        {serieGrafico.map((ponto) => {
+                          const altura =
+                            maiorValorGrafico > 0 && ponto.total > 0
+                              ? Math.max((ponto.total / maiorValorGrafico) * 100, 8)
+                              : 0;
+
+                          return (
+                            <div
+                              key={ponto.chave}
+                              className={styles.colunaGrafico}
+                              onMouseEnter={() => setBarraAtiva(ponto.chave)}
+                              onMouseLeave={() => setBarraAtiva(null)}
+                            >
+                              <span className={styles.valorBarraGrafico}>
+                                {ponto.total > 0
+                                  ? formatarMoeda(ponto.total)
+                                  : '—'}
+                              </span>
+                              <div className={styles.trilhaBarraGrafico}>
+                                <div
+                                  className={styles.barraGrafico}
+                                  style={{ height: `${altura}%` }}
+                                />
+                              </div>
+                              <span className={styles.rotuloBarraGrafico}>
+                                {ponto.rotulo}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </section>
                 </div>
               </div>
             )}

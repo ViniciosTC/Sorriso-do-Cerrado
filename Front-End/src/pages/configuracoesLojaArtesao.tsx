@@ -397,7 +397,6 @@ function ConfiguracoesLojaArtesao() {
     <div className={styles.paginaConfigLoja}>
       <header className={styles.cabecalho}>
         <div>
-          <p className={styles.sobretitulo}>Sua loja</p>
           <h1>Minha loja</h1>
           <p className={styles.descricao}>
             Edite as informações da loja e gerencie todos os dados fornecidos no

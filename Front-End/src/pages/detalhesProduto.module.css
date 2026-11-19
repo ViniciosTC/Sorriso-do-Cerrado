@@ -107,6 +107,27 @@
   background-color: var(--palette-surface-714a3e);
 }
 
+.botaoLoja {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid var(--palette-border-8d5b4c);
+  border-radius: 8px;
+  color: var(--palette-text-8d5b4c);
+  background-color: transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoLoja:hover {
+  background-color: var(--palette-surface-faf3e0);
+}
+
 @media (max-width: 768px) {
   .detalheProdutoContainer {
     flex-direction: column;

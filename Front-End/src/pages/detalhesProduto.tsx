@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/carrinhoContext';
 import { useAuth } from '../auth/authContext';
@@ -11,6 +11,7 @@ import styles from './detalhesProduto.module.css';
 
 interface Produto {
   id: number;
+  usuarioId?: string | null;
   nome: string;
   preco: string | number;
   imagemURL?: string;
@@ -198,6 +199,15 @@ function DetalheProduto() {
                   Adicionar ao Carrinho
                 </button>
               </div>
+
+              {produto.usuarioId && (
+                <Link
+                  to={`/loja-artesao/${produto.usuarioId}`}
+                  className={styles.botaoLoja}
+                >
+                  Ver loja do artesão
+                </Link>
+              )}
             </div>
           </div>
         )}

@@ -11,6 +11,8 @@ import { useNotificacao } from '../context/notificacaoContext';
 
 import styles from './home.module.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface Produto {
   id: number;
   nome: string;
@@ -28,6 +30,7 @@ function Home() {
   const [produtosDestaque, setProdutosDestaque] = useState<Produto[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [favoritosIds, setFavoritosIds] = useState<number[]>([]);
+  const [carrosselPausado, setCarrosselPausado] = useState(false);
 
   const { isAdmin, isAuthenticated } = useAuth();
   const { mostrarNotificacao, confirmarAcao } = useNotificacao();
@@ -55,7 +58,7 @@ function Home() {
 
   const buscarProdutos = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/produtos');
+      const response = await axios.get(`${API_URL}/produtos`);
       setProdutosDestaque(response.data.slice(0, 3));
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
@@ -64,7 +67,7 @@ function Home() {
 
   const buscarBanners = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/banners');
+      const response = await axios.get(`${API_URL}/banners`);
       setBanners(response.data);
     } catch (error) {
       console.error('Erro ao buscar banners:', error);
@@ -74,7 +77,7 @@ function Home() {
   const buscarFavoritos = async () => {
     if (isAuthenticated) {
       try {
-        const response = await axios.get('http://localhost:3000/favoritos', {
+        const response = await axios.get(`${API_URL}/favoritos`, {
           withCredentials: true,
         });
 
@@ -90,7 +93,7 @@ function Home() {
       const formData = new FormData();
       formData.append('imagem', arquivo);
 
-      await axios.put(`http://localhost:3000/banners/${bannerId}`, formData, {
+      await axios.put(`${API_URL}/banners/${bannerId}`, formData, {
         withCredentials: true,
       });
 
@@ -116,7 +119,7 @@ function Home() {
       formData.append('imagem', arquivo);
       formData.append('titulo', `Banner ${banners.length + 1}`);
 
-      await axios.post('http://localhost:3000/banners', formData, {
+      await axios.post(`${API_URL}/banners`, formData, {
         withCredentials: true,
       });
 
@@ -138,7 +141,7 @@ function Home() {
     if (!confirmar) return;
 
     try {
-      await axios.delete(`http://localhost:3000/banners/${bannerId}`, {
+      await axios.delete(`${API_URL}/banners/${bannerId}`, {
         withCredentials: true,
       });
 
@@ -155,13 +158,35 @@ function Home() {
 
   useEffect(() => {
     const carregarDadosIniciais = async () => {
-      await buscarFavoritos();
-      await buscarProdutos();
-      await buscarBanners();
+      await Promise.all([
+        buscarFavoritos(),
+        buscarProdutos(),
+        buscarBanners(),
+      ]);
     };
 
     carregarDadosIniciais();
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (banners.length <= 1 || carrosselPausado || isAdmin) return;
+
+    const intervalo = window.setInterval(() => {
+      const carrossel = carrosselRef.current;
+      if (!carrossel) return;
+
+      const noFim =
+        carrossel.scrollLeft + carrossel.clientWidth >= carrossel.scrollWidth - 8;
+
+      if (noFim) {
+        carrossel.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        navegarBanners(1);
+      }
+    }, 5000);
+
+    return () => window.clearInterval(intervalo);
+  }, [banners.length, carrosselPausado, isAdmin]);
 
   return (
     <div className={styles.containerPaginaInicial}>
@@ -174,7 +199,11 @@ function Home() {
           className={styles.imagemPrincipal}
         />
 
-        <div className={styles.bannersContainer}>
+        <div
+          className={styles.bannersContainer}
+          onMouseEnter={() => setCarrosselPausado(true)}
+          onMouseLeave={() => setCarrosselPausado(false)}
+        >
           {isAdmin && (
             <div className={styles.barraAdminBanners}>
               <button
