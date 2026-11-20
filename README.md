@@ -133,3 +133,4 @@ npx vite
 * [Vinicios Trindade Costa](https://github.com/Vinhicious) - UC23102647
 
 * TURMA: GPE17M80081
+* [Apresentação do projeto Sorriso do Cerrado](https://youtu.be/uac34t2DagU) 
