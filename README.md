@@ -126,9 +126,10 @@ npx vite
 > A aplicação front-end estará disponível em `http://localhost:5173`.
 
 ## 👩‍💻 Autores
-* [Gabriel Cézar Peres Matos](https://github.com/gbrielzera)
-* [Pedro Henrique Cavalcante de Sousa](https://github.com/pedrocavati)
-* [Samantha Yumi Tanaka](https://github.com/ySamantha)
-* [Samuel Batista Rennó](https://github.com/SamuelBati)
-* [Vinicios Trindade Costa](https://github.com/Vinhicious)
+* [Gabriel Cézar Peres Matos](https://github.com/gbrielzera) - UC23102346
+* [Pedro Henrique Cavalcante de Sousa](https://github.com/pedrocavati) - UC24102627
+* [Samantha Yumi Tanaka](https://github.com/ySamantha) - UC23201068
+* [Samuel Batista Rennó](https://github.com/SamuelBati) - UC23102986
+* [Vinicios Trindade Costa](https://github.com/Vinhicious) - UC23102647
 
+* TURMA: GPE17M80081
